@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PNE ARENA - URL TEST</title>
+    <title>PNE ARENA - Premium Graduation Products</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -21,8 +21,6 @@
             --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             --promo-color: #e74c3c;
             --whatsapp-color: #25D366;
-            --success-color: #28a745;
-            --info-color: #17a2b8;
         }
         * {
             margin: 0;
@@ -194,17 +192,6 @@
             transform: translateY(-2px);
             box-shadow: var(--shadow-md);
         }
-        .btn-success {
-            background-color: var(--success-color);
-            color: white;
-            border-color: var(--success-color);
-        }
-        .btn-success:hover {
-            background-color: #218838;
-            border-color: #218838;
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-md);
-        }
         .btn-group {
             display: flex;
             gap: 16px;
@@ -253,7 +240,7 @@
             position: absolute;
             top: 16px;
             left: 16px;
-            background-color: var(--promo-color);
+            background-color: var(--promo-color); /* Changed to red */
             color: white;
             font-size: 12px;
             font-weight: 600;
@@ -745,67 +732,6 @@
             padding-top: 16px;
             border-top: 1px solid var(--border-color);
         }
-        /* Order Confirmation Modal */
-        .confirmation-modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.7);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-            opacity: 0;
-            visibility: hidden;
-            transition: var(--transition);
-            padding: 20px;
-        }
-        .confirmation-modal.active {
-            opacity: 1;
-            visibility: visible;
-        }
-        .confirmation-content {
-            background-color: var(--bg-white);
-            border-radius: 16px;
-            max-width: 500px;
-            width: 100%;
-            padding: 40px;
-            text-align: center;
-            position: relative;
-            transform: scale(0.9);
-            transition: var(--transition);
-        }
-        .confirmation-modal.active .confirmation-content {
-            transform: scale(1);
-        }
-        .confirmation-icon {
-            font-size: 64px;
-            color: var(--success-color);
-            margin-bottom: 20px;
-        }
-        .confirmation-content h2 {
-            font-size: 28px;
-            font-weight: 700;
-            margin-bottom: 16px;
-            color: var(--text-dark);
-        }
-        .confirmation-content p {
-            font-size: 18px;
-            color: var(--text-light);
-            margin-bottom: 30px;
-            line-height: 1.6;
-        }
-        .order-id {
-            font-size: 20px;
-            font-weight: 700;
-            color: var(--primary-color);
-            margin-bottom: 30px;
-            padding: 12px;
-            background-color: var(--bg-light);
-            border-radius: 8px;
-        }
         /* WhatsApp Button */
         .whatsapp-btn {
             position: fixed;
@@ -931,13 +857,10 @@
             font-size: 24px;
         }
         .notification.success .notification-icon {
-            color: var(--success-color);
+            color: #28a745;
         }
         .notification.error .notification-icon {
             color: #dc3545;
-        }
-        .notification.info .notification-icon {
-            color: var(--info-color);
         }
         .notification-message {
             flex: 1;
@@ -949,19 +872,6 @@
         .notification-text {
             font-size: 14px;
             color: var(--text-light);
-        }
-        /* Loading Spinner */
-        .spinner {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-            border-top-color: white;
-            animation: spin 1s ease-in-out infinite;
-        }
-        @keyframes spin {
-            to { transform: rotate(360deg); }
         }
         /* Responsive Design */
         @media (max-width: 992px) {
@@ -1407,30 +1317,10 @@
                     <textarea id="notes" class="form-control" rows="3"></textarea>
                 </div>
                 
-                <button type="submit" class="btn btn-primary" style="width: 100%;">
-                    <span id="submit-btn-text">Submit Order</span>
-                    <span id="submit-btn-spinner" class="spinner" style="display: none;"></span>
-                </button>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Submit Order</button>
             </form>
         </div>
     </div>
-    
-    <!-- Order Confirmation Modal -->
-    <div class="confirmation-modal" id="confirmation-modal">
-        <div class="confirmation-content">
-            <button class="close-modal" onclick="closeConfirmationModal()">
-                <i class="fas fa-times"></i>
-            </button>
-            <div class="confirmation-icon">
-                <i class="fas fa-check-circle"></i>
-            </div>
-            <h2>Order Placed Successfully!</h2>
-            <p>Thank you for your order. We have received your order details and will process it shortly.</p>
-            <div class="order-id" id="confirmation-order-id">Order ID: ORD-123456</div>
-            <button class="btn btn-primary" onclick="closeConfirmationModal()">Continue Shopping</button>
-        </div>
-    </div>
-    
     <!-- WhatsApp Button -->
     <button class="whatsapp-btn" onclick="openWhatsApp()">
         <i class="fab fa-whatsapp"></i>
@@ -1497,10 +1387,8 @@
         let cartTotal = 0;
         let currentProduct = null;
         let singleProductOrder = null;
-        
         // List of custom made products
         const customMadeProducts = ['Medal', 'Keychain', 'Nametag', 'Corporate Shirt', 'Attendance Card'];
-        
         // List of available colors
         const availableColors = [
             'Black', 'White', 'Navy Blue', 'Burgundy', 'Forest Green', 
@@ -1508,15 +1396,12 @@
             'Beige', 'Brown', 'Teal', 'Maroon', 'Gold',
             'Silver', 'Copper', 'Olive', 'Khaki', 'Cream'
         ];
-        
         // Google Sheets configuration
-        const googleSheetURL = 'https://script.google.com/macros/s/AKfycbyBwCwBh_ypSMMRFEF3sasUC2Pr6sHtXPrKtf0b7OG4JCrHvQmcU9um8ERKleILLRRNbQ/exec'; // Replace with your Google Apps Script URL
-        
+        const googleSheetURL = 'YOUR_GOOGLE_APPS_SCRIPT_URL'; // Replace with your Google Apps Script URL
         function toggleCart() {
             const cartSidebar = document.getElementById('cart-sidebar');
             cartSidebar.classList.toggle('active');
         }
-        
         function addToCart(name, price) {
             const existingItem = cart.find(item => item.name === name);
             
@@ -1533,7 +1418,6 @@
             updateCart();
             showNotification('Item added to cart!', 'success');
         }
-        
         function addToCartFromModal() {
             const name = document.getElementById('modal-title').textContent;
             const priceText = document.getElementById('modal-price').textContent;
@@ -1575,7 +1459,6 @@
             closeProductModal();
             showNotification(`${quantity} item(s) added to cart!`, 'success');
         }
-        
         function updateCart() {
             const cartItems = document.getElementById('cart-items');
             const cartSummary = document.getElementById('cart-summary');
@@ -1640,7 +1523,6 @@
                 cartItems.appendChild(cartItem);
             });
         }
-        
         function updateQuantity(index, change) {
             cart[index].quantity += change;
             
@@ -1651,19 +1533,16 @@
             
             updateCart();
         }
-        
         function removeFromCart(index) {
             cart.splice(index, 1);
             updateCart();
             showNotification('Item removed from cart!', 'success');
         }
-        
         function clearCart() {
             cart = [];
             updateCart();
             showNotification('Cart cleared!', 'success');
         }
-        
         function openSingleProductOrder(name, price) {
             singleProductOrder = { name, price, quantity: 1 };
             document.getElementById('order-modal').classList.add('active');
@@ -1681,7 +1560,6 @@
             
             orderTotal.textContent = `RM${price.toFixed(2)}`;
         }
-        
         function openOrderForm() {
             if (cart.length === 0) {
                 showNotification('Your cart is empty!', 'error');
@@ -1720,23 +1598,12 @@
             document.getElementById('order-modal').classList.add('active');
             toggleCart();
         }
-        
         function closeOrderForm() {
             document.getElementById('order-modal').classList.remove('active');
             singleProductOrder = null;
         }
-        
         function submitOrder(event) {
             event.preventDefault();
-            
-            // Show loading state
-            const submitBtnText = document.getElementById('submit-btn-text');
-            const submitBtnSpinner = document.getElementById('submit-btn-spinner');
-            const submitBtn = event.target.querySelector('button[type="submit"]');
-            
-            submitBtnText.style.display = 'none';
-            submitBtnSpinner.style.display = 'inline-block';
-            submitBtn.disabled = true;
             
             // Collect form data
             const formData = {
@@ -1750,7 +1617,6 @@
                 notes: document.getElementById('notes').value,
                 orderItems: singleProductOrder ? [singleProductOrder] : cart,
                 totalAmount: singleProductOrder ? singleProductOrder.price.toFixed(2) : cartTotal.toFixed(2),
-                paymentMethod: 'Website Form',
                 timestamp: new Date().toISOString()
             };
             
@@ -1776,32 +1642,17 @@
                     // Close order form
                     closeOrderForm();
                     
-                    // Show confirmation modal
-                    document.getElementById('confirmation-order-id').textContent = `Order ID: ${data.orderId}`;
-                    document.getElementById('confirmation-modal').classList.add('active');
-                    
                     // Show success notification
                     showNotification('Order placed successfully!', 'success');
                 } else {
-                    showNotification(`Failed to place order: ${data.error || 'Unknown error'}`, 'error');
+                    showNotification('Failed to place order. Please try again.', 'error');
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
-                showNotification('Failed to place order. Please check your internet connection and try again.', 'error');
-            })
-            .finally(() => {
-                // Reset button state
-                submitBtnText.style.display = 'inline';
-                submitBtnSpinner.style.display = 'none';
-                submitBtn.disabled = false;
+                showNotification('Failed to place order. Please try again.', 'error');
             });
         }
-        
-        function closeConfirmationModal() {
-            document.getElementById('confirmation-modal').classList.remove('active');
-        }
-        
         function proceedPaymentWhatsApp() {
             const orderItems = singleProductOrder ? [singleProductOrder] : cart;
             const totalAmount = singleProductOrder ? singleProductOrder.price : cartTotal;
@@ -1837,31 +1688,6 @@
             // Open WhatsApp with pre-filled message
             window.open(`https://www.wasap.my/6012600969/ProceedOrder/?text=${encodedMessage}`, '_blank');
             
-            // Save order to Google Sheets with WhatsApp payment method
-            const formData = {
-                fullName: "WhatsApp Customer",
-                email: "",
-                phone: "",
-                postalCode: "",
-                address: "",
-                city: "",
-                state: "",
-                notes: "Order via WhatsApp",
-                orderItems: orderItems,
-                totalAmount: totalAmount.toFixed(2),
-                paymentMethod: "WhatsApp",
-                timestamp: new Date().toISOString()
-            };
-            
-            // Send data to Google Sheets (fire and forget)
-            fetch(googleSheetURL, {
-                method: 'POST',
-                body: JSON.stringify(formData),
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            });
-            
             // Clear cart or single product after order
             if (singleProductOrder) {
                 singleProductOrder = null;
@@ -1874,7 +1700,6 @@
             
             showNotification('Payment request sent via WhatsApp!', 'success');
         }
-        
         function proceedWhatsAppFromModal() {
             const name = document.getElementById('modal-title').textContent;
             const priceText = document.getElementById('modal-price').textContent;
@@ -1901,39 +1726,8 @@
             
             window.open(`https://www.wasap.my/6012600969/ProceedOrder/?text=${encodedMessage}`, '_blank');
             
-            // Save order to Google Sheets with WhatsApp payment method
-            const formData = {
-                fullName: "WhatsApp Customer",
-                email: "",
-                phone: "",
-                postalCode: "",
-                address: "",
-                city: "",
-                state: "",
-                notes: "Order via WhatsApp from product modal",
-                orderItems: [{
-                    name: name,
-                    price: price,
-                    quantity: quantity,
-                    options: optionsText ? {remark: optionsText.replace('Remark: ', '')} : null
-                }],
-                totalAmount: (price * quantity).toFixed(2),
-                paymentMethod: "WhatsApp",
-                timestamp: new Date().toISOString()
-            };
-            
-            // Send data to Google Sheets (fire and forget)
-            fetch(googleSheetURL, {
-                method: 'POST',
-                body: JSON.stringify(formData),
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            });
-            
             showNotification('Payment request sent via WhatsApp!', 'success');
         }
-        
         // Product modal functionality
         function quickView(name, price, originalPrice, image) {
             currentProduct = { name, price, originalPrice, image };
@@ -1982,23 +1776,19 @@
             
             document.getElementById('product-modal').classList.add('active');
         }
-        
         function closeProductModal() {
             document.getElementById('product-modal').classList.remove('active');
         }
-        
         function increaseQuantity() {
             const quantityInput = document.getElementById('quantity');
             quantityInput.value = parseInt(quantityInput.value) + 1;
         }
-        
         function decreaseQuantity() {
             const quantityInput = document.getElementById('quantity');
             if (parseInt(quantityInput.value) > 1) {
                 quantityInput.value = parseInt(quantityInput.value) - 1;
             }
         }
-        
         // Direct order via WhatsApp
         function directOrder(name, price) {
             const orderMessage = `Hello, I would like to order the following product:\n\n${name} - Price: RM${price.toFixed(2)}\n\nPlease confirm availability and payment details.`;
@@ -2008,47 +1798,27 @@
             
             showNotification('Order request sent via WhatsApp!', 'success');
         }
-        
         function openWhatsApp() {
             window.open('https://www.wasap.my/60122600969/Questions', '_blank');
         }
-        
         // Notification functionality
         function showNotification(message, type = 'success') {
             const notification = document.getElementById('notification');
             const notificationTitle = notification.querySelector('.notification-title');
             const notificationText = notification.querySelector('.notification-text');
-            const notificationIcon = notification.querySelector('.notification-icon i');
             
-            // Reset classes
             notification.className = 'notification';
-            
-            // Set type-specific classes
             notification.classList.add(type);
             
-            // Set icon based on type
-            if (type === 'success') {
-                notificationIcon.className = 'fas fa-check-circle';
-            } else if (type === 'error') {
-                notificationIcon.className = 'fas fa-exclamation-circle';
-            } else if (type === 'info') {
-                notificationIcon.className = 'fas fa-info-circle';
-            }
-            
-            // Set title and text
-            notificationTitle.textContent = type === 'success' ? 'Success' : 
-                                          type === 'error' ? 'Error' : 'Information';
+            notificationTitle.textContent = type === 'success' ? 'Success' : 'Error';
             notificationText.textContent = message;
             
-            // Show notification
             notification.classList.add('show');
             
-            // Auto-hide after 3 seconds
             setTimeout(() => {
                 notification.classList.remove('show');
             }, 3000);
         }
-        
         // Smooth scrolling for anchor links
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function (e) {
@@ -2066,12 +1836,10 @@
                 }
             });
         });
-        
         // Close modals when clicking outside
         window.addEventListener('click', function(event) {
             const productModal = document.getElementById('product-modal');
             const orderModal = document.getElementById('order-modal');
-            const confirmationModal = document.getElementById('confirmation-modal');
             
             if (event.target === productModal) {
                 closeProductModal();
@@ -2079,10 +1847,6 @@
             
             if (event.target === orderModal) {
                 closeOrderForm();
-            }
-            
-            if (event.target === confirmationModal) {
-                closeConfirmationModal();
             }
         });
     </script>
