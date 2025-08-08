@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PNE ARENA - Premium Graduation Products</title>
+    <title>PNE ARENA - Test</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -20,6 +20,7 @@
             --shadow-lg: 0 8px 24px rgba(0,0,0,0.12);
             --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             --promo-color: #e74c3c;
+            --whatsapp-color: #25D366;
         }
 
         * {
@@ -206,12 +207,16 @@
         }
 
         .btn-whatsapp {
-            background-color: #25D366;
+            background-color: var(--whatsapp-color);
             color: white;
+            border-color: var(--whatsapp-color);
         }
 
         .btn-whatsapp:hover {
             background-color: #20b558;
+            border-color: #20b558;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
         }
 
         .btn-group {
@@ -374,13 +379,18 @@
 
         .product-buttons {
             display: flex;
+            flex-direction: column;
             gap: 12px;
         }
 
         .btn-small {
             padding: 10px 16px;
             font-size: 14px;
-            flex: 1;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
         }
 
         /* Product Modal */
@@ -841,7 +851,7 @@
             right: 30px;
             width: 60px;
             height: 60px;
-            background-color: #25D366;
+            background-color: var(--whatsapp-color);
             color: white;
             border-radius: 50%;
             display: flex;
@@ -1141,8 +1151,8 @@
                     <div class="product-img">
                         <img src="https://images.unsplash.com/photo-1587854692152-cbe660dbde88?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" alt="Convocation Robe">
                         <div class="product-actions">
-                            <button class="action-btn" onclick="event.stopPropagation(); directOrder('Convocation Robe', 59.99)">
-                                <i class="fab fa-whatsapp"></i>
+                            <button class="action-btn" onclick="event.stopPropagation(); quickView('Convocation Robe', 59.99, 79.99, 'https://images.unsplash.com/photo-1587854692152-cbe660dbde88?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80')">
+                                <i class="fas fa-eye"></i>
                             </button>
                         </div>
                     </div>
@@ -1154,7 +1164,9 @@
                             <span class="promo-price">RM59.99</span>
                         </div>
                         <div class="product-buttons">
-                            <button class="btn btn-primary btn-small" onclick="event.stopPropagation(); addToCart('Convocation Robe', 59.99)">Add to Cart</button>
+                            <button class="btn btn-primary btn-small" onclick="event.stopPropagation(); openSingleProductOrder('Convocation Robe', 59.99)">
+                                <i class="fas fa-shopping-cart"></i> Place Order
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -1164,8 +1176,8 @@
                     <div class="product-img">
                         <img src="https://images.unsplash.com/photo-1576566588028-4147f3842f27?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1887&q=80" alt="T-Shirt">
                         <div class="product-actions">
-                            <button class="action-btn" onclick="event.stopPropagation(); directOrder('T-Shirt', 19.99)">
-                                <i class="fab fa-whatsapp"></i>
+                            <button class="action-btn" onclick="event.stopPropagation(); quickView('T-Shirt', 19.99, 29.99, 'https://images.unsplash.com/photo-1576566588028-4147f3842f27?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1887&q=80')">
+                                <i class="fas fa-eye"></i>
                             </button>
                         </div>
                     </div>
@@ -1177,7 +1189,9 @@
                             <span class="promo-price">RM19.99</span>
                         </div>
                         <div class="product-buttons">
-                            <button class="btn btn-primary btn-small" onclick="event.stopPropagation(); addToCart('T-Shirt', 19.99)">Add to Cart</button>
+                            <button class="btn btn-primary btn-small" onclick="event.stopPropagation(); openSingleProductOrder('T-Shirt', 19.99)">
+                                <i class="fas fa-shopping-cart"></i> Place Order
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -1187,8 +1201,8 @@
                     <div class="product-img">
                         <img src="https://images.unsplash.com/photo-1614730321146-b6fa6a46bcb4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" alt="Medal">
                         <div class="product-actions">
-                            <button class="action-btn" onclick="event.stopPropagation(); directOrder('Medal', 24.99)">
-                                <i class="fab fa-whatsapp"></i>
+                            <button class="action-btn" onclick="event.stopPropagation(); quickView('Medal', 24.99, null, 'https://images.unsplash.com/photo-1614730321146-b6fa6a46bcb4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80')">
+                                <i class="fas fa-eye"></i>
                             </button>
                         </div>
                     </div>
@@ -1197,7 +1211,9 @@
                         <h3 class="product-title">Medal</h3>
                         <div class="product-price">RM24.99</div>
                         <div class="product-buttons">
-                            <button class="btn btn-primary btn-small" onclick="event.stopPropagation(); addToCart('Medal', 24.99)">Add to Cart</button>
+                            <button class="btn btn-primary btn-small" onclick="event.stopPropagation(); openSingleProductOrder('Medal', 24.99)">
+                                <i class="fas fa-shopping-cart"></i> Place Order
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -1207,8 +1223,8 @@
                     <div class="product-img">
                         <img src="https://images.unsplash.com/photo-1620704765326-2cceb00c3752?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1887&q=80" alt="Towel">
                         <div class="product-actions">
-                            <button class="action-btn" onclick="event.stopPropagation(); directOrder('Towel', 14.99)">
-                                <i class="fab fa-whatsapp"></i>
+                            <button class="action-btn" onclick="event.stopPropagation(); quickView('Towel', 14.99, null, 'https://images.unsplash.com/photo-1620704765326-2cceb00c3752?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1887&q=80')">
+                                <i class="fas fa-eye"></i>
                             </button>
                         </div>
                     </div>
@@ -1217,7 +1233,9 @@
                         <h3 class="product-title">Towel</h3>
                         <div class="product-price">RM14.99</div>
                         <div class="product-buttons">
-                            <button class="btn btn-primary btn-small" onclick="event.stopPropagation(); addToCart('Towel', 14.99)">Add to Cart</button>
+                            <button class="btn btn-primary btn-small" onclick="event.stopPropagation(); openSingleProductOrder('Towel', 14.99)">
+                                <i class="fas fa-shopping-cart"></i> Place Order
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -1227,8 +1245,8 @@
                     <div class="product-img">
                         <img src="https://images.unsplash.com/photo-1596394616838-170f2fcf5c3a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1887&q=80" alt="Keychain">
                         <div class="product-actions">
-                            <button class="action-btn" onclick="event.stopPropagation(); directOrder('Keychain', 7.99)">
-                                <i class="fab fa-whatsapp"></i>
+                            <button class="action-btn" onclick="event.stopPropagation(); quickView('Keychain', 7.99, null, 'https://images.unsplash.com/photo-1596394616838-170f2fcf5c3a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1887&q=80')">
+                                <i class="fas fa-eye"></i>
                             </button>
                         </div>
                     </div>
@@ -1237,7 +1255,9 @@
                         <h3 class="product-title">Keychain</h3>
                         <div class="product-price">RM7.99</div>
                         <div class="product-buttons">
-                            <button class="btn btn-primary btn-small" onclick="event.stopPropagation(); addToCart('Keychain', 7.99)">Add to Cart</button>
+                            <button class="btn btn-primary btn-small" onclick="event.stopPropagation(); openSingleProductOrder('Keychain', 7.99)">
+                                <i class="fas fa-shopping-cart"></i> Place Order
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -1247,8 +1267,8 @@
                     <div class="product-img">
                         <img src="https://images.unsplash.com/photo-1586953208448-b95a79798f07?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1887&q=80" alt="Nametag">
                         <div class="product-actions">
-                            <button class="action-btn" onclick="event.stopPropagation(); directOrder('Nametag', 9.99)">
-                                <i class="fab fa-whatsapp"></i>
+                            <button class="action-btn" onclick="event.stopPropagation(); quickView('Nametag', 9.99, null, 'https://images.unsplash.com/photo-1586953208448-b95a79798f07?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1887&q=80')">
+                                <i class="fas fa-eye"></i>
                             </button>
                         </div>
                     </div>
@@ -1257,7 +1277,9 @@
                         <h3 class="product-title">Nametag</h3>
                         <div class="product-price">RM9.99</div>
                         <div class="product-buttons">
-                            <button class="btn btn-primary btn-small" onclick="event.stopPropagation(); addToCart('Nametag', 9.99)">Add to Cart</button>
+                            <button class="btn btn-primary btn-small" onclick="event.stopPropagation(); openSingleProductOrder('Nametag', 9.99)">
+                                <i class="fas fa-shopping-cart"></i> Place Order
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -1267,8 +1289,8 @@
                     <div class="product-img">
                         <img src="https://images.unsplash.com/photo-1606764888106-69b29f70e5c8?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1887&q=80" alt="Corporate Shirt">
                         <div class="product-actions">
-                            <button class="action-btn" onclick="event.stopPropagation(); directOrder('Corporate Shirt', 29.99)">
-                                <i class="fab fa-whatsapp"></i>
+                            <button class="action-btn" onclick="event.stopPropagation(); quickView('Corporate Shirt', 29.99, 39.99, 'https://images.unsplash.com/photo-1606764888106-69b29f70e5c8?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1887&q=80')">
+                                <i class="fas fa-eye"></i>
                             </button>
                         </div>
                     </div>
@@ -1280,7 +1302,9 @@
                             <span class="promo-price">RM29.99</span>
                         </div>
                         <div class="product-buttons">
-                            <button class="btn btn-primary btn-small" onclick="event.stopPropagation(); addToCart('Corporate Shirt', 29.99)">Add to Cart</button>
+                            <button class="btn btn-primary btn-small" onclick="event.stopPropagation(); openSingleProductOrder('Corporate Shirt', 29.99)">
+                                <i class="fas fa-shopping-cart"></i> Place Order
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -1290,8 +1314,8 @@
                     <div class="product-img">
                         <img src="https://images.unsplash.com/photo-1586953208448-b95a79798f07?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1887&q=80" alt="Attendance Card">
                         <div class="product-actions">
-                            <button class="action-btn" onclick="event.stopPropagation(); directOrder('Attendance Card', 4.99)">
-                                <i class="fab fa-whatsapp"></i>
+                            <button class="action-btn" onclick="event.stopPropagation(); quickView('Attendance Card', 4.99, null, 'https://images.unsplash.com/photo-1586953208448-b95a79798f07?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1887&q=80')">
+                                <i class="fas fa-eye"></i>
                             </button>
                         </div>
                     </div>
@@ -1300,7 +1324,9 @@
                         <h3 class="product-title">Attendance Card</h3>
                         <div class="product-price">RM4.99</div>
                         <div class="product-buttons">
-                            <button class="btn btn-primary btn-small" onclick="event.stopPropagation(); addToCart('Attendance Card', 4.99)">Add to Cart</button>
+                            <button class="btn btn-primary btn-small" onclick="event.stopPropagation(); openSingleProductOrder('Attendance Card', 4.99)">
+                                <i class="fas fa-shopping-cart"></i> Place Order
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -1341,8 +1367,8 @@
                         </div>
                     </div>
                     <div class="modal-actions">
-                        <button class="btn btn-outline" onclick="directOrder(document.getElementById('modal-title').textContent, parseFloat(document.getElementById('modal-price').textContent.replace('RM', '').replace(/[^0-9.]/g, '')))">
-                            <i class="fab fa-whatsapp"></i> Order via WhatsApp
+                        <button class="btn btn-whatsapp" onclick="proceedWhatsAppFromModal()">
+                            <i class="fab fa-whatsapp"></i> Proceed via WhatsApp
                         </button>
                         <button class="btn btn-primary" onclick="addToCartFromModal()">Add to Cart</button>
                     </div>
@@ -1513,6 +1539,7 @@
         let cart = [];
         let cartTotal = 0;
         let currentProduct = null;
+        let singleProductOrder = null;
 
         // List of custom made products
         const customMadeProducts = ['Medal', 'Keychain', 'Nametag', 'Corporate Shirt', 'Attendance Card'];
@@ -1680,6 +1707,24 @@
             showNotification('Cart cleared!', 'success');
         }
 
+        function openSingleProductOrder(name, price) {
+            singleProductOrder = { name, price, quantity: 1 };
+            document.getElementById('order-modal').classList.add('active');
+            
+            // Update order summary for single product
+            const orderItems = document.getElementById('order-items');
+            const orderTotal = document.getElementById('order-total');
+            
+            orderItems.innerHTML = `
+                <div class="order-item">
+                    <span>${name} x 1 - RM${price.toFixed(2)} each</span>
+                    <span>RM${price.toFixed(2)}</span>
+                </div>
+            `;
+            
+            orderTotal.textContent = `RM${price.toFixed(2)}`;
+        }
+
         function openOrderForm() {
             if (cart.length === 0) {
                 showNotification('Your cart is empty!', 'error');
@@ -1721,6 +1766,7 @@
 
         function closeOrderForm() {
             document.getElementById('order-modal').classList.remove('active');
+            singleProductOrder = null;
         }
 
         function submitOrder(event) {
@@ -1736,8 +1782,8 @@
                 city: document.getElementById('city').value,
                 state: document.getElementById('state').value,
                 notes: document.getElementById('notes').value,
-                orderItems: cart,
-                totalAmount: cartTotal.toFixed(2),
+                orderItems: singleProductOrder ? [singleProductOrder] : cart,
+                totalAmount: singleProductOrder ? singleProductOrder.price.toFixed(2) : cartTotal.toFixed(2),
                 timestamp: new Date().toISOString()
             };
             
@@ -1752,9 +1798,13 @@
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    // Clear cart
-                    cart = [];
-                    updateCart();
+                    // Clear cart or single product
+                    if (singleProductOrder) {
+                        singleProductOrder = null;
+                    } else {
+                        cart = [];
+                        updateCart();
+                    }
                     
                     // Close order form
                     closeOrderForm();
@@ -1772,7 +1822,10 @@
         }
 
         function proceedPaymentWhatsApp() {
-            if (cart.length === 0) {
+            const orderItems = singleProductOrder ? [singleProductOrder] : cart;
+            const totalAmount = singleProductOrder ? singleProductOrder.price : cartTotal;
+            
+            if (orderItems.length === 0) {
                 showNotification('Your cart is empty!', 'error');
                 return;
             }
@@ -1780,7 +1833,7 @@
             // Create order summary for WhatsApp
             let orderSummary = "Hello, I would like to proceed with payment for the following order:\n\n";
             
-            cart.forEach(item => {
+            orderItems.forEach(item => {
                 orderSummary += `${item.name}`;
                 
                 if (item.options) {
@@ -1794,7 +1847,7 @@
                 orderSummary += ` - Quantity: ${item.quantity} - Price: RM${item.price.toFixed(2)} each\n`;
             });
             
-            orderSummary += `\nTotal: RM${cartTotal.toFixed(2)}\n\n`;
+            orderSummary += `\nTotal: RM${totalAmount.toFixed(2)}\n\n`;
             orderSummary += "Please provide payment instructions.";
             
             // Encode message for URL
@@ -1803,10 +1856,44 @@
             // Open WhatsApp with pre-filled message
             window.open(`https://www.wasap.my/6012600969/ProceedOrder/?text=${encodedMessage}`, '_blank');
             
-            // Clear cart after order
-            cart = [];
-            updateCart();
-            toggleCart();
+            // Clear cart or single product after order
+            if (singleProductOrder) {
+                singleProductOrder = null;
+                closeOrderForm();
+            } else {
+                cart = [];
+                updateCart();
+                toggleCart();
+            }
+            
+            showNotification('Payment request sent via WhatsApp!', 'success');
+        }
+
+        function proceedWhatsAppFromModal() {
+            const name = document.getElementById('modal-title').textContent;
+            const priceText = document.getElementById('modal-price').textContent;
+            const price = parseFloat(priceText.replace('RM', '').replace(/[^0-9.]/g, ''));
+            const quantity = parseInt(document.getElementById('quantity').value);
+            
+            // Get selected options
+            let optionsText = '';
+            
+            if (customMadeProducts.includes(name)) {
+                const remarkField = document.getElementById('remark-field');
+                if (remarkField && remarkField.value) {
+                    optionsText = ` (Remark: ${remarkField.value})`;
+                }
+            } else {
+                const colorSelect = document.getElementById('color-select');
+                if (colorSelect) {
+                    optionsText = ` (Color: ${colorSelect.value})`;
+                }
+            }
+            
+            const orderMessage = `Hello, I would like to proceed with payment for the following product:\n\n${name}${optionsText} - Quantity: ${quantity} - Price: RM${price.toFixed(2)} each\n\nTotal: RM${(price * quantity).toFixed(2)}\n\nPlease provide payment instructions.`;
+            const encodedMessage = encodeURIComponent(orderMessage);
+            
+            window.open(`https://www.wasap.my/6012600969/ProceedOrder/?text=${encodedMessage}`, '_blank');
             
             showNotification('Payment request sent via WhatsApp!', 'success');
         }
