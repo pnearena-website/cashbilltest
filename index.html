@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Grad Essentials - Premium Graduation Products</title>
+    <title>PNE ARENA - Premium Graduation Products</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -203,6 +203,15 @@
         .btn-outline:hover {
             background-color: var(--bg-light);
             border-color: var(--text-dark);
+        }
+
+        .btn-whatsapp {
+            background-color: #25D366;
+            color: white;
+        }
+
+        .btn-whatsapp:hover {
+            background-color: #20b558;
         }
 
         .btn-group {
@@ -715,6 +724,116 @@
             color: var(--border-color);
         }
 
+        /* Order Form Modal */
+        .order-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: var(--transition);
+            padding: 20px;
+        }
+
+        .order-modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .order-form {
+            background-color: var(--bg-white);
+            border-radius: 16px;
+            max-width: 600px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+            transform: scale(0.9);
+            transition: var(--transition);
+            padding: 40px;
+        }
+
+        .order-modal.active .order-form {
+            transform: scale(1);
+        }
+
+        .order-form h2 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 24px;
+            color: var(--text-dark);
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 16px;
+            transition: var(--transition);
+        }
+
+        .form-control:focus {
+            border-color: var(--primary-color);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(51, 51, 51, 0.1);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .order-summary {
+            background-color: var(--bg-light);
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 24px;
+        }
+
+        .order-summary h3 {
+            font-size: 18px;
+            margin-bottom: 16px;
+            color: var(--text-dark);
+        }
+
+        .order-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        .order-total {
+            display: flex;
+            justify-content: space-between;
+            font-weight: 700;
+            font-size: 16px;
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid var(--border-color);
+        }
+
         /* WhatsApp Button */
         .whatsapp-btn {
             position: fixed;
@@ -943,6 +1062,14 @@
             .modal-img {
                 height: 300px;
             }
+            
+            .order-form {
+                padding: 30px 20px;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
         }
 
         @media (max-width: 576px) {
@@ -968,7 +1095,7 @@
     <!-- Header -->
     <header>
         <div class="container header-container">
-            <a href="#" class="logo">Grad Essentials</a>
+            <a href="#" class="logo">PNE ARENA</a>
             <nav>
                 <ul>
                     <li><a href="#home">Home</a></li>
@@ -1245,8 +1372,76 @@
             </div>
             <div class="cart-actions">
                 <button class="btn btn-outline" onclick="clearCart()">Clear Cart</button>
-                <button class="btn btn-primary" onclick="checkoutCart()">Checkout</button>
+                <button class="btn btn-primary" onclick="openOrderForm()">Place Order</button>
+                <button class="btn btn-whatsapp" onclick="proceedPaymentWhatsApp()">
+                    <i class="fab fa-whatsapp"></i> Proceed Payment via WhatsApp
+                </button>
             </div>
+        </div>
+    </div>
+
+    <!-- Order Form Modal -->
+    <div class="order-modal" id="order-modal">
+        <div class="order-form">
+            <button class="close-modal" onclick="closeOrderForm()">
+                <i class="fas fa-times"></i>
+            </button>
+            <h2>Place Your Order</h2>
+            
+            <div class="order-summary">
+                <h3>Order Summary</h3>
+                <div id="order-items"></div>
+                <div class="order-total">
+                    <span>Total:</span>
+                    <span id="order-total">RM0.00</span>
+                </div>
+            </div>
+            
+            <form id="order-form" onsubmit="submitOrder(event)">
+                <div class="form-group">
+                    <label for="full-name">Full Name</label>
+                    <input type="text" id="full-name" class="form-control" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" class="form-control" required>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="phone">Phone Number</label>
+                        <input type="tel" id="phone" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="postal-code">Postal Code</label>
+                        <input type="text" id="postal-code" class="form-control" required>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="address">Address</label>
+                    <input type="text" id="address" class="form-control" required>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="city">City</label>
+                        <input type="text" id="city" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="state">State</label>
+                        <input type="text" id="state" class="form-control" required>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="notes">Additional Notes (Optional)</label>
+                    <textarea id="notes" class="form-control" rows="3"></textarea>
+                </div>
+                
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Submit Order</button>
+            </form>
         </div>
     </div>
 
@@ -1260,7 +1455,7 @@
         <div class="container">
             <div class="footer-content">
                 <div class="footer-column">
-                    <h3>Grad Essentials</h3>
+                    <h3>PNE ARENA</h3>
                     <p>Your premium destination for graduation essentials. We provide high-quality products that make your special day unforgettable.</p>
                     <div class="social-links">
                         <a href="#"><i class="fab fa-facebook-f"></i></a>
@@ -1292,12 +1487,12 @@
                     <ul>
                         <li><i class="fas fa-map-marker-alt"></i> 123 Graduation St, Academic City</li>
                         <li><i class="fas fa-phone"></i> +1 (555) 123-4567</li>
-                        <li><i class="fas fa-envelope"></i> info@gradessentials.com</li>
+                        <li><i class="fas fa-envelope"></i> info@pnearena.com</li>
                     </ul>
                 </div>
             </div>
             <div class="copyright">
-                <p>&copy; 2023 Grad Essentials. All rights reserved.</p>
+                <p>&copy; 2023 PNE ARENA. All rights reserved.</p>
             </div>
         </div>
     </footer>
@@ -1329,6 +1524,9 @@
             'Beige', 'Brown', 'Teal', 'Maroon', 'Gold',
             'Silver', 'Copper', 'Olive', 'Khaki', 'Cream'
         ];
+
+        // Google Sheets configuration
+        const googleSheetURL = 'YOUR_GOOGLE_APPS_SCRIPT_URL'; // Replace with your Google Apps Script URL
 
         function toggleCart() {
             const cartSidebar = document.getElementById('cart-sidebar');
@@ -1482,14 +1680,105 @@
             showNotification('Cart cleared!', 'success');
         }
 
-        function checkoutCart() {
+        function openOrderForm() {
+            if (cart.length === 0) {
+                showNotification('Your cart is empty!', 'error');
+                return;
+            }
+            
+            // Populate order summary
+            const orderItems = document.getElementById('order-items');
+            const orderTotal = document.getElementById('order-total');
+            
+            orderItems.innerHTML = '';
+            
+            cart.forEach(item => {
+                let itemText = `${item.name} x ${item.quantity} - RM${item.price.toFixed(2)} each`;
+                
+                if (item.options) {
+                    if (item.options.color) {
+                        itemText += ` (Color: ${item.options.color})`;
+                    } else if (item.options.remark) {
+                        itemText += ` (Remark: ${item.options.remark})`;
+                    }
+                }
+                
+                const orderItem = document.createElement('div');
+                orderItem.className = 'order-item';
+                orderItem.innerHTML = `
+                    <span>${itemText}</span>
+                    <span>RM${(item.price * item.quantity).toFixed(2)}</span>
+                `;
+                orderItems.appendChild(orderItem);
+            });
+            
+            orderTotal.textContent = `RM${cartTotal.toFixed(2)}`;
+            
+            // Show order form modal
+            document.getElementById('order-modal').classList.add('active');
+            toggleCart();
+        }
+
+        function closeOrderForm() {
+            document.getElementById('order-modal').classList.remove('active');
+        }
+
+        function submitOrder(event) {
+            event.preventDefault();
+            
+            // Collect form data
+            const formData = {
+                fullName: document.getElementById('full-name').value,
+                email: document.getElementById('email').value,
+                phone: document.getElementById('phone').value,
+                postalCode: document.getElementById('postal-code').value,
+                address: document.getElementById('address').value,
+                city: document.getElementById('city').value,
+                state: document.getElementById('state').value,
+                notes: document.getElementById('notes').value,
+                orderItems: cart,
+                totalAmount: cartTotal.toFixed(2),
+                timestamp: new Date().toISOString()
+            };
+            
+            // Send data to Google Sheets
+            fetch(googleSheetURL, {
+                method: 'POST',
+                body: JSON.stringify(formData),
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Clear cart
+                    cart = [];
+                    updateCart();
+                    
+                    // Close order form
+                    closeOrderForm();
+                    
+                    // Show success notification
+                    showNotification('Order placed successfully!', 'success');
+                } else {
+                    showNotification('Failed to place order. Please try again.', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showNotification('Failed to place order. Please try again.', 'error');
+            });
+        }
+
+        function proceedPaymentWhatsApp() {
             if (cart.length === 0) {
                 showNotification('Your cart is empty!', 'error');
                 return;
             }
             
             // Create order summary for WhatsApp
-            let orderSummary = "Hello, I would like to place the following order:\n\n";
+            let orderSummary = "Hello, I would like to proceed with payment for the following order:\n\n";
             
             cart.forEach(item => {
                 orderSummary += `${item.name}`;
@@ -1506,20 +1795,20 @@
             });
             
             orderSummary += `\nTotal: RM${cartTotal.toFixed(2)}\n\n`;
-            orderSummary += "Please confirm availability and payment details.";
+            orderSummary += "Please provide payment instructions.";
             
             // Encode message for URL
             const encodedMessage = encodeURIComponent(orderSummary);
             
             // Open WhatsApp with pre-filled message
-            window.open(`https://www.wasap.my/60122600969/Questions?text=${encodedMessage}`, '_blank');
+            window.open(`https://www.wasap.my/6012600969/ProceedOrder/?text=${encodedMessage}`, '_blank');
             
             // Clear cart after order
             cart = [];
             updateCart();
             toggleCart();
             
-            showNotification('Order placed via WhatsApp!', 'success');
+            showNotification('Payment request sent via WhatsApp!', 'success');
         }
 
         // Product modal functionality
@@ -1641,8 +1930,14 @@
         // Close modals when clicking outside
         window.addEventListener('click', function(event) {
             const productModal = document.getElementById('product-modal');
+            const orderModal = document.getElementById('order-modal');
+            
             if (event.target === productModal) {
                 closeProductModal();
+            }
+            
+            if (event.target === orderModal) {
+                closeOrderForm();
             }
         });
     </script>
