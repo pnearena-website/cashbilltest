@@ -3,1851 +3,920 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PNE ARENA - Premium Graduation Products</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <title>Cashbill Management Portal</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
-            --primary-color: #333333;
-            --primary-hover: #222222;
-            --text-dark: #212529;
-            --text-light: #6c757d;
-            --bg-light: #f8f9fa;
-            --bg-white: #ffffff;
-            --border-color: #e9ecef;
-            --shadow-sm: 0 2px 8px rgba(0,0,0,0.05);
-            --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
-            --shadow-lg: 0 8px 24px rgba(0,0,0,0.12);
-            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            --promo-color: #e74c3c;
-            --whatsapp-color: #25D366;
+            --primary-color: #1a73e8;
+            --secondary-color: #34a853;
+            --accent-color: #fbbc05;
+            --danger-color: #ea4335;
+            --light-bg: #f8f9fa;
+            --dark-text: #202124;
+            --light-text: #5f6368;
+            --border-color: #dadce0;
+            --glass-bg: rgba(255, 255, 255, 0.1);
+            --glass-blur: blur(10px);
+            --dark-glass-bg: rgba(30, 30, 30, 0.1);
         }
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+
+        [data-theme="dark"] {
+            --light-bg: #1c2526;
+            --dark-text: #ffffff;
+            --light-text: #a0a0a0;
+            --border-color: #3a3a3a;
+            --glass-bg: var(--dark-glass-bg);
         }
+
         body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--bg-white);
-            color: var(--text-dark);
-            line-height: 1.6;
-            overflow-x: hidden;
+            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background-color: var(--light-bg);
+            color: var(--dark-text);
+            transition: all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
         }
-        .container {
-            width: 100%;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
-        /* Header Styles */
-        header {
-            background-color: var(--bg-white);
-            box-shadow: var(--shadow-sm);
+
+        .navbar {
+            background-color: var(--glass-bg);
+            backdrop-filter: var(--glass-blur);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             position: sticky;
             top: 0;
-            z-index: 100;
-            transition: var(--transition);
+            z-index: 1000;
         }
-        .header-container {
+
+        .navbar-brand {
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .sidebar {
+            background-color: var(--glass-bg);
+            backdrop-filter: var(--glass-blur);
+            min-height: calc(100vh - 76px);
+            box-shadow: 2px 0 4px rgba(0,0,0,0.05);
+            padding-top: 20px;
+            transition: all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
+        }
+
+        .sidebar .nav-link {
+            color: var(--light-text);
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.2s cubic-bezier(0.25, 0.1, 0.25, 1);
+            display: flex;
+            align-items: center;
+        }
+
+        .sidebar .nav-link:hover {
+            background-color: var(--glass-bg);
+            backdrop-filter: var(--glass-blur);
+            color: var(--primary-color);
+            transform: translateX(5px);
+        }
+
+        .sidebar .nav-link.active {
+            background-color: rgba(26, 115, 232, 0.2);
+            color: var(--primary-color);
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .sidebar .nav-link i {
+            margin-right: 10px;
+            font-size: 18px;
+        }
+
+        .main-content {
+            padding: 25px;
+        }
+
+        .card {
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            margin-bottom: 25px;
+            background-color: var(--glass-bg);
+            backdrop-filter: var(--glass-blur);
+        }
+
+        .card-header {
+            background-color: transparent;
+            border-bottom: 1px solid var(--border-color);
+            padding: 15px 20px;
+            font-weight: 600;
+        }
+
+        .stat-card {
+            border-left: 4px solid;
+        }
+
+        .stat-card.primary { border-left-color: var(--primary-color); }
+        .stat-card.success { border-left-color: var(--secondary-color); }
+        .stat-card.warning { border-left-color: var(--accent-color); }
+        .stat-card.danger { border-left-color: var(--danger-color); }
+
+        .stat-card .card-body {
+            padding: 20px;
+        }
+
+        .stat-card h5 {
+            font-size: 16px;
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+
+        .stat-card h3 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 0;
+        }
+
+        .table-container {
+            background-color: var(--glass-bg);
+            backdrop-filter: var(--glass-blur);
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .table-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 20px 0;
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--border-color);
         }
-        .logo {
-            font-size: 28px;
-            font-weight: 700;
-            color: var(--text-dark);
-            text-decoration: none;
-            letter-spacing: -0.5px;
-            transition: var(--transition);
-        }
-        .logo:hover {
-            color: var(--primary-color);
-        }
-        nav ul {
-            display: flex;
-            list-style: none;
-            gap: 35px;
-        }
-        nav ul li a {
-            text-decoration: none;
-            color: var(--text-dark);
-            font-weight: 500;
-            font-size: 16px;
-            transition: var(--transition);
-            position: relative;
-        }
-        nav ul li a:after {
-            content: '';
-            position: absolute;
-            width: 0;
-            height: 2px;
-            bottom: -5px;
-            left: 0;
-            background-color: var(--primary-color);
-            transition: var(--transition);
-        }
-        nav ul li a:hover:after {
-            width: 100%;
-        }
-        .header-actions {
-            display: flex;
-            align-items: center;
-            gap: 25px;
-        }
-        .cart-icon {
-            position: relative;
-            cursor: pointer;
-            font-size: 20px;
-            color: var(--text-dark);
-            transition: var(--transition);
-        }
-        .cart-icon:hover {
-            color: var(--primary-color);
-        }
-        .cart-count {
-            position: absolute;
-            top: -8px;
-            right: -8px;
-            background-color: var(--primary-color);
-            color: white;
-            font-size: 11px;
-            width: 18px;
-            height: 18px;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-weight: 600;
-        }
-        /* Hero Section */
-        .hero {
-            background: linear-gradient(rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0.85)), 
-                        url('https://images.unsplash.com/photo-1523580846011-d3a5bc25702b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80');
-            background-size: cover;
-            background-position: center;
-            min-height: 600px;
-            display: flex;
-            align-items: center;
-            padding: 0 20px;
-            margin-bottom: 80px;
-        }
-        .hero-content {
-            max-width: 600px;
-        }
-        .hero h1 {
-            font-size: 56px;
-            font-weight: 700;
-            line-height: 1.2;
-            margin-bottom: 24px;
-            color: var(--text-dark);
-            letter-spacing: -1px;
-        }
-        .hero p {
-            font-size: 20px;
-            color: var(--text-light);
-            margin-bottom: 40px;
-            line-height: 1.6;
-        }
-        .btn {
-            display: inline-block;
-            padding: 14px 32px;
-            border-radius: 8px;
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 16px;
-            transition: var(--transition);
-            cursor: pointer;
-            border: 2px solid transparent;
-            text-align: center;
-        }
-        .btn-primary {
-            background-color: var(--primary-color);
-            color: white;
-        }
-        .btn-primary:hover {
-            background-color: var(--primary-hover);
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-md);
-        }
-        .btn-outline {
-            background-color: transparent;
-            color: var(--text-dark);
-            border-color: var(--border-color);
-        }
-        .btn-outline:hover {
-            background-color: var(--bg-light);
-            border-color: var(--text-dark);
-        }
-        .btn-whatsapp {
-            background-color: var(--whatsapp-color);
-            color: white;
-            border-color: var(--whatsapp-color);
-        }
-        .btn-whatsapp:hover {
-            background-color: #20b558;
-            border-color: #20b558;
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-md);
-        }
-        .btn-group {
-            display: flex;
-            gap: 16px;
-        }
-        /* Section Styles */
-        .section {
-            padding: 80px 0;
-        }
-        .section-title {
-            text-align: center;
-            margin-bottom: 60px;
-        }
-        .section-title h2 {
-            font-size: 42px;
-            font-weight: 700;
-            color: var(--text-dark);
-            margin-bottom: 16px;
-            letter-spacing: -0.5px;
-        }
-        .section-title p {
+
+        .table-title {
             font-size: 18px;
-            color: var(--text-light);
-            max-width: 600px;
-            margin: 0 auto;
-        }
-        /* Products Section */
-        .product-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 30px;
-        }
-        .product-card {
-            background-color: var(--bg-white);
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: var(--shadow-sm);
-            transition: var(--transition);
-            position: relative;
-            cursor: pointer;
-        }
-        .product-card:hover {
-            transform: translateY(-8px);
-            box-shadow: var(--shadow-lg);
-        }
-        .product-badge {
-            position: absolute;
-            top: 16px;
-            left: 16px;
-            background-color: var(--promo-color); /* Changed to red */
-            color: white;
-            font-size: 12px;
             font-weight: 600;
-            padding: 4px 12px;
-            border-radius: 20px;
-            z-index: 1;
+            margin: 0;
         }
-        .product-img {
-            height: 240px;
-            overflow: hidden;
-            position: relative;
+
+        .btn-primary {
+            background-color: var(--glass-bg);
+            backdrop-filter: var(--glass-blur);
+            border: none;
+            padding: 8px 16px;
+            font-weight: 500;
+            transition: all 0.2s cubic-bezier(0.25, 0.1, 0.25, 1);
         }
-        .product-img img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: var(--transition);
-        }
-        .product-card:hover .product-img img {
+
+        .btn-primary:hover {
+            background-color: var(--primary-color);
+            color: white;
             transform: scale(1.05);
         }
-        .product-actions {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);
-            padding: 20px;
-            display: flex;
-            justify-content: center;
-            gap: 12px;
-            opacity: 0;
-            transition: var(--transition);
+
+        .table {
+            margin-bottom: 0;
         }
-        .product-card:hover .product-actions {
-            opacity: 1;
-        }
-        .action-btn {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background-color: white;
-            color: var(--text-dark);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            border: none;
-            cursor: pointer;
-            transition: var(--transition);
-            font-size: 16px;
-        }
-        .action-btn:hover {
-            background-color: var(--primary-color);
-            color: white;
-            transform: translateY(-3px);
-        }
-        .product-info {
-            padding: 24px;
-        }
-        .product-category {
-            font-size: 14px;
-            color: var(--text-light);
-            margin-bottom: 8px;
-        }
-        .product-title {
-            font-size: 20px;
-            font-weight: 600;
-            margin-bottom: 12px;
-            color: var(--text-dark);
-        }
-        .product-price {
-            font-size: 22px;
-            font-weight: 700;
-            color: var(--primary-color);
-            margin-bottom: 20px;
-        }
-        .original-price {
-            text-decoration: line-through;
-            color: var(--text-light);
-            font-size: 16px;
+
+        .table thead th {
+            background-color: var(--glass-bg);
+            backdrop-filter: var(--glass-blur);
+            border-bottom: 1px solid var(--border-color);
+            color: var(--light-text);
             font-weight: 500;
-            margin-right: 8px;
+            text-transform: uppercase;
+            font-size: 13px;
+            padding: 12px 15px;
         }
-        .promo-price {
-            color: var(--promo-color);
-            font-weight: 700;
+
+        .table tbody td {
+            padding: 15px;
+            vertical-align: middle;
+            border-bottom: 1px solid var(--border-color);
         }
-        .product-buttons {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
+
+        .table tbody tr:hover {
+            background-color: rgba(26, 115, 232, 0.1);
         }
-        .btn-small {
-            padding: 10px 16px;
+
+        .status-badge {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+            display: inline-block;
+        }
+
+        .status-badge.committed {
+            background-color: rgba(52, 168, 83, 0.1);
+            color: var(--secondary-color);
+        }
+
+        .status-badge.draft {
+            background-color: rgba(251, 188, 5, 0.1);
+            color: var(--accent-color);
+        }
+
+        .action-buttons .btn {
+            padding: 5px 8px;
+            margin: 0 2px;
             font-size: 14px;
-            width: 100%;
+            transition: all 0.2s cubic-bezier(0.25, 0.1, 0.25, 1);
+        }
+
+        .action-buttons .btn-primary {
+            background-color: transparent;
+            color: var(--primary-color);
+            border: 1px solid var(--primary-color);
+        }
+
+        .action-buttons .btn-primary:hover {
+            background-color: var(--primary-color);
+            color: white;
+            transform: scale(1.05);
+        }
+
+        .action-buttons .btn-danger {
+            background-color: transparent;
+            color: var(--danger-color);
+            border: 1px solid var(--danger-color);
+        }
+
+        .action-buttons .btn-danger:hover {
+            background-color: var(--danger-color);
+            color: white;
+            transform: scale(1.05);
+        }
+
+        .search-box {
+            position: relative;
+        }
+
+        .search-box input {
+            padding-left: 35px;
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+            background-color: var(--glass-bg);
+            backdrop-filter: var(--glass-blur);
+            transition: all 0.2s cubic-bezier(0.25, 0.1, 0.25, 1);
+        }
+
+        .search-box input:focus {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 12px;
+            top: 10px;
+            color: var(--light-text);
+        }
+
+        .user-profile {
             display: flex;
             align-items: center;
-            justify-content: center;
-            gap: 8px;
         }
-        /* Product Modal */
-        .product-modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.7);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-            opacity: 0;
-            visibility: hidden;
-            transition: var(--transition);
-            padding: 20px;
+
+        .user-profile img {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            margin-right: 10px;
         }
-        .product-modal.active {
-            opacity: 1;
-            visibility: visible;
+
+        .user-profile .user-name {
+            font-weight: 500;
+            margin: 0;
         }
+
+        .user-profile .user-role {
+            font-size: 12px;
+            color: var(--light-text);
+            margin: 0;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 15px;
+            color: var(--light-text);
+            font-size: 14px;
+            background-color: var(--glass-bg);
+            backdrop-filter: var(--glass-blur);
+            border-top: 1px solid var(--border-color);
+        }
+
         .modal-content {
-            background-color: var(--bg-white);
-            border-radius: 16px;
-            max-width: 900px;
-            width: 100%;
-            max-height: 90vh;
-            overflow-y: auto;
-            position: relative;
-            transform: scale(0.9);
-            transition: var(--transition);
-        }
-        .product-modal.active .modal-content {
-            transform: scale(1);
-        }
-        .close-modal {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background-color: var(--bg-light);
-            color: var(--text-dark);
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            background-color: var(--glass-bg);
+            backdrop-filter: var(--glass-blur);
             border: none;
-            cursor: pointer;
-            z-index: 1;
-            transition: var(--transition);
-        }
-        .close-modal:hover {
-            background-color: var(--primary-color);
-            color: white;
-        }
-        .modal-body {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 40px;
-            padding: 40px;
-        }
-        .modal-img {
             border-radius: 12px;
-            overflow: hidden;
-            height: 400px;
         }
-        .modal-img img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
+
+        .modal-header, .modal-footer {
+            border-color: var(--border-color);
         }
-        .modal-info h2 {
-            font-size: 32px;
-            font-weight: 700;
-            margin-bottom: 16px;
-            color: var(--text-dark);
-        }
-        .modal-price {
-            font-size: 28px;
-            font-weight: 700;
-            color: var(--primary-color);
-            margin-bottom: 24px;
-        }
-        .modal-description {
-            color: var(--text-light);
-            margin-bottom: 20px;
-            line-height: 1.7;
-        }
-        .custom-note {
-            background-color: #f0f7ff;
-            border-left: 4px solid var(--primary-color);
-            padding: 12px 16px;
-            margin-bottom: 24px;
-            border-radius: 0 8px 8px 0;
-            font-size: 14px;
-            color: var(--text-light);
-        }
-        .modal-options {
-            margin-bottom: 30px;
-        }
-        .option-group {
-            margin-bottom: 20px;
-        }
-        .option-label {
-            font-weight: 600;
-            margin-bottom: 10px;
-            display: block;
-        }
-        .color-select {
-            width: 100%;
-            padding: 12px 16px;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            background-color: var(--bg-white);
-            font-size: 16px;
-            transition: var(--transition);
+
+        .theme-toggle {
             cursor: pointer;
-        }
-        .color-select:focus {
-            border-color: var(--primary-color);
-            outline: none;
-            box-shadow: 0 0 0 3px rgba(51, 51, 51, 0.1);
-        }
-        .remark-field {
-            width: 100%;
-            padding: 12px 16px;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            background-color: var(--bg-white);
-            font-size: 16px;
-            transition: var(--transition);
-            resize: vertical;
-            min-height: 100px;
-        }
-        .remark-field:focus {
-            border-color: var(--primary-color);
-            outline: none;
-            box-shadow: 0 0 0 3px rgba(51, 51, 51, 0.1);
-        }
-        .quantity-selector {
-            display: flex;
-            align-items: center;
-            margin-bottom: 30px;
-        }
-        .quantity-label {
-            font-weight: 600;
-            margin-right: 15px;
-        }
-        .quantity-controls {
-            display: flex;
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-        }
-        .quantity-btn {
-            width: 40px;
-            height: 40px;
-            border: none;
-            background-color: var(--bg-light);
-            cursor: pointer;
-            font-size: 16px;
-            transition: var(--transition);
-        }
-        .quantity-btn:hover {
-            background-color: var(--primary-color);
-            color: white;
-        }
-        .quantity-input {
-            width: 50px;
-            text-align: center;
-            border: none;
-            border-left: 1px solid var(--border-color);
-            border-right: 1px solid var(--border-color);
-            font-weight: 600;
-        }
-        .modal-actions {
-            display: flex;
-            gap: 16px;
-        }
-        /* Cart Sidebar */
-        .cart-sidebar {
-            position: fixed;
-            top: 0;
-            right: -400px;
-            width: 400px;
-            height: 100%;
-            background-color: var(--bg-white);
-            box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1);
-            z-index: 1000;
-            transition: var(--transition);
-            overflow-y: auto;
-        }
-        .cart-sidebar.active {
-            right: 0;
-        }
-        .cart-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 24px;
-            border-bottom: 1px solid var(--border-color);
-        }
-        .cart-header h3 {
-            font-size: 22px;
-            font-weight: 600;
-        }
-        .close-cart {
-            background: none;
-            border: none;
-            font-size: 24px;
-            cursor: pointer;
-            color: var(--text-light);
-            transition: var(--transition);
-        }
-        .close-cart:hover {
-            color: var(--text-dark);
-        }
-        .cart-items {
-            padding: 24px;
-        }
-        .cart-item {
-            display: flex;
-            margin-bottom: 24px;
-            padding-bottom: 24px;
-            border-bottom: 1px solid var(--border-color);
-        }
-        .cart-item-img {
-            width: 80px;
-            height: 80px;
-            object-fit: cover;
-            border-radius: 8px;
-            margin-right: 16px;
-        }
-        .cart-item-info {
-            flex: 1;
-        }
-        .cart-item-title {
-            font-weight: 600;
-            margin-bottom: 6px;
-        }
-        .cart-item-price {
-            color: var(--primary-color);
-            font-weight: 700;
-            margin-bottom: 10px;
-        }
-        .cart-item-quantity {
-            display: flex;
-            align-items: center;
-        }
-        .cart-quantity-btn {
-            width: 28px;
-            height: 28px;
-            border: 1px solid var(--border-color);
-            background: var(--bg-white);
-            border-radius: 4px;
-            cursor: pointer;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 14px;
-        }
-        .cart-quantity-input {
-            width: 40px;
-            text-align: center;
-            border: none;
-            margin: 0 8px;
-            font-weight: 600;
-        }
-        .cart-summary {
-            padding: 24px;
-            border-top: 1px solid var(--border-color);
-        }
-        .cart-total {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 24px;
             font-size: 18px;
-            font-weight: 700;
+            margin-left: 10px;
         }
-        .cart-actions {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-        .empty-cart {
-            text-align: center;
-            padding: 60px 20px;
-            color: var(--text-light);
-        }
-        .empty-cart i {
-            font-size: 64px;
-            margin-bottom: 20px;
-            color: var(--border-color);
-        }
-        /* Order Form Modal */
-        .order-modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.7);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-            opacity: 0;
-            visibility: hidden;
-            transition: var(--transition);
-            padding: 20px;
-        }
-        .order-modal.active {
-            opacity: 1;
-            visibility: visible;
-        }
-        .order-form {
-            background-color: var(--bg-white);
-            border-radius: 16px;
-            max-width: 600px;
-            width: 100%;
-            max-height: 90vh;
-            overflow-y: auto;
-            position: relative;
-            transform: scale(0.9);
-            transition: var(--transition);
-            padding: 40px;
-        }
-        .order-modal.active .order-form {
-            transform: scale(1);
-        }
-        .order-form h2 {
-            font-size: 28px;
-            font-weight: 700;
-            margin-bottom: 24px;
-            color: var(--text-dark);
-            text-align: center;
-        }
-        .form-group {
-            margin-bottom: 20px;
-        }
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: var(--text-dark);
-        }
-        .form-control {
-            width: 100%;
-            padding: 12px 16px;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            font-size: 16px;
-            transition: var(--transition);
-        }
-        .form-control:focus {
-            border-color: var(--primary-color);
-            outline: none;
-            box-shadow: 0 0 0 3px rgba(51, 51, 51, 0.1);
-        }
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-        }
-        .order-summary {
-            background-color: var(--bg-light);
-            padding: 20px;
-            border-radius: 8px;
-            margin-bottom: 24px;
-        }
-        .order-summary h3 {
-            font-size: 18px;
-            margin-bottom: 16px;
-            color: var(--text-dark);
-        }
-        .order-item {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 10px;
-            font-size: 14px;
-        }
-        .order-total {
-            display: flex;
-            justify-content: space-between;
-            font-weight: 700;
-            font-size: 16px;
-            margin-top: 16px;
-            padding-top: 16px;
-            border-top: 1px solid var(--border-color);
-        }
-        /* WhatsApp Button */
-        .whatsapp-btn {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            width: 60px;
-            height: 60px;
-            background-color: var(--whatsapp-color);
-            color: white;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 28px;
-            box-shadow: var(--shadow-lg);
-            cursor: pointer;
-            z-index: 99;
-            transition: var(--transition);
-            border: none;
-        }
-        .whatsapp-btn:hover {
-            transform: scale(1.1);
-            box-shadow: 0 8px 24px rgba(37, 211, 102, 0.4);
-        }
-        /* Footer */
-        footer {
-            background-color: var(--bg-light);
-            padding: 80px 0 40px;
-            margin-top: 80px;
-        }
-        .footer-content {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 40px;
-            margin-bottom: 60px;
-        }
-        .footer-column h3 {
-            font-size: 20px;
-            font-weight: 700;
-            margin-bottom: 24px;
-            position: relative;
-            padding-bottom: 12px;
-        }
-        .footer-column h3:after {
-            content: '';
-            position: absolute;
-            left: 0;
-            bottom: 0;
-            width: 40px;
-            height: 3px;
-            background-color: var(--primary-color);
-        }
-        .footer-column p {
-            color: var(--text-light);
-            margin-bottom: 20px;
-            line-height: 1.7;
-        }
-        .footer-column ul {
-            list-style: none;
-        }
-        .footer-column ul li {
-            margin-bottom: 12px;
-        }
-        .footer-column ul li a {
-            color: var(--text-light);
-            text-decoration: none;
-            transition: var(--transition);
-        }
-        .footer-column ul li a:hover {
-            color: var(--primary-color);
-            padding-left: 5px;
-        }
-        .social-links {
-            display: flex;
-            gap: 15px;
-            margin-top: 20px;
-        }
-        .social-links a {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            width: 40px;
-            height: 40px;
-            background-color: var(--bg-white);
-            border-radius: 50%;
-            color: var(--text-dark);
-            transition: var(--transition);
-            box-shadow: var(--shadow-sm);
-        }
-        .social-links a:hover {
-            background-color: var(--primary-color);
-            color: white;
-            transform: translateY(-3px);
-        }
-        .copyright {
-            text-align: center;
-            padding-top: 30px;
-            border-top: 1px solid var(--border-color);
-            color: var(--text-light);
-            font-size: 14px;
-        }
-        /* Notification */
-        .notification {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background-color: var(--bg-white);
-            padding: 16px 24px;
-            border-radius: 8px;
-            box-shadow: var(--shadow-lg);
-            z-index: 2000;
-            display: flex;
-            align-items: center;
-            transform: translateX(150%);
-            transition: var(--transition);
-            max-width: 350px;
-        }
-        .notification.show {
-            transform: translateX(0);
-        }
-        .notification-icon {
-            margin-right: 16px;
-            font-size: 24px;
-        }
-        .notification.success .notification-icon {
-            color: #28a745;
-        }
-        .notification.error .notification-icon {
-            color: #dc3545;
-        }
-        .notification-message {
-            flex: 1;
-        }
-        .notification-title {
-            font-weight: 600;
-            margin-bottom: 4px;
-        }
-        .notification-text {
-            font-size: 14px;
-            color: var(--text-light);
-        }
-        /* Responsive Design */
+
         @media (max-width: 992px) {
-            .hero h1 {
-                font-size: 42px;
+            .sidebar {
+                position: fixed;
+                top: 76px;
+                left: -250px;
+                width: 250px;
+                height: calc(100vh - 76px);
+                z-index: 1000;
+                transition: all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
             }
-            
-            .hero p {
-                font-size: 18px;
+
+            .sidebar.active {
+                left: 0;
             }
-            
-            .section-title h2 {
-                font-size: 36px;
+
+            .main-content {
+                margin-left: 0;
             }
-            
-            .modal-body {
-                grid-template-columns: 1fr;
+
+            .sidebar .nav-link span {
+                display: none;
             }
-        }
-        @media (max-width: 768px) {
-            .header-container {
-                flex-direction: column;
-                padding: 15px 0;
-            }
-            
-            .logo {
-                margin-bottom: 15px;
-            }
-            
-            nav ul {
-                flex-wrap: wrap;
-                justify-content: center;
-                gap: 20px;
-                margin-bottom: 15px;
-            }
-            
-            .hero {
-                min-height: 500px;
-            }
-            
-            .hero h1 {
-                font-size: 36px;
-            }
-            
-            .hero p {
-                font-size: 16px;
-            }
-            
-            .btn-group {
-                flex-direction: column;
-            }
-            
-            .cart-sidebar {
-                width: 100%;
-                right: -100%;
-            }
-            
-            .modal-body {
-                padding: 30px 20px;
-            }
-            
-            .modal-img {
-                height: 300px;
-            }
-            
-            .order-form {
-                padding: 30px 20px;
-            }
-            
-            .form-row {
-                grid-template-columns: 1fr;
+
+            .sidebar .nav-link i {
+                margin-right: 0;
             }
         }
-        @media (max-width: 576px) {
-            .hero h1 {
-                font-size: 30px;
-            }
-            
-            .section-title h2 {
-                font-size: 28px;
-            }
-            
-            .product-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .modal-actions {
-                flex-direction: column;
+
+        @media (prefers-reduced-motion: reduce) {
+            .btn-primary:hover, .action-buttons .btn:hover, .sidebar .nav-link:hover {
+                transform: none;
+                transition: none;
             }
         }
     </style>
 </head>
 <body>
-    <!-- Header -->
-    <header>
-        <div class="container header-container">
-            <a href="#" class="logo">PNE ARENA</a>
-            <nav>
-                <ul>
-                    <li><a href="#home">Home</a></li>
-                    <li><a href="#products">Products</a></li>
-                    <li><a href="#about">About</a></li>
-                    <li><a href="#contact">Contact</a></li>
-                </ul>
-            </nav>
-            <div class="header-actions">
-                <div class="cart-icon" onclick="toggleCart()">
-                    <i class="fas fa-shopping-bag"></i>
-                    <span class="cart-count">0</span>
-                </div>
-            </div>
-        </div>
-    </header>
-    <!-- Hero Section -->
-    <section class="hero" id="home">
-        <div class="container">
-            <div class="hero-content">
-                <h1>Premium Graduation Essentials</h1>
-                <p>Everything you need for your special day, crafted with quality and attention to detail.</p>
-                <div class="btn-group">
-                    <a href="#products" class="btn btn-primary">Shop Collection</a>
-                    <a href="#about" class="btn btn-outline">Learn More</a>
-                </div>
-            </div>
-        </div>
-    </section>
-    <!-- Products Section -->
-    <section class="section" id="products">
-        <div class="container">
-            <div class="section-title">
-                <h2>Our Products</h2>
-                <p>High-quality graduation essentials designed to make your special day memorable.</p>
-            </div>
-            <div class="product-grid">
-                <!-- Product 1: Convocation Robe -->
-                <div class="product-card" onclick="quickView('Convocation Robe', 59.99, 79.99, 'https://images.unsplash.com/photo-1587854692152-cbe660dbde88?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80')">
-                    <div class="product-badge">Bestseller</div>
-                    <div class="product-img">
-                        <img src="https://images.unsplash.com/photo-1587854692152-cbe660dbde88?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" alt="Convocation Robe">
-                        <div class="product-actions">
-                            <button class="action-btn" onclick="event.stopPropagation(); quickView('Convocation Robe', 59.99, 79.99, 'https://images.unsplash.com/photo-1587854692152-cbe660dbde88?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80')">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="product-info">
-                        <div class="product-category">Academic Wear</div>
-                        <h3 class="product-title">Convocation Robe</h3>
-                        <div class="product-price">
-                            <span class="original-price">RM79.99</span>
-                            <span class="promo-price">RM59.99</span>
-                        </div>
-                        <div class="product-buttons">
-                            <button class="btn btn-primary btn-small" onclick="event.stopPropagation(); openSingleProductOrder('Convocation Robe', 59.99)">
-                                <i class="fas fa-shopping-cart"></i> Place Order
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                <!-- Product 2: T-Shirt -->
-                <div class="product-card" onclick="quickView('T-Shirt', 19.99, 29.99, 'https://images.unsplash.com/photo-1576566588028-4147f3842f27?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1887&q=80')">
-                    <div class="product-img">
-                        <img src="https://images.unsplash.com/photo-1576566588028-4147f3842f27?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1887&q=80" alt="T-Shirt">
-                        <div class="product-actions">
-                            <button class="action-btn" onclick="event.stopPropagation(); quickView('T-Shirt', 19.99, 29.99, 'https://images.unsplash.com/photo-1576566588028-4147f3842f27?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1887&q=80')">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="product-info">
-                        <div class="product-category">Apparel</div>
-                        <h3 class="product-title">T-Shirt</h3>
-                        <div class="product-price">
-                            <span class="original-price">RM29.99</span>
-                            <span class="promo-price">RM19.99</span>
-                        </div>
-                        <div class="product-buttons">
-                            <button class="btn btn-primary btn-small" onclick="event.stopPropagation(); openSingleProductOrder('T-Shirt', 19.99)">
-                                <i class="fas fa-shopping-cart"></i> Place Order
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                <!-- Product 3: Medal -->
-                <div class="product-card" onclick="quickView('Medal', 24.99, null, 'https://images.unsplash.com/photo-1614730321146-b6fa6a46bcb4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80')">
-                    <div class="product-img">
-                        <img src="https://images.unsplash.com/photo-1614730321146-b6fa6a46bcb4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" alt="Medal">
-                        <div class="product-actions">
-                            <button class="action-btn" onclick="event.stopPropagation(); quickView('Medal', 24.99, null, 'https://images.unsplash.com/photo-1614730321146-b6fa6a46bcb4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80')">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="product-info">
-                        <div class="product-category">Accessories</div>
-                        <h3 class="product-title">Medal</h3>
-                        <div class="product-price">RM24.99</div>
-                        <div class="product-buttons">
-                            <button class="btn btn-primary btn-small" onclick="event.stopPropagation(); openSingleProductOrder('Medal', 24.99)">
-                                <i class="fas fa-shopping-cart"></i> Place Order
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                <!-- Product 4: Towel -->
-                <div class="product-card" onclick="quickView('Towel', 14.99, null, 'https://images.unsplash.com/photo-1620704765326-2cceb00c3752?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1887&q=80')">
-                    <div class="product-img">
-                        <img src="https://images.unsplash.com/photo-1620704765326-2cceb00c3752?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1887&q=80" alt="Towel">
-                        <div class="product-actions">
-                            <button class="action-btn" onclick="event.stopPropagation(); quickView('Towel', 14.99, null, 'https://images.unsplash.com/photo-1620704765326-2cceb00c3752?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1887&q=80')">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="product-info">
-                        <div class="product-category">Essentials</div>
-                        <h3 class="product-title">Towel</h3>
-                        <div class="product-price">RM14.99</div>
-                        <div class="product-buttons">
-                            <button class="btn btn-primary btn-small" onclick="event.stopPropagation(); openSingleProductOrder('Towel', 14.99)">
-                                <i class="fas fa-shopping-cart"></i> Place Order
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                <!-- Product 5: Keychain -->
-                <div class="product-card" onclick="quickView('Keychain', 7.99, null, 'https://images.unsplash.com/photo-1596394616838-170f2fcf5c3a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1887&q=80')">
-                    <div class="product-img">
-                        <img src="https://images.unsplash.com/photo-1596394616838-170f2fcf5c3a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1887&q=80" alt="Keychain">
-                        <div class="product-actions">
-                            <button class="action-btn" onclick="event.stopPropagation(); quickView('Keychain', 7.99, null, 'https://images.unsplash.com/photo-1596394616838-170f2fcf5c3a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1887&q=80')">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="product-info">
-                        <div class="product-category">Accessories</div>
-                        <h3 class="product-title">Keychain</h3>
-                        <div class="product-price">RM7.99</div>
-                        <div class="product-buttons">
-                            <button class="btn btn-primary btn-small" onclick="event.stopPropagation(); openSingleProductOrder('Keychain', 7.99)">
-                                <i class="fas fa-shopping-cart"></i> Place Order
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                <!-- Product 6: Nametag -->
-                <div class="product-card" onclick="quickView('Nametag', 9.99, null, 'https://images.unsplash.com/photo-1586953208448-b95a79798f07?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1887&q=80')">
-                    <div class="product-img">
-                        <img src="https://images.unsplash.com/photo-1586953208448-b95a79798f07?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1887&q=80" alt="Nametag">
-                        <div class="product-actions">
-                            <button class="action-btn" onclick="event.stopPropagation(); quickView('Nametag', 9.99, null, 'https://images.unsplash.com/photo-1586953208448-b95a79798f07?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1887&q=80')">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="product-info">
-                        <div class="product-category">Accessories</div>
-                        <h3 class="product-title">Nametag</h3>
-                        <div class="product-price">RM9.99</div>
-                        <div class="product-buttons">
-                            <button class="btn btn-primary btn-small" onclick="event.stopPropagation(); openSingleProductOrder('Nametag', 9.99)">
-                                <i class="fas fa-shopping-cart"></i> Place Order
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                <!-- Product 7: Corporate Shirt -->
-                <div class="product-card" onclick="quickView('Corporate Shirt', 29.99, 39.99, 'https://images.unsplash.com/photo-1606764888106-69b29f70e5c8?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1887&q=80')">
-                    <div class="product-img">
-                        <img src="https://images.unsplash.com/photo-1606764888106-69b29f70e5c8?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1887&q=80" alt="Corporate Shirt">
-                        <div class="product-actions">
-                            <button class="action-btn" onclick="event.stopPropagation(); quickView('Corporate Shirt', 29.99, 39.99, 'https://images.unsplash.com/photo-1606764888106-69b29f70e5c8?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1887&q=80')">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="product-info">
-                        <div class="product-category">Apparel</div>
-                        <h3 class="product-title">Corporate Shirt</h3>
-                        <div class="product-price">
-                            <span class="original-price">RM39.99</span>
-                            <span class="promo-price">RM29.99</span>
-                        </div>
-                        <div class="product-buttons">
-                            <button class="btn btn-primary btn-small" onclick="event.stopPropagation(); openSingleProductOrder('Corporate Shirt', 29.99)">
-                                <i class="fas fa-shopping-cart"></i> Place Order
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                <!-- Product 8: Attendance Card -->
-                <div class="product-card" onclick="quickView('Attendance Card', 4.99, null, 'https://images.unsplash.com/photo-1586953208448-b95a79798f07?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1887&q=80')">
-                    <div class="product-img">
-                        <img src="https://images.unsplash.com/photo-1586953208448-b95a79798f07?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1887&q=80" alt="Attendance Card">
-                        <div class="product-actions">
-                            <button class="action-btn" onclick="event.stopPropagation(); quickView('Attendance Card', 4.99, null, 'https://images.unsplash.com/photo-1586953208448-b95a79798f07?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1887&q=80')">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="product-info">
-                        <div class="product-category">Essentials</div>
-                        <h3 class="product-title">Attendance Card</h3>
-                        <div class="product-price">RM4.99</div>
-                        <div class="product-buttons">
-                            <button class="btn btn-primary btn-small" onclick="event.stopPropagation(); openSingleProductOrder('Attendance Card', 4.99)">
-                                <i class="fas fa-shopping-cart"></i> Place Order
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-    <!-- Product Modal -->
-    <div class="product-modal" id="product-modal">
-        <div class="modal-content">
-            <button class="close-modal" onclick="closeProductModal()">
-                <i class="fas fa-times"></i>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">
+                <i class="bi bi-cash-coin"></i> CashBill Portal
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
             </button>
-            <div class="modal-body">
-                <div class="modal-img">
-                    <img id="modal-image" src="" alt="">
-                </div>
-                <div class="modal-info">
-                    <h2 id="modal-title"></h2>
-                    <div class="modal-price" id="modal-price"></div>
-                    <p class="modal-description">
-                        This premium graduation essential is crafted with attention to detail and quality materials. 
-                        Designed to make your special day memorable, this product combines functionality with elegant aesthetics. 
-                        Perfect for graduates who appreciate quality and style.
-                    </p>
-                    <div class="custom-note">
-                        <i class="fas fa-info-circle"></i> Any custom made can contact via Whatsapp / Sebarang cadangan custom made boleh contact kami melalui Whatsapp.
-                    </div>
-                    <div class="modal-options" id="modal-options">
-                        <!-- Options will be dynamically inserted here -->
-                    </div>
-                    <div class="quantity-selector">
-                        <span class="quantity-label">Quantity:</span>
-                        <div class="quantity-controls">
-                            <button class="quantity-btn" onclick="decreaseQuantity()">-</button>
-                            <input type="text" class="quantity-input" id="quantity" value="1" readonly>
-                            <button class="quantity-btn" onclick="increaseQuantity()">+</button>
-                        </div>
-                    </div>
-                    <div class="modal-actions">
-                        <button class="btn btn-whatsapp" onclick="proceedWhatsAppFromModal()">
-                            <i class="fab fa-whatsapp"></i> Proceed via WhatsApp
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <button class="theme-toggle" aria-label="Toggle theme" onclick="toggleTheme()">
+                            <i class="bi bi-moon-stars-fill"></i>
                         </button>
-                        <button class="btn btn-primary" onclick="addToCartFromModal()">Add to Cart</button>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <div class="user-profile">
+                                <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="User">
+                                <div>
+                                    <p class="user-name">John Doe</p>
+                                    <p class="user-role">Administrator</p>
+                                </div>
+                            </div>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="#"><i class="bi bi-person me-2"></i> Profile</a></li>
+                            <li><a class="dropdown-item" href="#"><i class="bi bi-gear me-2"></i> Settings</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="#"><i class="bi bi-box-arrow-right me-2"></i> Logout</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-lg-2 col-md-3 sidebar" id="sidebar">
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#" aria-current="page">
+                            <i class="bi bi-speedometer2"></i><span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">
+                            <i class="bi bi-receipt"></i><span>Cashbills</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">
+                            <i class="bi bi-people"></i><span>Customers</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">
+                            <i class="bi bi-person-badge"></i><span>Crew Members</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">
+                            <i class="bi bi-graph-up"></i><span>Reports</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">
+                            <i class="bi bi-gear"></i><span>Settings</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Main Content -->
+            <div class="col-lg-10 col-md-9 main-content">
+                <!-- Stats Cards -->
+                <div class="row mb-4">
+                    <div class="col-xl-3 col-md-6 mb-4">
+                        <div class="card stat-card primary">
+                            <div class="card-body">
+                                <h5>Total Cashbills</h5>
+                                <h3 id="totalCashbills">1,248</h3>
+                                <div class="text-success">
+                                    <i class="bi bi-arrow-up"></i> 12.4% from last month
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-3 col-md-6 mb-4">
+                        <div class="card stat-card success">
+                            <div class="card-body">
+                                <h5>Committed</h5>
+                                <h3 id="committedCashbills">986</h3>
+                                <div class="text-success">
+                                    <i class="bi bi-arrow-up"></i> 8.2% from last month
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-3 col-md-6 mb-4">
+                        <div class="card stat-card warning">
+                            <div class="card-body">
+                                <h5>Drafts</h5>
+                                <h3 id="draftCashbills">262</h3>
+                                <div class="text-danger">
+                                    <i class="bi bi-arrow-down"></i> 3.1% from last month
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-3 col-md-6 mb-4">
+                        <div class="card stat-card danger">
+                            <div class="card-body">
+                                <h5>Total Revenue</h5>
+                                <h3 id="totalRevenue">$84,256</h3>
+                                <div class="text-success">
+                                    <i class="bi bi-arrow-up"></i> 10.5% from last month
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chart -->
+                <div class="card mb-4">
+                    <div class="card-header">Cashbill Status Distribution</div>
+                    <div class="card-body">
+                        <canvas id="statusChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Cashbill Table -->
+                <div class="table-container">
+                    <div class="table-header">
+                        <h2 class="table-title">Cashbill Management</h2>
+                        <div class="d-flex">
+                            <div class="search-box me-3">
+                                <i class="bi bi-search"></i>
+                                <input type="text" class="form-control" placeholder="Search cashbills..." aria-label="Search cashbills">
+                            </div>
+                            <button class="btn btn-primary" onclick="newCashbill()">
+                                <i class="bi bi-plus-circle me-1"></i> New Cashbill
+                            </button>
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>No</th>
+                                    <th>Cashbill ID</th>
+                                    <th>Date</th>
+                                    <th>Customer Name</th>
+                                    <th>Prices</th>
+                                    <th>Username Crew</th>
+                                    <th>Crew ID</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Dynamically populated by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="card-footer bg-transparent py-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div id="showingInfo">Showing 1 to 5 of 1,248 entries</div>
+                            <nav>
+                                <ul class="pagination mb-0">
+                                    <!-- Dynamically populated by JavaScript -->
+                                </ul>
+                            </nav>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    <!-- Cart Sidebar -->
-    <div class="cart-sidebar" id="cart-sidebar">
-        <div class="cart-header">
-            <h3>Shopping Cart</h3>
-            <button class="close-cart" onclick="toggleCart()">
-                <i class="fas fa-times"></i>
-            </button>
-        </div>
-        <div class="cart-items" id="cart-items">
-            <div class="empty-cart">
-                <i class="fas fa-shopping-bag"></i>
-                <p>Your cart is empty</p>
-            </div>
-        </div>
-        <div class="cart-summary" id="cart-summary" style="display: none;">
-            <div class="cart-total">
-                <span>Total:</span>
-                <span id="cart-total">RM0.00</span>
-            </div>
-            <div class="cart-actions">
-                <button class="btn btn-outline" onclick="clearCart()">Clear Cart</button>
-                <button class="btn btn-primary" onclick="openOrderForm()">Place Order</button>
-                <button class="btn btn-whatsapp" onclick="proceedPaymentWhatsApp()">
-                    <i class="fab fa-whatsapp"></i> Proceed Payment via WhatsApp
-                </button>
-            </div>
-        </div>
-    </div>
-    <!-- Order Form Modal -->
-    <div class="order-modal" id="order-modal">
-        <div class="order-form">
-            <button class="close-modal" onclick="closeOrderForm()">
-                <i class="fas fa-times"></i>
-            </button>
-            <h2>Place Your Order</h2>
-            
-            <div class="order-summary">
-                <h3>Order Summary</h3>
-                <div id="order-items"></div>
-                <div class="order-total">
-                    <span>Total:</span>
-                    <span id="order-total">RM0.00</span>
-                </div>
-            </div>
-            
-            <form id="order-form" onsubmit="submitOrder(event)">
-                <div class="form-group">
-                    <label for="full-name">Full Name</label>
-                    <input type="text" id="full-name" class="form-control" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="email">Email</label>
-                    <input type="email" id="email" class="form-control" required>
-                </div>
-                
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="phone">Phone Number</label>
-                        <input type="tel" id="phone" class="form-control" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="postal-code">Postal Code</label>
-                        <input type="text" id="postal-code" class="form-control" required>
-                    </div>
-                </div>
-                
-                <div class="form-group">
-                    <label for="address">Address</label>
-                    <input type="text" id="address" class="form-control" required>
-                </div>
-                
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="city">City</label>
-                        <input type="text" id="city" class="form-control" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="state">State</label>
-                        <input type="text" id="state" class="form-control" required>
-                    </div>
-                </div>
-                
-                <div class="form-group">
-                    <label for="notes">Additional Notes (Optional)</label>
-                    <textarea id="notes" class="form-control" rows="3"></textarea>
-                </div>
-                
-                <button type="submit" class="btn btn-primary" style="width: 100%;">Submit Order</button>
-            </form>
-        </div>
-    </div>
-    <!-- WhatsApp Button -->
-    <button class="whatsapp-btn" onclick="openWhatsApp()">
-        <i class="fab fa-whatsapp"></i>
-    </button>
+
     <!-- Footer -->
-    <footer>
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-column">
-                    <h3>PNE ARENA</h3>
-                    <p>Your premium destination for graduation essentials. We provide high-quality products that make your special day unforgettable.</p>
-                    <div class="social-links">
-                        <a href="#"><i class="fab fa-facebook-f"></i></a>
-                        <a href="#"><i class="fab fa-twitter"></i></a>
-                        <a href="#"><i class="fab fa-instagram"></i></a>
-                        <a href="#"><i class="fab fa-linkedin-in"></i></a>
-                    </div>
-                </div>
-                <div class="footer-column">
-                    <h3>Quick Links</h3>
-                    <ul>
-                        <li><a href="#home">Home</a></li>
-                        <li><a href="#products">Products</a></li>
-                        <li><a href="#about">About Us</a></li>
-                        <li><a href="#contact">Contact</a></li>
-                    </ul>
-                </div>
-                <div class="footer-column">
-                    <h3>Customer Service</h3>
-                    <ul>
-                        <li><a href="#">FAQ</a></li>
-                        <li><a href="#">Shipping Policy</a></li>
-                        <li><a href="#">Returns & Refunds</a></li>
-                        <li><a href="#">Privacy Policy</a></li>
-                    </ul>
-                </div>
-                <div class="footer-column">
-                    <h3>Contact Us</h3>
-                    <ul>
-                        <li><i class="fas fa-map-marker-alt"></i> 123 Graduation St, Academic City</li>
-                        <li><i class="fas fa-phone"></i> +1 (555) 123-4567</li>
-                        <li><i class="fas fa-envelope"></i> info@pnearena.com</li>
-                    </ul>
-                </div>
-            </div>
-            <div class="copyright">
-                <p>&copy; 2023 PNE ARENA. All rights reserved.</p>
-            </div>
-        </div>
-    </footer>
-    <!-- Notification -->
-    <div class="notification" id="notification">
-        <div class="notification-icon">
-            <i class="fas fa-check-circle"></i>
-        </div>
-        <div class="notification-message">
-            <div class="notification-title">Success</div>
-            <div class="notification-text">Item added to cart!</div>
-        </div>
+    <div class="footer">
+        <p>&copy; 2025 CashBill Management Portal. All rights reserved.</p>
     </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
     <script>
-        // Cart functionality
-        let cart = [];
-        let cartTotal = 0;
-        let currentProduct = null;
-        let singleProductOrder = null;
-        // List of custom made products
-        const customMadeProducts = ['Medal', 'Keychain', 'Nametag', 'Corporate Shirt', 'Attendance Card'];
-        // List of available colors
-        const availableColors = [
-            'Black', 'White', 'Navy Blue', 'Burgundy', 'Forest Green', 
-            'Royal Blue', 'Purple', 'Red', 'Gray', 'Charcoal',
-            'Beige', 'Brown', 'Teal', 'Maroon', 'Gold',
-            'Silver', 'Copper', 'Olive', 'Khaki', 'Cream'
+        // Simulated backend data
+        let cashbills = [
+            { id: 'CB-2023-001', date: '2023-10-15', customer: 'Anderson Inc.', price: 1250.00, crew: 'j.smith', crewId: 'CRW-1025', status: 'Committed' },
+            { id: 'CB-2023-002', date: '2023-10-16', customer: 'Tech Solutions Ltd.', price: 2450.00, crew: 'm.johnson', crewId: 'CRW-1028', status: 'Draft' },
+            { id: 'CB-2023-003', date: '2023-10-17', customer: 'Global Enterprises', price: 3750.00, crew: 's.williams', crewId: 'CRW-1032', status: 'Committed' },
+            { id: 'CB-2023-004', date: '2023-10-18', customer: 'Prime Services', price: 850.00, crew: 'r.brown', crewId: 'CRW-1035', status: 'Draft' },
+            { id: 'CB-2023-005', date: '2023-10-19', customer: 'Innovate Corp', price: 4200.00, crew: 't.davis', crewId: 'CRW-1041', status: 'Committed' }
         ];
-        // Google Sheets configuration
-        const googleSheetURL = 'YOUR_GOOGLE_APPS_SCRIPT_URL'; // Replace with your Google Apps Script URL
-        function toggleCart() {
-            const cartSidebar = document.getElementById('cart-sidebar');
-            cartSidebar.classList.toggle('active');
+
+        // Pagination settings
+        const itemsPerPage = 5;
+        let currentPage = 1;
+        let statusFilter = null;
+
+        // DOM elements
+        const sidebar = document.getElementById('sidebar');
+        const toggler = document.querySelector('.navbar-toggler');
+        const searchInput = document.querySelector('.search-box input');
+        const tableBody = document.querySelector('.table tbody');
+        const pagination = document.querySelector('.pagination');
+        const showingInfo = document.getElementById('showingInfo');
+        const totalCashbills = document.getElementById('totalCashbills');
+        const committedCashbills = document.getElementById('committedCashbills');
+        const draftCashbills = document.getElementById('draftCashbills');
+        const totalRevenue = document.getElementById('totalRevenue');
+
+        // Theme toggle
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+            document.documentElement.setAttribute('data-theme', currentTheme === 'light' ? 'dark' : 'light');
+            document.querySelector('.theme-toggle i').className = currentTheme === 'light' ? 'bi bi-sun-fill' : 'bi bi-moon-stars-fill';
         }
-        function addToCart(name, price) {
-            const existingItem = cart.find(item => item.name === name);
-            
-            if (existingItem) {
-                existingItem.quantity += 1;
-            } else {
-                cart.push({
-                    name,
-                    price,
-                    quantity: 1
-                });
-            }
-            
-            updateCart();
-            showNotification('Item added to cart!', 'success');
+
+        // Update stats
+        function updateStats(data) {
+            totalCashbills.textContent = data.length;
+            committedCashbills.textContent = data.filter(c => c.status === 'Committed').length;
+            draftCashbills.textContent = data.filter(c => c.status === 'Draft').length;
+            totalRevenue.textContent = `$${data.reduce((sum, c) => sum + c.price, 0).toFixed(2)}`;
         }
-        function addToCartFromModal() {
-            const name = document.getElementById('modal-title').textContent;
-            const priceText = document.getElementById('modal-price').textContent;
-            const price = parseFloat(priceText.replace('RM', '').replace(/[^0-9.]/g, ''));
-            const quantity = parseInt(document.getElementById('quantity').value);
-            
-            // Get selected options
-            let options = {};
-            
-            if (customMadeProducts.includes(name)) {
-                const remarkField = document.getElementById('remark-field');
-                if (remarkField) {
-                    options.remark = remarkField.value;
-                }
-            } else {
-                const colorSelect = document.getElementById('color-select');
-                if (colorSelect) {
-                    options.color = colorSelect.value;
-                }
-            }
-            
-            const existingItem = cart.find(item => 
-                item.name === name && 
-                JSON.stringify(item.options) === JSON.stringify(options)
-            );
-            
-            if (existingItem) {
-                existingItem.quantity += quantity;
-            } else {
-                cart.push({
-                    name,
-                    price,
-                    quantity,
-                    options
-                });
-            }
-            
-            updateCart();
-            closeProductModal();
-            showNotification(`${quantity} item(s) added to cart!`, 'success');
-        }
-        function updateCart() {
-            const cartItems = document.getElementById('cart-items');
-            const cartSummary = document.getElementById('cart-summary');
-            const cartCount = document.querySelector('.cart-count');
-            const cartTotalElement = document.getElementById('cart-total');
-            
-            // Update cart count
-            const totalItems = cart.reduce((total, item) => total + item.quantity, 0);
-            cartCount.textContent = totalItems;
-            
-            // Clear cart items
-            cartItems.innerHTML = '';
-            
-            if (cart.length === 0) {
-                cartItems.innerHTML = `
-                    <div class="empty-cart">
-                        <i class="fas fa-shopping-bag"></i>
-                        <p>Your cart is empty</p>
-                    </div>
-                `;
-                cartSummary.style.display = 'none';
-                return;
-            }
-            
-            // Show cart summary
-            cartSummary.style.display = 'block';
-            
-            // Calculate total
-            cartTotal = cart.reduce((total, item) => total + (item.price * item.quantity), 0);
-            cartTotalElement.textContent = `RM${cartTotal.toFixed(2)}`;
-            
-            // Add cart items
-            cart.forEach((item, index) => {
-                let optionsText = '';
-                
-                if (item.options) {
-                    if (item.options.color) {
-                        optionsText = `<div style="font-size: 12px; color: var(--text-light);">Color: ${item.options.color}</div>`;
-                    } else if (item.options.remark) {
-                        optionsText = `<div style="font-size: 12px; color: var(--text-light);">Remark: ${item.options.remark}</div>`;
+
+        // Render chart
+        function renderChart() {
+            const ctx = document.getElementById('statusChart').getContext('2d');
+            const filteredData = filterCashbills();
+            const committedCount = filteredData.filter(c => c.status === 'Committed').length;
+            const draftCount = filteredData.filter(c => c.status === 'Draft').length;
+
+            new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: ['Committed', 'Draft'],
+                    datasets: [{
+                        data: [committedCount, draftCount],
+                        backgroundColor: ['#34a853', '#fbbc05'],
+                        borderColor: ['#2d8c44', '#e0a800'],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: {
+                                font: { size: 14 }
+                            }
+                        },
+                        tooltip: {
+                            enabled: true
+                        }
+                    },
+                    onClick: (e, elements) => {
+                        if (elements.length > 0) {
+                            const index = elements[0].index;
+                            statusFilter = index === 0 ? 'Committed' : 'Draft';
+                            currentPage = 1;
+                            renderTable(filterCashbills(), currentPage);
+                        }
                     }
                 }
-                
-                const cartItem = document.createElement('div');
-                cartItem.className = 'cart-item';
-                cartItem.innerHTML = `
-                    <img src="https://picsum.photos/seed/${item.name}/80/80.jpg" alt="${item.name}" class="cart-item-img">
-                    <div class="cart-item-info">
-                        <div class="cart-item-title">${item.name}</div>
-                        ${optionsText}
-                        <div class="cart-item-price">RM${item.price.toFixed(2)}</div>
-                        <div class="cart-item-quantity">
-                            <button class="cart-quantity-btn" onclick="updateQuantity(${index}, -1)">-</button>
-                            <input type="text" class="cart-quantity-input" value="${item.quantity}" readonly>
-                            <button class="cart-quantity-btn" onclick="updateQuantity(${index}, 1)">+</button>
-                            <button class="cart-quantity-btn" onclick="removeFromCart(${index})" style="margin-left: 10px; background-color: #dc3545; color: white;">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </div>
-                    </div>
-                `;
-                cartItems.appendChild(cartItem);
             });
         }
-        function updateQuantity(index, change) {
-            cart[index].quantity += change;
+
+        // Render table
+        function renderTable(data, page = 1) {
+            const start = (page - 1) * itemsPerPage;
+            const end = start + itemsPerPage;
+            const paginatedData = data.slice(start, end);
             
-            if (cart[index].quantity <= 0) {
-                removeFromCart(index);
-                return;
+            tableBody.innerHTML = '';
+            paginatedData.forEach((item, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${start + index + 1}</td>
+                    <td>${item.id}</td>
+                    <td>${item.date}</td>
+                    <td>${item.customer}</td>
+                    <td>$${item.price.toFixed(2)}</td>
+                    <td>${item.crew}</td>
+                    <td>${item.crewId}</td>
+                    <td><span class="status-badge ${item.status.toLowerCase()}">${item.status}</span></td>
+                    <td class="action-buttons">
+                        <button class="btn btn-primary btn-sm" onclick="viewCashbill('${item.id}')" aria-label="View Cashbill ${item.id}">
+                            <i class="bi bi-eye"></i>
+                        </button>
+                        <button class="btn btn-primary btn-sm" onclick="editCashbill('${item.id}')" aria-label="Edit Cashbill ${item.id}">
+                            <i class="bi bi-pencil"></i>
+                        </button>
+                        <button class="btn btn-danger btn-sm" onclick="deleteCashbill('${item.id}')" aria-label="Delete Cashbill ${item.id}">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+
+            showingInfo.textContent = `Showing ${start + 1} to ${Math.min(end, data.length)} of ${data.length} entries`;
+            updateStats(data);
+            renderPagination(data.length);
+        }
+
+        // Render pagination
+        function renderPagination(totalItems) {
+            const totalPages = Math.ceil(totalItems / itemsPerPage);
+            pagination.innerHTML = `
+                <li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
+                    <a class="page-link" href="#" onclick="changePage(${currentPage - 1})" aria-label="Previous page">Previous</a>
+                </li>
+            `;
+            for (let i = 1; i <= totalPages; i++) {
+                pagination.innerHTML += `
+                    < charged class="page-item ${i === currentPage ? 'active' : ''}">
+                        <a class="page-link" href="#" onclick="changePage(${i})" aria-label="Page ${i}">${i}</a>
+                    </li>
+                `;
             }
-            
-            updateCart();
+            pagination.innerHTML += `
+                <li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
+                    <a class="page-link" href="#" onclick="changePage(${currentPage + 1})" aria-label="Next page">Next</a>
+                </li>
+            `;
         }
-        function removeFromCart(index) {
-            cart.splice(index, 1);
-            updateCart();
-            showNotification('Item removed from cart!', 'success');
+
+        // Change page
+        function changePage(page) {
+            if (page < 1 || page > Math.ceil(filterCashbills().length / itemsPerPage)) return;
+            currentPage = page;
+            renderTable(filterCashbills(), currentPage);
         }
-        function clearCart() {
-            cart = [];
-            updateCart();
-            showNotification('Cart cleared!', 'success');
+
+        // Filter cashbills
+        function filterCashbills() {
+            let filtered = cashbills;
+            if (statusFilter) {
+                filtered = filtered.filter(item => item.status === statusFilter);
+            }
+            const query = searchInput.value.toLowerCase();
+            return filtered.filter(item =>
+                item.id.toLowerCase().includes(query) ||
+                item.customer.toLowerCase().includes(query) ||
+                item.crew.toLowerCase().includes(query) ||
+                item.crewId.toLowerCase().includes(query) ||
+                item.status.toLowerCase().includes(query)
+            );
         }
-        function openSingleProductOrder(name, price) {
-            singleProductOrder = { name, price, quantity: 1 };
-            document.getElementById('order-modal').classList.add('active');
-            
-            // Update order summary for single product
-            const orderItems = document.getElementById('order-items');
-            const orderTotal = document.getElementById('order-total');
-            
-            orderItems.innerHTML = `
-                <div class="order-item">
-                    <span>${name} x 1 - RM${price.toFixed(2)} each</span>
-                    <span>RM${price.toFixed(2)}</span>
+
+        // Show modal
+        function showModal(title, content, footer, onKeydown) {
+            const modal = document.createElement('div');
+            modal.className = 'modal fade';
+            modal.innerHTML = `
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">${title}</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">${content}</div>
+                        <div class="modal-footer">${footer}</div>
+                    </div>
                 </div>
             `;
-            
-            orderTotal.textContent = `RM${price.toFixed(2)}`;
+            document.body.appendChild(modal);
+            const bootstrapModal = new bootstrap.Modal(modal);
+            if (onKeydown) modal.addEventListener('keydown', onKeydown);
+            bootstrapModal.show();
+            modal.addEventListener('hidden.bs.modal', () => modal.remove());
         }
-        function openOrderForm() {
-            if (cart.length === 0) {
-                showNotification('Your cart is empty!', 'error');
+
+        // View cashbill
+        function viewCashbill(id) {
+            const cashbill = cashbills.find(c => c.id === id);
+            if (!cashbill) return;
+            const content = `
+                <p><strong>Cashbill ID:</strong> ${cashbill.id}</p>
+                <p><strong>Date:</strong> ${cashbill.date}</p>
+                <p><strong>Customer:</strong> ${cashbill.customer}</p>
+                <p><strong>Price:</strong> $${cashbill.price.toFixed(2)}</p>
+                <p><strong>Crew:</strong> ${cashbill.crew}</p>
+                <p><strong>Crew ID:</strong> ${cashbill.crewId}</p>
+                <p><strong>Status:</strong> ${cashbill.status}</p>
+            `;
+            showModal(`View Cashbill ${id}`, content, `
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" aria-label="Close">Close</button>
+            `);
+        }
+
+        // Edit cashbill
+        function editCashbill(id) {
+            const cashbill = cashbills.find(c => c.id === id);
+            if (!cashbill) return;
+            const content = `
+                <form id="editCashbillForm">
+                    <div class="mb-3">
+                        <label class="form-label" for="editCustomer">Customer Name</label>
+                        <input type="text" class="form-control" id="editCustomer" name="customer" value="${cashbill.customer}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="editPrice">Price</label>
+                        <input type="number" class="form-control" id="editPrice" name="price" value="${cashbill.price}" min="0" step="0.01" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="editStatus">Status</label>
+                        <select class="form-select" id="editStatus" name="status" required>
+                            <option value="Committed" ${cashbill.status === 'Committed' ? 'selected' : ''}>Committed</option>
+                            <option value="Draft" ${cashbill.status === 'Draft' ? 'selected' : ''}>Draft</option>
+                        </select>
+                    </div>
+                </form>
+            `;
+            showModal(`Edit Cashbill ${id}`, content, `
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" aria-label="Cancel">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="saveCashbill('${id}')" aria-label="Save changes">Save</button>
+            `, (e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    saveCashbill(id);
+                }
+            });
+        }
+
+        // Save cashbill
+        function saveCashbill(id) {
+            const form = document.getElementById('editCashbillForm');
+            if (!form.checkValidity()) {
+                form.reportValidity();
                 return;
             }
+            const customer = form.querySelector('[name="customer"]').value.trim();
+            const price = parseFloat(form.querySelector('[name="price"]').value);
+            const status = form.querySelector('[name="status"]').value;
             
-            // Populate order summary
-            const orderItems = document.getElementById('order-items');
-            const orderTotal = document.getElementById('order-total');
-            
-            orderItems.innerHTML = '';
-            
-            cart.forEach(item => {
-                let itemText = `${item.name} x ${item.quantity} - RM${item.price.toFixed(2)} each`;
-                
-                if (item.options) {
-                    if (item.options.color) {
-                        itemText += ` (Color: ${item.options.color})`;
-                    } else if (item.options.remark) {
-                        itemText += ` (Remark: ${item.options.remark})`;
-                    }
+            const index = cashbills.findIndex(c => c.id === id);
+            if (index !== -1) {
+                cashbills[index] = { ...cashbills[index], customer, price, status };
+                renderTable(filterCashbills(), currentPage);
+                renderChart();
+                bootstrap.Modal.getInstance(document.querySelector('.modal')).hide();
+            }
+        }
+
+        // New cashbill
+        function newCashbill() {
+            const content = `
+                <form id="newCashbillForm">
+                    <div class="mb-3">
+                        <label class="form-label" for="newId">Cashbill ID</label>
+                        <input type="text" class="form-control" id="newId" name="id" placeholder="CB-YYYY-NNN" required pattern="CB-\\d{4}-\\d{3}">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="newDate">Date</label>
+                        <input type="date" class="form-control" id="newDate" name="date" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="newCustomer">Customer Name</label>
+                        <input type="text" class="form-control" id="newCustomer" name="customer" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="newPrice">Price</label>
+                        <input type="number" class="form-control" id="newPrice" name="price" min="0" step="0.01" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="newCrew">Crew Username</label>
+                        <input type="text" class="form-control" id="newCrew" name="crew" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="newCrewId">Crew ID</label>
+                        <input type="text" class="form-control" id="newCrewId" name="crewId" placeholder="CRW-NNNN" required pattern="CRW-\\d{4}">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="newStatus">Status</label>
+                        <select class="form-select" id="newStatus" name="status" required>
+                            <option value="Committed">Committed</option>
+                            <option value="Draft">Draft</option>
+                        </select>
+                    </div>
+                </form>
+            `;
+            showModal('New Cashbill', content, `
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" aria-label="Cancel">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="saveNewCashbill()" aria-label="Create cashbill">Create</button>
+            `, (e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    saveNewCashbill();
                 }
-                
-                const orderItem = document.createElement('div');
-                orderItem.className = 'order-item';
-                orderItem.innerHTML = `
-                    <span>${itemText}</span>
-                    <span>RM${(item.price * item.quantity).toFixed(2)}</span>
-                `;
-                orderItems.appendChild(orderItem);
             });
-            
-            orderTotal.textContent = `RM${cartTotal.toFixed(2)}`;
-            
-            // Show order form modal
-            document.getElementById('order-modal').classList.add('active');
-            toggleCart();
         }
-        function closeOrderForm() {
-            document.getElementById('order-modal').classList.remove('active');
-            singleProductOrder = null;
-        }
-        function submitOrder(event) {
-            event.preventDefault();
-            
-            // Collect form data
-            const formData = {
-                fullName: document.getElementById('full-name').value,
-                email: document.getElementById('email').value,
-                phone: document.getElementById('phone').value,
-                postalCode: document.getElementById('postal-code').value,
-                address: document.getElementById('address').value,
-                city: document.getElementById('city').value,
-                state: document.getElementById('state').value,
-                notes: document.getElementById('notes').value,
-                orderItems: singleProductOrder ? [singleProductOrder] : cart,
-                totalAmount: singleProductOrder ? singleProductOrder.price.toFixed(2) : cartTotal.toFixed(2),
-                timestamp: new Date().toISOString()
+
+        // Save new cashbill
+        function saveNewCashbill() {
+            const form = document.getElementById('newCashbillForm');
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+            const id = form.querySelector('[name="id"]').value.trim();
+            if (cashbills.some(c => c.id === id)) {
+                alert('Cashbill ID must be unique!');
+                return;
+            }
+            const newCashbill = {
+                id,
+                date: form.querySelector('[name="date"]').value,
+                customer: form.querySelector('[name="customer"]').value.trim(),
+                price: parseFloat(form.querySelector('[name="price"]').value),
+                crew: form.querySelector('[name="crew"]').value.trim(),
+                crewId: form.querySelector('[name="crewId"]').value.trim(),
+                status: form.querySelector('[name="status"]').value
             };
-            
-            // Send data to Google Sheets
-            fetch(googleSheetURL, {
-                method: 'POST',
-                body: JSON.stringify(formData),
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    // Clear cart or single product
-                    if (singleProductOrder) {
-                        singleProductOrder = null;
-                    } else {
-                        cart = [];
-                        updateCart();
-                    }
-                    
-                    // Close order form
-                    closeOrderForm();
-                    
-                    // Show success notification
-                    showNotification('Order placed successfully!', 'success');
-                } else {
-                    showNotification('Failed to place order. Please try again.', 'error');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                showNotification('Failed to place order. Please try again.', 'error');
+            cashbills.push(newCashbill);
+            currentPage = Math.ceil(cashbills.length / itemsPerPage);
+            renderTable(filterCashbills(), currentPage);
+            renderChart();
+            bootstrap.Modal.getInstance(document.querySelector('.modal')).hide();
+        }
+
+        // Delete cashbill
+        function deleteCashbill(id) {
+            if (confirm(`Are you sure you want to delete Cashbill ${id}?`)) {
+                cashbills = cashbills.filter(c => c.id !== id);
+                currentPage = Math.min(currentPage, Math.ceil(cashbills.length / itemsPerPage));
+                renderTable(filterCashbills(), currentPage);
+                renderChart();
+            }
+        }
+
+        // Event listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            renderTable(cashbills, currentPage);
+            updateStats(cashbills);
+            renderChart();
+
+            toggler.addEventListener('click', function() {
+                sidebar.classList.toggle('active');
             });
-        }
-        function proceedPaymentWhatsApp() {
-            const orderItems = singleProductOrder ? [singleProductOrder] : cart;
-            const totalAmount = singleProductOrder ? singleProductOrder.price : cartTotal;
-            
-            if (orderItems.length === 0) {
-                showNotification('Your cart is empty!', 'error');
-                return;
-            }
-            
-            // Create order summary for WhatsApp
-            let orderSummary = "Hello, I would like to proceed with payment for the following order:\n\n";
-            
-            orderItems.forEach(item => {
-                orderSummary += `${item.name}`;
-                
-                if (item.options) {
-                    if (item.options.color) {
-                        orderSummary += ` (Color: ${item.options.color})`;
-                    } else if (item.options.remark) {
-                        orderSummary += ` (Remark: ${item.options.remark})`;
-                    }
-                }
-                
-                orderSummary += ` - Quantity: ${item.quantity} - Price: RM${item.price.toFixed(2)} each\n`;
+
+            searchInput.addEventListener('input', () => {
+                currentPage = 1;
+                statusFilter = null;
+                renderTable(filterCashbills(), currentPage);
+                renderChart();
             });
-            
-            orderSummary += `\nTotal: RM${totalAmount.toFixed(2)}\n\n`;
-            orderSummary += "Please provide payment instructions.";
-            
-            // Encode message for URL
-            const encodedMessage = encodeURIComponent(orderSummary);
-            
-            // Open WhatsApp with pre-filled message
-            window.open(`https://www.wasap.my/6012600969/ProceedOrder/?text=${encodedMessage}`, '_blank');
-            
-            // Clear cart or single product after order
-            if (singleProductOrder) {
-                singleProductOrder = null;
-                closeOrderForm();
-            } else {
-                cart = [];
-                updateCart();
-                toggleCart();
-            }
-            
-            showNotification('Payment request sent via WhatsApp!', 'success');
-        }
-        function proceedWhatsAppFromModal() {
-            const name = document.getElementById('modal-title').textContent;
-            const priceText = document.getElementById('modal-price').textContent;
-            const price = parseFloat(priceText.replace('RM', '').replace(/[^0-9.]/g, ''));
-            const quantity = parseInt(document.getElementById('quantity').value);
-            
-            // Get selected options
-            let optionsText = '';
-            
-            if (customMadeProducts.includes(name)) {
-                const remarkField = document.getElementById('remark-field');
-                if (remarkField && remarkField.value) {
-                    optionsText = ` (Remark: ${remarkField.value})`;
-                }
-            } else {
-                const colorSelect = document.getElementById('color-select');
-                if (colorSelect) {
-                    optionsText = ` (Color: ${colorSelect.value})`;
-                }
-            }
-            
-            const orderMessage = `Hello, I would like to proceed with payment for the following product:\n\n${name}${optionsText} - Quantity: ${quantity} - Price: RM${price.toFixed(2)} each\n\nTotal: RM${(price * quantity).toFixed(2)}\n\nPlease provide payment instructions.`;
-            const encodedMessage = encodeURIComponent(orderMessage);
-            
-            window.open(`https://www.wasap.my/6012600969/ProceedOrder/?text=${encodedMessage}`, '_blank');
-            
-            showNotification('Payment request sent via WhatsApp!', 'success');
-        }
-        // Product modal functionality
-        function quickView(name, price, originalPrice, image) {
-            currentProduct = { name, price, originalPrice, image };
-            
-            document.getElementById('modal-title').textContent = name;
-            
-            // Set price display
-            const modalPrice = document.getElementById('modal-price');
-            if (originalPrice) {
-                modalPrice.innerHTML = `
-                    <span class="original-price">RM${originalPrice.toFixed(2)}</span>
-                    <span class="promo-price">RM${price.toFixed(2)}</span>
-                `;
-            } else {
-                modalPrice.innerHTML = `RM${price.toFixed(2)}`;
-            }
-            
-            document.getElementById('modal-image').src = image;
-            document.getElementById('quantity').value = 1;
-            
-            // Clear previous options
-            const modalOptions = document.getElementById('modal-options');
-            modalOptions.innerHTML = '';
-            
-            if (customMadeProducts.includes(name)) {
-                // Show remark field for custom made products
-                const remarkGroup = document.createElement('div');
-                remarkGroup.className = 'option-group';
-                remarkGroup.innerHTML = `
-                    <span class="option-label">Customization Remark:</span>
-                    <textarea class="remark-field" id="remark-field" placeholder="Please describe your custom requirements..."></textarea>
-                `;
-                modalOptions.appendChild(remarkGroup);
-            } else {
-                // Show color dropdown for other products
-                const colorGroup = document.createElement('div');
-                colorGroup.className = 'option-group';
-                colorGroup.innerHTML = `
-                    <span class="option-label">Color:</span>
-                    <select class="color-select" id="color-select">
-                        ${availableColors.map(color => `<option value="${color}">${color}</option>`).join('')}
-                    </select>
-                `;
-                modalOptions.appendChild(colorGroup);
-            }
-            
-            document.getElementById('product-modal').classList.add('active');
-        }
-        function closeProductModal() {
-            document.getElementById('product-modal').classList.remove('active');
-        }
-        function increaseQuantity() {
-            const quantityInput = document.getElementById('quantity');
-            quantityInput.value = parseInt(quantityInput.value) + 1;
-        }
-        function decreaseQuantity() {
-            const quantityInput = document.getElementById('quantity');
-            if (parseInt(quantityInput.value) > 1) {
-                quantityInput.value = parseInt(quantityInput.value) - 1;
-            }
-        }
-        // Direct order via WhatsApp
-        function directOrder(name, price) {
-            const orderMessage = `Hello, I would like to order the following product:\n\n${name} - Price: RM${price.toFixed(2)}\n\nPlease confirm availability and payment details.`;
-            const encodedMessage = encodeURIComponent(orderMessage);
-            
-            window.open(`https://www.wasap.my/60122600969/Questions?text=${encodedMessage}`, '_blank');
-            
-            showNotification('Order request sent via WhatsApp!', 'success');
-        }
-        function openWhatsApp() {
-            window.open('https://www.wasap.my/60122600969/Questions', '_blank');
-        }
-        // Notification functionality
-        function showNotification(message, type = 'success') {
-            const notification = document.getElementById('notification');
-            const notificationTitle = notification.querySelector('.notification-title');
-            const notificationText = notification.querySelector('.notification-text');
-            
-            notification.className = 'notification';
-            notification.classList.add(type);
-            
-            notificationTitle.textContent = type === 'success' ? 'Success' : 'Error';
-            notificationText.textContent = message;
-            
-            notification.classList.add('show');
-            
-            setTimeout(() => {
-                notification.classList.remove('show');
-            }, 3000);
-        }
-        // Smooth scrolling for anchor links
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                
-                const targetId = this.getAttribute('href');
-                if (targetId === '#') return;
-                
-                const targetElement = document.querySelector(targetId);
-                if (targetElement) {
-                    window.scrollTo({
-                        top: targetElement.offsetTop - 80,
-                        behavior: 'smooth'
-                    });
+
+            window.addEventListener('resize', () => {
+                if (window.innerWidth >= 992) {
+                    sidebar.classList.remove('active');
                 }
             });
-        });
-        // Close modals when clicking outside
-        window.addEventListener('click', function(event) {
-            const productModal = document.getElementById('product-modal');
-            const orderModal = document.getElementById('order-modal');
-            
-            if (event.target === productModal) {
-                closeProductModal();
-            }
-            
-            if (event.target === orderModal) {
-                closeOrderForm();
-            }
         });
     </script>
 </body>
