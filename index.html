@@ -5,12 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PNE ARENA - Management System</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10./font/bootstrap-icons.css">
     <style>
         :root {
             --primary-color: #3498db;
             --secondary-color: #2980b9;
-            --success-color: #2ecc71;
+            --success-color: #28cc71;
             --danger-color: #e74c3c;
             --warning-color: #f39c12;
             --light-color: #ecf0f1;
@@ -29,7 +29,6 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #f8f9fa;
             color: #333;
-            overflow-x: hidden;
         }
 
         /* Login Page */
@@ -44,8 +43,8 @@
         .login-card {
             background-color: white;
             border-radius: 10px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            padding: 40px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            padding: 30px;
             width: 100%;
             max-width: 400px;
         }
@@ -55,20 +54,48 @@
             margin-bottom: 30px;
         }
 
-        .login-header .logo {
-            font-size: 36px;
+        .login-logo {
+            font-size: 28px;
             font-weight: bold;
             color: var(--primary-color);
             margin-bottom: 10px;
         }
 
-        .login-header .tagline {
-            color: #7f8c8d;
-            font-size: 14px;
+        .login-form .form-group {
+            margin-bottom: 20px;
         }
 
-        /* Main App (hidden by default) */
-        .main-app {
+        .login-form .form-control {
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 12px;
+            font-size: 16px;
+        }
+
+        .login-form .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+        }
+
+        .login-btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 12px;
+            font-size: 16px;
+            font-weight: 500;
+            width: 100%;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .login-btn:hover {
+            background-color: var(--secondary-color);
+        }
+
+        /* Main Application */
+        .app-container {
             display: none;
         }
 
@@ -80,7 +107,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
             position: fixed;
             top: 0;
             left: 0;
@@ -104,11 +131,11 @@
         }
 
         .user-role {
-            background-color: var(--light-color);
+            background-color: rgba(52, 152, 219, 0.1);
+            color: var(--primary-color);
             padding: 5px 10px;
             border-radius: 4px;
             font-size: 14px;
-            color: var(--dark-color);
         }
 
         .logout-btn {
@@ -147,30 +174,30 @@
         .sidebar-toggle {
             position: absolute;
             top: 15px;
-            right: 10px;
-            background: var(--primary-color);
-            border: none;
-            color: white;
-            font-size: 18px;
-            cursor: pointer;
+            right: -40px;
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: 4px;
             width: 30px;
             height: 30px;
-            border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
+            color: var(--dark-color);
+            font-size: 16px;
+            cursor: pointer;
             transition: all 0.3s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
 
-        .sidebar.collapsed .sidebar-toggle {
-            right: -40px;
-            top: 15px;
+        .sidebar-toggle:hover {
+            background-color: var(--light-color);
         }
 
         .sidebar-menu {
-            margin-top: 50px;
+            margin-top: 20px;
             list-style: none;
-            padding-left: 0;
+            padding: 0 10px;
         }
 
         .sidebar-menu li {
@@ -180,15 +207,15 @@
         .sidebar-menu a {
             display: flex;
             align-items: center;
-            padding: 12px 20px;
+            padding: 12px 15px;
             color: var(--dark-color);
             text-decoration: none;
             transition: background-color 0.3s;
-            white-space: nowrap;
+            border-radius: 4px;
         }
 
         .sidebar-menu a:hover, .sidebar-menu a.active {
-            background-color: var(--light-color);
+            background-color: rgba(52, 152, 219, 0.1);
             color: var(--primary-color);
         }
 
@@ -379,17 +406,6 @@
             background-color: #7f8c8d;
         }
 
-        .btn-outline-primary {
-            background-color: transparent;
-            color: var(--primary-color);
-            border: 1px solid var(--primary-color);
-        }
-
-        .btn-outline-primary:hover {
-            background-color: var(--primary-color);
-            color: white;
-        }
-
         /* Status badges */
         .badge {
             padding: 4px 8px;
@@ -399,7 +415,7 @@
         }
 
         .badge-draft {
-            background-color: #f39c12;
+            background-color: var(--warning-color);
             color: white;
         }
 
@@ -418,33 +434,27 @@
             color: white;
         }
 
-        /* Schedule Timetable */
-        .schedule-header {
+        /* Schedule Table */
+        .schedule-controls {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 20px;
-        }
-
-        .schedule-controls {
-            display: flex;
-            align-items: center;
+            flex-wrap: wrap;
             gap: 10px;
         }
 
         .schedule-table {
             width: 100%;
             border-collapse: collapse;
-            background-color: white;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-            border-radius: 8px;
-            overflow: hidden;
+            margin-top: 20px;
         }
 
         .schedule-table th, .schedule-table td {
-            border: 1px solid #eee;
             padding: 12px;
             text-align: center;
+            border: 1px solid #ddd;
+            vertical-align: top;
         }
 
         .schedule-table th {
@@ -452,157 +462,306 @@
             font-weight: 600;
         }
 
-        .schedule-table .time-column {
-            width: 100px;
+        .schedule-table .crew-name {
+            text-align: left;
+            font-weight: 500;
+            min-width: 150px;
+        }
+
+        .schedule-table .day-header {
+            background-color: var(--primary-color);
+            color: white;
+            position: sticky;
+            top: 0;
+        }
+
+        .schedule-table .day-date {
+            font-size: 12px;
+            font-weight: normal;
+            display: block;
+        }
+
+        .schedule-table .total-hours {
             background-color: #f8f9fa;
             font-weight: 600;
         }
 
         .schedule-cell {
-            min-height: 60px;
+            min-height: 80px;
             position: relative;
         }
 
-        .schedule-cell.has-shift {
-            background-color: rgba(52, 152, 219, 0.1);
+        .schedule-cell.off-day {
+            background-color: #f8f9fa;
+            color: #7f8c8d;
         }
 
-        .shift-details {
-            font-size: 12px;
-            padding: 5px;
-            border-radius: 4px;
-            background-color: rgba(52, 152, 219, 0.2);
-            margin-bottom: 5px;
+        .schedule-cell.annual-leave {
+            background-color: #fff3cd;
+            color: #856404;
         }
 
-        .shift-crew {
-            font-weight: 600;
-            color: var(--primary-color);
+        .schedule-cell.working {
+            background-color: #d4edda;
+            color: #155724;
         }
 
-        .add-shift-btn {
+        .schedule-cell .hours {
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        .edit-schedule-btn {
             position: absolute;
-            bottom: 5px;
+            top: 5px;
             right: 5px;
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: 4px;
             width: 24px;
             height: 24px;
-            border-radius: 50%;
-            background-color: var(--primary-color);
-            color: white;
-            border: none;
-            font-size: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
+            color: var(--dark-color);
+            font-size: 12px;
             cursor: pointer;
-            opacity: 0;
-            transition: opacity 0.3s;
+            transition: all 0.3s;
         }
 
-        .schedule-cell:hover .add-shift-btn {
-            opacity: 1;
+        .edit-schedule-btn:hover {
+            background-color: var(--light-color);
         }
 
-        /* Crew Schedule */
-        .crew-schedule {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 20px;
-        }
-
-        .crew-card {
-            background-color: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-            padding: 15px;
-        }
-
-        .crew-header {
+        .crew-selector {
             display: flex;
-            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .crew-checkbox {
+            display: flex;
             align-items: center;
-            margin-bottom: 10px;
-        }
-
-        .crew-name {
-            font-weight: bold;
-            font-size: 16px;
-        }
-
-        .crew-id {
-            color: #7f8c8d;
-            font-size: 14px;
-        }
-
-        .crew-position {
-            margin-bottom: 10px;
-            color: var(--primary-color);
-        }
-
-        .crew-outlet {
             background-color: #f8f9fa;
-            padding: 5px 10px;
+            padding: 8px 12px;
             border-radius: 4px;
-            font-size: 14px;
-            display: inline-block;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .crew-checkbox:hover {
+            background-color: #e9ecef;
+        }
+
+        .crew-checkbox input {
+            margin-right: 5px;
+        }
+
+        /* Loading Animation */
+        .loading-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+        }
+
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-radius: 50%;
+            border-top: 4px solid var(--primary-color);
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* No Schedule Message */
+        .no-schedule-message {
+            text-align: center;
+            padding: 40px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            color: #7f8c8d;
+            font-size: 18px;
+        }
+
+        /* Edit Mode Styles */
+        .edit-mode-btn {
+            background-color: var(--danger-color);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .edit-mode-btn:hover {
+            background-color: #c0392b;
+        }
+
+        .save-mode-btn {
+            background-color: var(--success-color);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .save-mode-btn:hover {
+            background-color: #27ae60;
+        }
+
+        .schedule-cell.editable {
+            cursor: pointer;
+        }
+
+        .schedule-cell.editable:hover {
+            background-color: rgba(52, 152, 219, 0.1);
+        }
+
+        .schedule-cell.editing {
+            background-color: rgba(52, 152, 219, 0.2);
+        }
+
+        .schedule-cell .edit-input {
+            width: 100%;
+            padding: 5px;
+            border: 1px solid var(--primary-color);
+            border-radius: 4px;
+            margin-top: 5px;
+        }
+
+        .schedule-cell .status-select {
+            width: 100%;
+            padding: 5px;
+            border: 1px solid var(--primary-color);
+            border-radius: 4px;
+            margin-top: 5px;
         }
 
         /* Time Tracking */
-        .time-tracking-card {
+        .time-tracking-container {
             background-color: white;
             border-radius: 8px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.05);
             padding: 20px;
             margin-bottom: 20px;
+            text-align: center;
         }
 
         .time-status {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .status-indicator {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .status-dot {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            background-color: #e74c3c;
-        }
-
-        .status-dot.active {
-            background-color: var(--success-color);
-        }
-
-        .status-dot.break {
-            background-color: var(--warning-color);
-        }
-
-        .time-buttons {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
-        .schedule-today {
-            margin-top: 20px;
-        }
-
-        .schedule-today h5 {
+            font-size: 18px;
             margin-bottom: 15px;
         }
 
-        .today-shift {
-            background-color: #f8f9fa;
-            padding: 10px;
-            border-radius: 4px;
+        .time-actions {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .time-record {
+            margin-top: 20px;
+            text-align: left;
+        }
+
+        .time-record h4 {
             margin-bottom: 10px;
+        }
+
+        .time-record table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .time-record th, .time-record td {
+            padding: 8px 12px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .time-record th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+        }
+
+        /* Create Cashbill Button */
+        .create-cashbill-btn {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            background-color: var(--success-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 10px 15px;
+            display: flex;
+            align-items: center;
+            font-size: 14px;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            transition: all 0.3s;
+            z-index: 100;
+        }
+
+        .create-cashbill-btn:hover {
+            background-color: #27ae60;
+            transform: translateY(-2px);
+        }
+
+        /* Cashbill Summary */
+        .cashbill-summary {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            padding: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .cashbill-summary h3 {
+            margin-bottom: 15px;
+        }
+
+        .cashbill-summary .total-count {
+            font-size: 48px;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: var(--sidebar-collapsed-width);
+            }
+            
+            .sidebar .sidebar-menu span {
+                display: none;
+            }
+            
+            .main-content {
+                margin-left: var(--sidebar-collapsed-width);
+            }
+            
+            .dashboard-cards {
+                grid-template-columns: 1fr;
+            }
+            
+            .schedule-controls {
+                flex-direction: column;
+                align-items: flex-start;
+            }
         }
 
         /* Modal */
@@ -726,25 +885,9 @@
             color: var(--warning-color);
         }
 
-        /* Loading Spinner */
-        .spinner {
-            border: 4px solid rgba(0, 0, 0, 0.1);
-            border-radius: 50%;
-            border-top: 4px solid var(--primary-color);
-            width: 30px;
-            height: 30px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
         /* Print Styles */
         @media print {
-            .top-navbar, .sidebar, .btn, .modal, .toast-container {
+            .top-navbar, .sidebar, .btn, .modal, .toast-container, .create-cashbill-btn {
                 display: none !important;
             }
             
@@ -758,59 +901,37 @@
                 display: block !important;
             }
         }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .sidebar {
-                width: var(--sidebar-collapsed-width);
-            }
-            
-            .sidebar .sidebar-menu span {
-                display: none;
-            }
-            
-            .main-content {
-                margin-left: var(--sidebar-collapsed-width);
-            }
-            
-            .dashboard-cards {
-                grid-template-columns: 1fr;
-            }
-            
-            .schedule-table {
-                font-size: 12px;
-            }
-            
-            .schedule-table th, .schedule-table td {
-                padding: 5px;
-            }
-        }
     </style>
 </head>
 <body>
     <!-- Login Page -->
-    <div class="login-container" id="loginPage">
+    <div class="login-container" id="loginContainer">
         <div class="login-card">
             <div class="login-header">
-                <div class="logo">PNE ARENA</div>
-                <div class="tagline">Management System</div>
+                <div class="login-logo">
+                    <i class="bi bi-building"></i> PNE ARENA
+                </div>
+                <p>Management System</p>
             </div>
-            <form id="loginForm">
+            <form class="login-form" id="loginForm">
                 <div class="form-group">
-                    <label class="form-label">User ID</label>
-                    <input type="text" class="form-control" id="loginUserId" placeholder="Enter your ID" required>
+                    <label for="username">Staff ID</label>
+                    <input type="text" class="form-control" id="username" placeholder="Enter Staff ID" required>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Password</label>
-                    <input type="password" class="form-control" id="loginPassword" placeholder="Enter your password" required>
+                    <label for="password">Password</label>
+                    <input type="password" class="form-control" id="password" placeholder="Enter Password" required>
                 </div>
-                <button type="button" class="btn btn-primary w-100" onclick="login()">Login</button>
+                <button type="submit" class="login-btn">Login</button>
             </form>
+            <div class="mt-3 text-center">
+                <small>Default password: 0000</small>
+            </div>
         </div>
     </div>
 
-    <!-- Main Application (hidden by default) -->
-    <div class="main-app" id="mainApp">
+    <!-- Main Application -->
+    <div class="app-container" id="appContainer">
         <!-- Top Navigation Bar -->
         <div class="top-navbar">
             <div class="logo">
@@ -827,7 +948,7 @@
         <!-- Sidebar -->
         <div class="sidebar" id="sidebar">
             <button class="sidebar-toggle" id="sidebarToggle">
-                <i class="bi bi-chevron-left"></i>
+                <i class="bi bi-chevron-right"></i>
             </button>
             <ul class="sidebar-menu">
                 <li><a href="#" class="active" onclick="showPage('dashboard')"><i class="bi bi-speedometer2"></i> <span>Dashboard</span></a></li>
@@ -930,110 +1051,135 @@
 
             <!-- Cashbill Page -->
             <div class="page" id="cashbill">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h2>Cashbill Management</h2>
-                    <button class="btn btn-primary" id="createCashbillBtn" onclick="toggleCashbillForm()">
-                        <i class="bi bi-plus-circle"></i> Create Cashbill
-                    </button>
+                <h2 class="mb-4">Cashbill Management</h2>
+                
+                <div id="cashbillFormContainer" style="display: none;">
+                    <div class="form-container">
+                        <h4 class="mb-3">Create New Cashbill</h4>
+                        <form id="cashbillForm">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="form-label">Invoice Number</label>
+                                        <input type="text" class="form-control" id="invoiceNumber" readonly>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="form-label">Date</label>
+                                        <input type="date" class="form-control" id="cashbillDate" required>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="form-label">Customer Name</label>
+                                        <input type="text" class="form-control" id="customerName" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="form-label">Phone Number</label>
+                                        <input type="tel" class="form-control" id="customerPhone" required>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="form-label">Outlet</label>
+                                        <select class="form-select" id="cashbillOutlet" required>
+                                            <option value="">Select Outlet</option>
+                                            <option value="HQ">HQ</option>
+                                            <option value="BLM">Bandar Laguna Merbok</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="form-label">Item</label>
+                                        <select class="form-select" id="cashbillItem" required>
+                                            <option value="">Select Item</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="form-label">Quantity</label>
+                                        <input type="number" class="form-control" id="itemQuantity" min="1" value="1" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="form-label">Price (RM)</label>
+                                        <input type="number" class="form-control" id="itemPrice" step="0.01" min="0" required>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Total Amount (RM)</label>
+                                <input type="number" class="form-control" id="totalAmount" step="0.01" min="0" readonly>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Notes</label>
+                                <textarea class="form-control" id="cashbillNotes" rows="3"></textarea>
+                            </div>
+                            
+                            <div class="d-flex gap-2">
+                                <button type="button" class="btn btn-primary" onclick="addItemToCashbill()">
+                                    <i class="bi bi-plus-circle"></i> Add Item
+                                </button>
+                                <button type="button" class="btn btn-success" onclick="saveCashbill('draft')">
+                                    <i class="bi bi-save"></i> Save as Draft
+                                </button>
+                                <button type="button" class="btn btn-success" onclick="saveCashbill('commit')">
+                                    <i class="bi bi-check-circle"></i> Commit
+                                </button>
+                                <button type="button" class="btn btn-secondary" onclick="printCashbill()">
+                                    <i class="bi bi-printer"></i> Print
+                                </button>
+                                <button type="button" class="btn btn-secondary" onclick="downloadCashbill()">
+                                    <i class="bi bi-download"></i> Download PDF
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                    
+                    <div class="table-container">
+                        <h4 class="mb-3">Cashbill Items</h4>
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Item</th>
+                                    <th>Quantity</th>
+                                    <th>Price (RM)</th>
+                                    <th>Total (RM)</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="cashbillItems">
+                                <tr>
+                                    <td colspan="5" class="text-center">No items added</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
                 
-                <div class="form-container" id="cashbillFormContainer" style="display: none;">
-                    <h4 class="mb-3">Create New Cashbill</h4>
-                    <form id="cashbillForm">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label class="form-label">Invoice Number</label>
-                                    <input type="text" class="form-control" id="invoiceNumber" readonly>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label class="form-label">Date</label>
-                                    <input type="date" class="form-control" id="cashbillDate" required>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label class="form-label">Customer Name</label>
-                                    <input type="text" class="form-control" id="customerName" required>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label class="form-label">Phone Number</label>
-                                    <input type="tel" class="form-control" id="customerPhone" required>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label class="form-label">Outlet</label>
-                                    <select class="form-select" id="cashbillOutlet" required>
-                                        <option value="">Select Outlet</option>
-                                        <option value="HQ">HQ</option>
-                                        <option value="BLM">Bandar Laguna Merbok</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label class="form-label">Item</label>
-                                    <select class="form-select" id="cashbillItem" required>
-                                        <option value="">Select Item</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label class="form-label">Quantity</label>
-                                    <input type="number" class="form-control" id="itemQuantity" min="1" value="1" required>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label class="form-label">Price (RM)</label>
-                                    <input type="number" class="form-control" id="itemPrice" step="0.01" min="0" required>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label class="form-label">Total Amount (RM)</label>
-                            <input type="number" class="form-control" id="totalAmount" step="0.01" min="0" readonly>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label class="form-label">Notes</label>
-                            <textarea class="form-control" id="cashbillNotes" rows="3"></textarea>
-                        </div>
-                        
-                        <div class="d-flex gap-2">
-                            <button type="button" class="btn btn-primary" onclick="addItemToCashbill()">
-                                <i class="bi bi-plus-circle"></i> Add Item
-                            </button>
-                            <button type="button" class="btn btn-success" onclick="saveCashbill('draft')">
-                                <i class="bi bi-save"></i> Save as Draft
-                            </button>
-                            <button type="button" class="btn btn-success" onclick="saveCashbill('commit')">
-                                <i class="bi bi-check-circle"></i> Commit
-                            </button>
-                            <button type="button" class="btn btn-secondary" onclick="printCashbill()">
-                                <i class="bi bi-printer"></i> Print
-                            </button>
-                            <button type="button" class="btn btn-secondary" onclick="downloadCashbill()">
-                                <i class="bi bi-download"></i> Download PDF
-                            </button>
-                        </div>
-                    </form>
+                <div id="cashbillSummaryContainer">
+                    <div class="cashbill-summary">
+                        <h3>Cashbill Summary</h3>
+                        <div class="total-count" id="cashbillTotalCount">0</div>
+                        <p>Total Cashbills Created</p>
+                    </div>
                 </div>
                 
                 <div class="table-container">
@@ -1060,56 +1206,61 @@
 
             <!-- Logbook Page -->
             <div class="page" id="logbook">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h2>Logbook Management</h2>
-                    <button class="btn btn-primary" id="createLogbookBtn" onclick="toggleLogbookForm()">
-                        <i class="bi bi-plus-circle"></i> Create Log Entry
-                    </button>
+                <h2 class="mb-4">Logbook Management</h2>
+                
+                <div id="logbookFormContainer" style="display: none;">
+                    <div class="form-container">
+                        <h4 class="mb-3">Create New Log Entry</h4>
+                        <form id="logbookForm">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="form-label">Date</label>
+                                        <input type="date" class="form-control" id="logDate" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="form-label">Crew Involved</label>
+                                        <select class="form-select" id="logCrew" required>
+                                            <option value="">Select Crew</option>
+                                            <option value="Danial Danish (0001)">Danial Danish (0001)</option>
+                                            <option value="Aida (0002)">Aida (0002)</option>
+                                            <option value="Putri Erinna (0003)">Putri Erinna (0003)</option>
+                                            <option value="Putri Farah (0004)">Putri Farah (0004)</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Description</label>
+                                <textarea class="form-control" id="logDescription" rows="4" required></textarea>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Price (RM)</label>
+                                <input type="number" class="form-control" id="logPrice" step="0.01" min="0">
+                            </div>
+                            
+                            <div class="d-flex gap-2">
+                                <button type="button" class="btn btn-success" onclick="saveLogEntry('draft')">
+                                    <i class="bi bi-save"></i> Save as Draft
+                                </button>
+                                <button type="button" class="btn btn-success" onclick="saveLogEntry('commit')">
+                                    <i class="bi bi-check-circle"></i> Commit
+                                </button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
                 
-                <div class="form-container" id="logbookFormContainer" style="display: none;">
-                    <h4 class="mb-3">Create New Log Entry</h4>
-                    <form id="logbookForm">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label class="form-label">Date</label>
-                                    <input type="date" class="form-control" id="logDate" required>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label class="form-label">Crew Involved</label>
-                                    <select class="form-select" id="logCrew" required>
-                                        <option value="">Select Crew</option>
-                                        <option value="Danial Danish (0001)">Danial Danish (0001)</option>
-                                        <option value="Aida (0002)">Aida (0002)</option>
-                                        <option value="Putri Erinna (0003)">Putri Erinna (0003)</option>
-                                        <option value="Putri Farah (0004)">Putri Farah (0004)</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label class="form-label">Description</label>
-                            <textarea class="form-control" id="logDescription" rows="4" required></textarea>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label class="form-label">Price (RM)</label>
-                            <input type="number" class="form-control" id="logPrice" step="0.01" min="0">
-                        </div>
-                        
-                        <div class="d-flex gap-2">
-                            <button type="button" class="btn btn-success" onclick="saveLogEntry('draft')">
-                                <i class="bi bi-save"></i> Save as Draft
-                            </button>
-                            <button type="button" class="btn btn-success" onclick="saveLogEntry('commit')">
-                                <i class="bi bi-check-circle"></i> Commit
-                            </button>
-                        </div>
-                    </form>
+                <div id="logbookSummaryContainer">
+                    <div class="cashbill-summary">
+                        <h3>Logbook Summary</h3>
+                        <div class="total-count" id="logbookTotalCount">0</div>
+                        <p>Total Log Entries Created</p>
+                    </div>
                 </div>
                 
                 <div class="table-container">
@@ -1136,114 +1287,119 @@
 
             <!-- Quotation Page -->
             <div class="page" id="quotation">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h2>Quotation Management</h2>
-                    <button class="btn btn-primary" id="createQuotationBtn" onclick="toggleQuotationForm()">
-                        <i class="bi bi-plus-circle"></i> Create Quotation
-                    </button>
+                <h2 class="mb-4">Quotation Management</h2>
+                
+                <div id="quotationFormContainer" style="display: none;">
+                    <div class="form-container">
+                        <h4 class="mb-3">Create New Quotation</h4>
+                        <form id="quotationForm">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="form-label">Quotation Number</label>
+                                        <input type="text" class="form-control" id="quotationNumber" readonly>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="form-label">Date</label>
+                                        <input type="date" class="form-control" id="quotationDate" required>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="form-label">Client Name</label>
+                                        <input type="text" class="form-control" id="clientName" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="form-label">Client Email</label>
+                                        <input type="email" class="form-control" id="clientEmail" required>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="form-label">Client Phone</label>
+                                        <input type="tel" class="form-control" id="clientPhone" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="form-label">Company</label>
+                                        <input type="text" class="form-control" id="clientCompany">
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Services</label>
+                                <div id="quotationServices">
+                                    <div class="row mb-2">
+                                        <div class="col-md-6">
+                                            <input type="text" class="form-control service-name" placeholder="Service Name" required>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <input type="number" class="form-control service-price" placeholder="Price (RM)" step="0.01" min="0" required>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <button type="button" class="btn btn-danger btn-sm" onclick="removeQuotationService(this)">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button type="button" class="btn btn-primary btn-sm mt-2" onclick="addQuotationService()">
+                                    <i class="bi bi-plus-circle"></i> Add Service
+                                </button>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Total Amount (RM)</label>
+                                <input type="number" class="form-control" id="quotationTotal" step="0.01" min="0" readonly>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Notes</label>
+                                <textarea class="form-control" id="quotationNotes" rows="3"></textarea>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Template</label>
+                                <select class="form-select" id="quotationTemplate">
+                                    <option value="">Select Template</option>
+                                    <option value="standard">Standard Template</option>
+                                    <option value="premium">Premium Template</option>
+                                </select>
+                            </div>
+                            
+                            <div class="d-flex gap-2">
+                                <button type="button" class="btn btn-success" onclick="saveQuotation()">
+                                    <i class="bi bi-save"></i> Save
+                                </button>
+                                <button type="button" class="btn btn-secondary" onclick="downloadQuotation()">
+                                    <i class="bi bi-download"></i> Download
+                                </button>
+                                <button type="button" class="btn btn-secondary" onclick="emailQuotation()">
+                                    <i class="bi bi-envelope"></i> Send Email
+                                </button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
                 
-                <div class="form-container" id="quotationFormContainer" style="display: none;">
-                    <h4 class="mb-3">Create New Quotation</h4>
-                    <form id="quotationForm">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label class="form-label">Quotation Number</label>
-                                    <input type="text" class="form-control" id="quotationNumber" readonly>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label class="form-label">Date</label>
-                                    <input type="date" class="form-control" id="quotationDate" required>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label class="form-label">Client Name</label>
-                                    <input type="text" class="form-control" id="clientName" required>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label class="form-label">Client Email</label>
-                                    <input type="email" class="form-control" id="clientEmail" required>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label class="form-label">Client Phone</label>
-                                    <input type="tel" class="form-control" id="clientPhone" required>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label class="form-label">Company</label>
-                                    <input type="text" class="form-control" id="clientCompany">
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label class="form-label">Services</label>
-                            <div id="quotationServices">
-                                <div class="row mb-2">
-                                    <div class="col-md-6">
-                                        <input type="text" class="form-control service-name" placeholder="Service Name" required>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <input type="number" class="form-control service-price" placeholder="Price (RM)" step="0.01" min="0" required>
-                                    </div>
-                                    <div class="col-md-2">
-                                        <button type="button" class="btn btn-danger btn-sm" onclick="removeQuotationService(this)">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                            <button type="button" class="btn btn-primary btn-sm mt-2" onclick="addQuotationService()">
-                                <i class="bi bi-plus-circle"></i> Add Service
-                            </button>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label class="form-label">Total Amount (RM)</label>
-                            <input type="number" class="form-control" id="quotationTotal" step="0.01" min="0" readonly>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label class="form-label">Notes</label>
-                            <textarea class="form-control" id="quotationNotes" rows="3"></textarea>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label class="form-label">Template</label>
-                            <select class="form-select" id="quotationTemplate">
-                                <option value="">Select Template</option>
-                                <option value="standard">Standard Template</option>
-                                <option value="premium">Premium Template</option>
-                            </select>
-                        </div>
-                        
-                        <div class="d-flex gap-2">
-                            <button type="button" class="btn btn-success" onclick="saveQuotation()">
-                                <i class="bi bi-save"></i> Save
-                            </button>
-                            <button type="button" class="btn btn-secondary" onclick="downloadQuotation()">
-                                <i class="bi bi-download"></i> Download
-                            </button>
-                            <button type="button" class="btn btn-secondary" onclick="emailQuotation()">
-                                <i class="bi bi-envelope"></i> Send Email
-                            </button>
-                        </div>
-                    </form>
+                <div id="quotationSummaryContainer">
+                    <div class="cashbill-summary">
+                        <h3>Quotation Summary</h3>
+                        <div class="total-count" id="quotationTotalCount">0</div>
+                        <p>Total Quotations Created</p>
+                    </div>
                 </div>
                 
                 <div class="table-container">
@@ -1270,160 +1426,230 @@
 
             <!-- Schedule Page -->
             <div class="page" id="schedule">
-                <div class="schedule-header">
+                <div class="schedule-controls">
                     <h2>Schedule Timetable</h2>
-                    <div class="schedule-controls">
-                        <button class="btn btn-outline-primary" id="prevWeekBtn">
-                            <i class="bi bi-chevron-left"></i> Previous
+                    <div>
+                        <input type="date" class="form-control d-inline-block" id="scheduleDate" style="width: auto;">
+                        <button class="btn btn-primary ms-2" onclick="loadSchedule()">
+                            <i class="bi bi-search"></i> Find
                         </button>
-                        <span id="currentWeek">Week of Aug 18, 2025</span>
-                        <button class="btn btn-outline-primary" id="nextWeekBtn">
-                            Next <i class="bi bi-chevron-right"></i>
+                        <button class="btn btn-secondary ms-2" onclick="setTodaySchedule()">
+                            <i class="bi bi-calendar-day"></i> Today
                         </button>
-                        <button class="btn btn-primary" id="addScheduleBtn" style="display: none;">
-                            <i class="bi bi-plus-circle"></i> Add Schedule
+                        <button class="btn btn-success ms-2" onclick="createNewSchedule()">
+                            <i class="bi bi-plus-circle"></i> Create Schedule
+                        </button>
+                        <button class="btn btn-primary ms-2" onclick="saveSchedule()">
+                            <i class="bi bi-save"></i> Save Schedule
+                        </button>
+                        <button id="editScheduleBtn" class="edit-mode-btn ms-2" onclick="toggleEditMode()">
+                            <i class="bi bi-pencil"></i> Edit
+                        </button>
+                        <button id="saveScheduleChangesBtn" class="save-mode-btn ms-2" style="display: none;" onclick="saveScheduleChanges()">
+                            <i class="bi bi-check"></i> Save Changes
                         </button>
                     </div>
                 </div>
                 
-                <div class="table-container">
-                    <table class="schedule-table">
-                        <thead>
-                            <tr>
-                                <th>Time</th>
-                                <th>Sunday</th>
-                                <th>Monday</th>
-                                <th>Tuesday</th>
-                                <th>Wednesday</th>
-                                <th>Thursday</th>
-                                <th>Friday</th>
-                                <th>Saturday</th>
-                            </tr>
-                        </thead>
-                        <tbody id="scheduleTableBody">
-                            <!-- Schedule rows will be generated by JavaScript -->
-                        </tbody>
-                    </table>
+                <div class="form-container" id="scheduleFormContainer" style="display: none;">
+                    <h4 class="mb-3">Create New Schedule</h4>
+                    <div class="form-group">
+                        <label class="form-label">Week Starting</label>
+                        <input type="date" class="form-control" id="newScheduleWeek" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Select Crew Members</label>
+                        <div class="crew-selector" id="crewSelector">
+                            <!-- Crew checkboxes will be generated here -->
+                        </div>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <button type="button" class="btn btn-success" onclick="addCrewToSchedule()">
+                            <i class="bi bi-plus-circle"></i> Add to Schedule
+                        </button>
+                        <button type="button" class="btn btn-secondary" onclick="cancelNewSchedule()">
+                            <i class="bi bi-x-circle"></i> Cancel
+                        </button>
+                    </div>
                 </div>
                 
-                <div class="mt-4">
-                    <h4>Daily Hours Summary</h4>
+                <div id="scheduleLoadingContainer" style="display: none;">
+                    <div class="loading-container">
+                        <div class="spinner"></div>
+                        <p class="mt-2">Loading schedule data...</p>
+                    </div>
+                </div>
+                
+                <div id="scheduleTableContainer">
                     <div class="table-container">
-                        <table class="table">
+                        <table class="schedule-table" id="scheduleTable">
                             <thead>
                                 <tr>
-                                    <th>Day</th>
+                                    <th>Crew Name</th>
+                                    <th class="day-header">
+                                        Sunday
+                                        <span class="day-date" id="sundayDate"></span>
+                                    </th>
+                                    <th class="day-header">
+                                        Monday
+                                        <span class="day-date" id="mondayDate"></span>
+                                    </th>
+                                    <th class="day-header">
+                                        Tuesday
+                                        <span class="day-date" id="tuesdayDate"></span>
+                                    </th>
+                                    <th class="day-header">
+                                        Wednesday
+                                        <span class="day-date" id="wednesdayDate"></span>
+                                    </th>
+                                    <th class="day-header">
+                                        Thursday
+                                        <span class="day-date" id="thursdayDate"></span>
+                                    </th>
+                                    <th class="day-header">
+                                        Friday
+                                        <span class="day-date" id="fridayDate"></span>
+                                    </th>
+                                    <th class="day-header">
+                                        Saturday
+                                        <span class="day-date" id="saturdayDate"></span>
+                                    </th>
                                     <th>Total Hours</th>
-                                    <th>Staff Count</th>
                                 </tr>
                             </thead>
-                            <tbody id="dailyHoursSummary">
-                                <!-- Daily hours summary will be generated by JavaScript -->
+                            <tbody id="scheduleTableBody">
+                                <!-- Schedule rows will be generated here -->
                             </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td class="total-hours">Daily Total</td>
+                                    <td class="total-hours" id="sundayTotal">0</td>
+                                    <td class="total-hours" id="mondayTotal">0</td>
+                                    <td class="total-hours" id="tuesdayTotal">0</td>
+                                    <td class="total-hours" id="wednesdayTotal">0</td>
+                                    <td class="total-hours" id="thursdayTotal">0</td>
+                                    <td class="total-hours" id="fridayTotal">0</td>
+                                    <td class="total-hours" id="saturdayTotal">0</td>
+                                    <td class="total-hours" id="weeklyTotal">0</td>
+                                </tr>
+                            </tfoot>
                         </table>
+                    </div>
+                </div>
+                
+                <div id="noScheduleContainer" style="display: none;">
+                    <div class="no-schedule-message">
+                        <i class="bi bi-calendar-x" style="font-size: 48px; margin-bottom: 15px;"></i>
+                        <h3>No Schedule Found</h3>
+                        <p>No schedule exists for the selected week. Please create a new schedule.</p>
                     </div>
                 </div>
             </div>
 
             <!-- Online Order Page -->
             <div class="page" id="onlineOrder">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h2>Online Order Management</h2>
-                    <button class="btn btn-primary" id="createOrderBtn" onclick="toggleOrderForm()">
-                        <i class="bi bi-plus-circle"></i> Create Order
-                    </button>
+                <h2 class="mb-4">Online Order Management</h2>
+                
+                <div id="adminOrderSection" style="display: none;">
+                    <div class="form-container">
+                        <h4 class="mb-3">Add New Order</h4>
+                        <form id="onlineOrderForm">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="form-label">Order ID</label>
+                                        <input type="text" class="form-control" id="orderId" readonly>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="form-label">Date</label>
+                                        <input type="date" class="form-control" id="orderDate" required>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="form-label">Customer Name</label>
+                                        <input type="text" class="form-control" id="orderCustomerName" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="form-label">Customer Email</label>
+                                        <input type="email" class="form-control" id="orderCustomerEmail" required>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="form-label">Customer Phone</label>
+                                        <input type="tel" class="form-control" id="orderCustomerPhone" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="form-label">Assign to Outlet</label>
+                                        <select class="form-select" id="orderOutlet" required>
+                                            <option value="">Select Outlet</option>
+                                            <option value="HQ">HQ</option>
+                                            <option value="BLM">Bandar Laguna Merbok</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Order Items</label>
+                                <div id="orderItems">
+                                    <div class="row mb-2">
+                                        <div class="col-md-6">
+                                            <input type="text" class="form-control order-item-name" placeholder="Item Name" required>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <input type="number" class="form-control order-item-price" placeholder="Price (RM)" step="0.01" min="0" required>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <button type="button" class="btn btn-danger btn-sm" onclick="removeOrderItem(this)">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button type="button" class="btn btn-primary btn-sm mt-2" onclick="addOrderItem()">
+                                    <i class="bi bi-plus-circle"></i> Add Item
+                                </button>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Total Amount (RM)</label>
+                                <input type="number" class="form-control" id="orderTotal" step="0.01" min="0" readonly>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Notes</label>
+                                <textarea class="form-control" id="orderNotes" rows="3"></textarea>
+                            </div>
+                            
+                            <div class="d-flex gap-2">
+                                <button type="button" class="btn btn-success" onclick="saveOnlineOrder()">
+                                    <i class="bi bi-save"></i> Save Order
+                                </button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
                 
-                <div class="form-container" id="orderFormContainer" style="display: none;">
-                    <h4 class="mb-3">Add New Order</h4>
-                    <form id="onlineOrderForm">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label class="form-label">Order ID</label>
-                                    <input type="text" class="form-control" id="orderId" readonly>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label class="form-label">Date</label>
-                                    <input type="date" class="form-control" id="orderDate" required>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label class="form-label">Customer Name</label>
-                                    <input type="text" class="form-control" id="orderCustomerName" required>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label class="form-label">Customer Email</label>
-                                    <input type="email" class="form-control" id="orderCustomerEmail" required>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label class="form-label">Customer Phone</label>
-                                    <input type="tel" class="form-control" id="orderCustomerPhone" required>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label class="form-label">Assign to Outlet</label>
-                                    <select class="form-select" id="orderOutlet" required>
-                                        <option value="">Select Outlet</option>
-                                        <option value="HQ">HQ</option>
-                                        <option value="BLM">Bandar Laguna Merbok</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label class="form-label">Order Items</label>
-                            <div id="orderItems">
-                                <div class="row mb-2">
-                                    <div class="col-md-6">
-                                        <input type="text" class="form-control order-item-name" placeholder="Item Name" required>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <input type="number" class="form-control order-item-price" placeholder="Price (RM)" step="0.01" min="0" required>
-                                    </div>
-                                    <div class="col-md-2">
-                                        <button type="button" class="btn btn-danger btn-sm" onclick="removeOrderItem(this)">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                            <button type="button" class="btn btn-primary btn-sm mt-2" onclick="addOrderItem()">
-                                <i class="bi bi-plus-circle"></i> Add Item
-                            </button>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label class="form-label">Total Amount (RM)</label>
-                            <input type="number" class="form-control" id="orderTotal" step="0.01" min="0" readonly>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label class="form-label">Notes</label>
-                            <textarea class="form-control" id="orderNotes" rows="3"></textarea>
-                        </div>
-                        
-                        <div class="d-flex gap-2">
-                            <button type="button" class="btn btn-success" onclick="saveOnlineOrder()">
-                                <i class="bi bi-save"></i> Save Order
-                            </button>
-                        </div>
-                    </form>
+                <div id="onlineOrderSummaryContainer">
+                    <div class="cashbill-summary">
+                        <h3>Online Order Summary</h3>
+                        <div class="total-count" id="onlineOrderTotalCount">0</div>
+                        <p>Total Online Orders Created</p>
+                    </div>
                 </div>
                 
                 <div class="table-container">
@@ -1484,6 +1710,7 @@
                                     <select class="form-select" id="crewRole" required>
                                         <option value="">Select Role</option>
                                         <option value="Admin">Admin</option>
+                                        <option value="Supervisor">Supervisor</option>
                                         <option value="Crew">Crew</option>
                                     </select>
                                 </div>
@@ -1543,7 +1770,7 @@
                                 <td>0002</td>
                                 <td>Aida</td>
                                 <td>Director/Business Manager</td>
-                                <td>Crew</td>
+                                <td>Supervisor</td>
                                 <td>HQ</td>
                                 <td>
                                     <button class="btn btn-sm btn-primary" onclick="editCrew('0002')">
@@ -1694,164 +1921,88 @@
             <div class="page" id="timeTracking">
                 <h2 class="mb-4">Time Tracking</h2>
                 
-                <div class="row">
-                    <div class="col-md-8">
-                        <div class="time-tracking-card">
-                            <div class="time-status">
-                                <div class="status-indicator">
-                                    <div class="status-dot" id="statusDot"></div>
-                                    <span id="statusText">Not Punched In</span>
-                                </div>
-                                <div id="currentTime"></div>
-                            </div>
-                            
-                            <div class="time-buttons">
-                                <button class="btn btn-success" id="punchInBtn" onclick="punchIn()">
-                                    <i class="bi bi-box-arrow-in-right"></i> Punch In
-                                </button>
-                                <button class="btn btn-warning" id="breakBtn" onclick="takeBreak()" disabled>
-                                    <i class="bi bi-cup-hot"></i> Take Break
-                                </button>
-                                <button class="btn btn-info" id="breakEndBtn" onclick="endBreak()" disabled>
-                                    <i class="bi bi-cup-straw"></i> End Break
-                                </button>
-                                <button class="btn btn-danger" id="punchOutBtn" onclick="punchOut()" disabled>
-                                    <i class="bi bi-box-arrow-right"></i> Punch Out
-                                </button>
-                            </div>
-                            
-                            <div class="schedule-today">
-                                <h5>Today's Schedule</h5>
-                                <div id="todaySchedule">
-                                    <p>You are not scheduled for today</p>
-                                </div>
-                            </div>
-                        </div>
+                <div class="time-tracking-container">
+                    <div class="time-status" id="timeStatus">
+                        You are not punched in
                     </div>
-                    
-                    <div class="col-md-4">
-                        <div class="time-tracking-card">
-                            <h5>Time Summary</h5>
-                            <div class="mb-3">
-                                <div class="d-flex justify-content-between">
-                                    <span>Today's Hours:</span>
-                                    <span id="todayHours">0.00</span>
-                                </div>
-                            </div>
-                            <div class="mb-3">
-                                <div class="d-flex justify-content-between">
-                                    <span>This Week:</span>
-                                    <span id="weekHours">0.00</span>
-                                </div>
-                            </div>
-                            <div class="mb-3">
-                                <div class="d-flex justify-content-between">
-                                    <span>This Month:</span>
-                                    <span id="monthHours">0.00</span>
-                                </div>
-                            </div>
-                        </div>
+                    <div class="time-actions">
+                        <button class="btn btn-success" id="punchInBtn" onclick="punchIn()">
+                            <i class="bi bi-play-circle"></i> Punch In
+                        </button>
+                        <button class="btn btn-warning" id="breakBtn" onclick="takeBreak()" disabled>
+                            <i class="bi bi-pause-circle"></i> Break
+                        </button>
+                        <button class="btn btn-danger" id="punchOutBtn" onclick="punchOut()" disabled>
+                            <i class="bi bi-stop-circle"></i> Punch Out
+                        </button>
                     </div>
                 </div>
                 
-                <div class="time-tracking-card mt-4">
-                    <h5>Time Records</h5>
-                    <div class="table-container">
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th>Date</th>
-                                    <th>Punch In</th>
-                                    <th>Punch Out</th>
-                                    <th>Break Time</th>
-                                    <th>Total Hours</th>
-                                </tr>
-                            </thead>
-                            <tbody id="timeRecords">
-                                <tr>
-                                    <td colspan="5" class="text-center">No time records found</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
+                <div class="time-record">
+                    <h4>Today's Time Record</h4>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Action</th>
+                                <th>Time</th>
+                                <th>Duration</th>
+                            </tr>
+                        </thead>
+                        <tbody id="timeRecordTable">
+                            <tr>
+                                <td colspan="3" class="text-center">No time records for today</td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
+
+        <!-- Create Cashbill Button -->
+        <button class="create-cashbill-btn" id="createCashbillBtn" onclick="toggleCashbillForm()" style="display: none;">
+            <i class="bi bi-plus-lg"></i> Create Cashbill
+        </button>
     </div>
 
     <!-- Toast Container -->
     <div class="toast-container" id="toastContainer"></div>
 
-    <!-- Modal for Schedule -->
-    <div class="modal" id="scheduleModal">
+    <!-- Modal for Schedule Edit -->
+    <div class="modal" id="scheduleEditModal">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Add Schedule</h5>
-                <button class="modal-close" onclick="closeModal('scheduleModal')">
+                <h5 class="modal-title">Edit Schedule</h5>
+                <button class="modal-close" onclick="closeModal('scheduleEditModal')">
                     <i class="bi bi-x"></i>
                 </button>
             </div>
             <div class="modal-body">
-                <form id="scheduleForm">
+                <form id="scheduleEditForm">
+                    <div class="form-group">
+                        <label class="form-label">Crew Member</label>
+                        <input type="text" class="form-control" id="editCrewName" readonly>
+                    </div>
                     <div class="form-group">
                         <label class="form-label">Day</label>
-                        <select class="form-select" id="scheduleDay" required>
-                            <option value="0">Sunday</option>
-                            <option value="1">Monday</option>
-                            <option value="2">Tuesday</option>
-                            <option value="3">Wednesday</option>
-                            <option value="4">Thursday</option>
-                            <option value="5">Friday</option>
-                            <option value="6">Saturday</option>
+                        <input type="text" class="form-control" id="editDay" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Status</label>
+                        <select class="form-select" id="editStatus">
+                            <option value="working">Working</option>
+                            <option value="off-day">Off Day</option>
+                            <option value="annual-leave">Annual Leave</option>
                         </select>
                     </div>
-                    <div class="form-group">
-                        <label class="form-label">Start Time</label>
-                        <input type="time" class="form-control" id="scheduleStartTime" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">End Time</label>
-                        <input type="time" class="form-control" id="scheduleEndTime" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Crew</label>
-                        <select class="form-select" id="scheduleCrew" required>
-                            <!-- Options will be populated by JavaScript -->
-                        </select>
+                    <div class="form-group" id="editHoursGroup">
+                        <label class="form-label">Hours</label>
+                        <input type="text" class="form-control" id="editHours" placeholder="e.g., 9:00 AM - 5:00 PM">
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
-                <button class="btn btn-secondary" onclick="closeModal('scheduleModal')">Cancel</button>
-                <button class="btn btn-primary" onclick="saveSchedule()">Save</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal for Adjustment -->
-    <div class="modal" id="adjustmentModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Request Adjustment</h5>
-                <button class="modal-close" onclick="closeModal('adjustmentModal')">
-                    <i class="bi bi-x"></i>
-                </button>
-            </div>
-            <div class="modal-body">
-                <form id="adjustmentForm">
-                    <div class="form-group">
-                        <label class="form-label">Reason for Adjustment</label>
-                        <textarea class="form-control" id="adjustmentReason" rows="3" required></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Adjustment Amount (RM)</label>
-                        <input type="number" class="form-control" id="adjustmentAmount" step="0.01" required>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-secondary" onclick="closeModal('adjustmentModal')">Cancel</button>
-                <button class="btn btn-primary" onclick="submitAdjustment()">Submit Request</button>
+                <button class="btn btn-secondary" onclick="closeModal('scheduleEditModal')">Cancel</button>
+                <button class="btn btn-primary" onclick="saveScheduleEdit()">Save Changes</button>
             </div>
         </div>
     </div>
@@ -1877,17 +2028,22 @@
 
     <script>
         // Global variables
-        let currentUser = null;
-        let isLoggedIn = false;
+        let currentUser = {
+            id: '0001',
+            name: 'Danial Danish',
+            role: 'Admin',
+            outlet: 'HQ'
+        };
+
         let cashbills = [];
         let logEntries = [];
         let quotations = [];
         let onlineOrders = [];
         let crews = [
-            { id: '0001', name: 'Danial Danish', position: 'Head IT', role: 'Admin', outlet: 'HQ', password: 'admin123' },
-            { id: '0002', name: 'Aida', position: 'Director/Business Manager', role: 'Crew', outlet: 'HQ', password: 'crew123' },
-            { id: '0003', name: 'Putri Erinna', position: 'Business Development Manager', role: 'Crew', outlet: 'HQ', password: 'crew123' },
-            { id: '0004', name: 'Putri Farah', position: 'Business Marketing Manager', role: 'Crew', outlet: 'HQ', password: 'crew123' }
+            { id: '0001', name: 'Danial Danish', position: 'Head IT', role: 'Admin', outlet: 'HQ' },
+            { id: '0002', name: 'Aida', position: 'Director/Business Manager', role: 'Supervisor', outlet: 'HQ' },
+            { id: '0003', name: 'Putri Erinna', position: 'Business Development Manager', role: 'Crew', outlet: 'HQ' },
+            { id: '0004', name: 'Putri Farah', position: 'Business Marketing Manager', role: 'Crew', outlet: 'HQ' }
         ];
         let stockItems = [
             { sku: 'SKU001', name: 'Laptop', category: 'Electronics', price: 2500, quantity: 10, outlet: 'HQ' },
@@ -1895,11 +2051,6 @@
             { sku: 'SKU003', name: 'Keyboard', category: 'Electronics', price: 100, quantity: 15, outlet: 'HQ' },
             { sku: 'SKU004', name: 'T-Shirt', category: 'Clothing', price: 30, quantity: 50, outlet: 'HQ' }
         ];
-        let schedules = [];
-        let timeRecords = [];
-        let currentPunch = null;
-        let currentWeekStart = new Date();
-        currentWeekStart.setDate(currentWeekStart.getDate() - currentWeekStart.getDay()); // Set to Sunday of current week
 
         let currentCashbillItems = [];
         let currentQuotationServices = [];
@@ -1907,15 +2058,79 @@
         let invoiceCounter = 1;
         let orderCounter = 1;
         let quotationCounter = 1;
+        
+        // Schedule data
+        let scheduleData = [
+            {
+                crewId: '0001',
+                crewName: 'Danial Danish',
+                sunday: { status: 'off-day', hours: '' },
+                monday: { status: 'working', hours: '9:00 AM - 5:00 PM' },
+                tuesday: { status: 'working', hours: '9:00 AM - 5:00 PM' },
+                wednesday: { status: 'working', hours: '9:00 AM - 5:00 PM' },
+                thursday: { status: 'working', hours: '9:00 AM - 5:00 PM' },
+                friday: { status: 'working', hours: '9:00 AM - 5:00 PM' },
+                saturday: { status: 'off-day', hours: '' }
+            },
+            {
+                crewId: '0002',
+                crewName: 'Aida',
+                sunday: { status: 'off-day', hours: '' },
+                monday: { status: 'working', hours: '9:00 AM - 5:00 PM' },
+                tuesday: { status: 'working', hours: '9:00 AM - 5:00 PM' },
+                wednesday: { status: 'working', hours: '9:00 AM - 5:00 PM' },
+                thursday: { status: 'working', hours: '9:00 AM - 5:00 PM' },
+                friday: { status: 'working', hours: '9:00 AM - 5:00 PM' },
+                saturday: { status: 'off-day', hours: '' }
+            },
+            {
+                crewId: '0003',
+                crewName: 'Putri Erinna',
+                sunday: { status: 'off-day', hours: '' },
+                monday: { status: 'working', hours: '9:00 AM - 5:00 PM' },
+                tuesday: { status: 'working', hours: '9:00 AM - 5:00 PM' },
+                wednesday: { status: 'working', hours: '9:00 AM - 5:00 PM' },
+                thursday: { status: 'working', hours: '9:00 AM - 5:00 PM' },
+                friday: { status: 'working', hours: '9:00 AM - 5:00 PM' },
+                saturday: { status: 'off-day', hours: '' }
+            },
+            {
+                crewId: '0004',
+                crewName: 'Putri Farah',
+                sunday: { status: 'off-day', hours: '' },
+                monday: { status: 'working', hours: '9:00 AM - 5:00 PM' },
+                tuesday: { status: 'working', hours: '9:00 AM - 5:00 PM' },
+                wednesday: { status: 'working', hours: '9:00 AM - 5:00 PM' },
+                thursday: { status: 'working', hours: '9:00 AM - 5:00 PM' },
+                friday: { status: 'working', hours: '9:00 AM - 5:00 PM' },
+                saturday: { status: 'off-day', hours: '' }
+            }
+        ];
+        
+        // Time tracking data
+        let timeRecords = [];
+        let currentTimeStatus = 'out'; // 'in', 'break', 'out'
+        let currentScheduleEdit = {
+            crewId: '',
+            crewName: '',
+            day: '',
+            status: '',
+            hours: ''
+        };
+        let isEditMode = false;
 
         // Initialize the application
         document.addEventListener('DOMContentLoaded', function() {
+            // Check if user is logged in
+            checkLoginStatus();
+            
             // Set current date to all date fields
             const today = new Date().toISOString().split('T')[0];
             document.getElementById('cashbillDate').value = today;
             document.getElementById('logDate').value = today;
             document.getElementById('quotationDate').value = today;
             document.getElementById('orderDate').value = today;
+            document.getElementById('scheduleDate').value = today;
 
             // Generate initial numbers
             document.getElementById('invoiceNumber').value = `INV-${String(invoiceCounter).padStart(4, '0')}`;
@@ -1925,8 +2140,14 @@
             // Populate stock items dropdown
             populateStockItemsDropdown();
 
+            // Check user role and show/hide admin features
+            checkUserRole();
+
             // Load data from localStorage if available
             loadDataFromStorage();
+
+            // Update dashboard
+            updateDashboard();
 
             // Set up sidebar toggle
             document.getElementById('sidebarToggle').addEventListener('click', toggleSidebar);
@@ -1953,88 +2174,87 @@
                 input.addEventListener('input', calculateOrderTotal);
             });
 
-            // Set up schedule navigation
-            document.getElementById('prevWeekBtn').addEventListener('click', function() {
-                currentWeekStart.setDate(currentWeekStart.getDate() - 7);
-                updateScheduleTable();
-                updateCurrentWeekDisplay();
-            });
-
-            document.getElementById('nextWeekBtn').addEventListener('click', function() {
-                currentWeekStart.setDate(currentWeekStart.getDate() + 7);
-                updateScheduleTable();
-                updateCurrentWeekDisplay();
-            });
-
-            // Update current week display
-            updateCurrentWeekDisplay();
-
-            // Initialize schedule table
-            updateScheduleTable();
-
-            // Update current time
-            updateCurrentTime();
-            setInterval(updateCurrentTime, 1000);
-
-            // Set up login form submission
+            // Set up login form
             document.getElementById('loginForm').addEventListener('submit', function(e) {
                 e.preventDefault();
                 login();
             });
+
+            // Set up schedule edit form
+            document.getElementById('editStatus').addEventListener('change', function() {
+                const hoursGroup = document.getElementById('editHoursGroup');
+                if (this.value === 'working') {
+                    hoursGroup.style.display = 'block';
+                } else {
+                    hoursGroup.style.display = 'none';
+                }
+            });
+
+            // Load schedule
+            loadSchedule();
+            
+            // Load time records for today
+            loadTimeRecords();
         });
+
+        // Check login status
+        function checkLoginStatus() {
+            const loggedInUser = localStorage.getItem('loggedInUser');
+            
+            if (loggedInUser) {
+                currentUser = JSON.parse(loggedInUser);
+                document.getElementById('loginContainer').style.display = 'none';
+                document.getElementById('appContainer').style.display = 'block';
+                checkUserRole();
+            } else {
+                document.getElementById('loginContainer').style.display = 'flex';
+                document.getElementById('appContainer').style.display = 'none';
+            }
+        }
 
         // Login function
         function login() {
-            const userId = document.getElementById('loginUserId').value;
-            const password = document.getElementById('loginPassword').value;
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
             
-            // Find user in crew list
-            const user = crews.find(c => c.id === userId && c.password === password);
+            // Check if username matches any crew ID
+            const crew = crews.find(c => c.id === username);
             
-            if (user) {
+            if (crew && password === '0000') {
                 currentUser = {
-                    id: user.id,
-                    name: user.name,
-                    role: user.role,
-                    outlet: user.outlet
+                    id: crew.id,
+                    name: crew.name,
+                    role: crew.role,
+                    outlet: crew.outlet
                 };
                 
-                isLoggedIn = true;
+                // Save to localStorage
+                localStorage.setItem('loggedInUser', JSON.stringify(currentUser));
                 
-                // Hide login page and show main app
-                document.getElementById('loginPage').style.display = 'none';
-                document.getElementById('mainApp').style.display = 'block';
+                // Show app and hide login
+                document.getElementById('loginContainer').style.display = 'none';
+                document.getElementById('appContainer').style.display = 'block';
                 
-                // Check user role and show/hide admin features
+                // Update UI
                 checkUserRole();
-                
-                // Update dashboard
                 updateDashboard();
                 
-                // Update time tracking if on that page
-                if (document.getElementById('timeTracking').classList.contains('active')) {
-                    updateTimeTracking();
-                }
-                
-                showToast(`Welcome, ${currentUser.name}!`, 'success');
+                showToast('Login successful', 'success');
             } else {
-                showToast('Invalid user ID or password', 'error');
+                showToast('Invalid Staff ID or password', 'error');
             }
         }
 
         // Logout function
         function logout() {
             showConfirmation('Are you sure you want to logout?', function() {
-                isLoggedIn = false;
-                currentUser = null;
-                
-                // Show login page and hide main app
-                document.getElementById('loginPage').style.display = 'flex';
-                document.getElementById('mainApp').style.display = 'none';
+                localStorage.removeItem('loggedInUser');
+                document.getElementById('loginContainer').style.display = 'flex';
+                document.getElementById('appContainer').style.display = 'none';
                 
                 // Reset login form
-                document.getElementById('loginUserId').value = '';
-                document.getElementById('loginPassword').value = '';
+                document.getElementById('username').value = '';
+                document.getElementById('password').value = '';
                 
                 showToast('Logged out successfully', 'success');
             });
@@ -2044,9 +2264,16 @@
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
             const mainContent = document.getElementById('mainContent');
+            const toggleBtn = document.getElementById('sidebarToggle');
             
             sidebar.classList.toggle('collapsed');
             mainContent.classList.toggle('expanded');
+            
+            if (sidebar.classList.contains('collapsed')) {
+                toggleBtn.innerHTML = '<i class="bi bi-chevron-left"></i>';
+            } else {
+                toggleBtn.innerHTML = '<i class="bi bi-chevron-right"></i>';
+            }
         }
 
         // Page navigation
@@ -2065,6 +2292,14 @@
             });
             event.target.closest('a').classList.add('active');
             
+            // Show/hide create cashbill button based on page
+            const createCashbillBtn = document.getElementById('createCashbillBtn');
+            if (pageId === 'cashbill' || pageId === 'logbook' || pageId === 'quotation' || pageId === 'onlineOrder') {
+                createCashbillBtn.style.display = 'flex';
+            } else {
+                createCashbillBtn.style.display = 'none';
+            }
+            
             // Update page-specific content
             if (pageId === 'dashboard') {
                 updateDashboard();
@@ -2081,7 +2316,9 @@
             } else if (pageId === 'stockManagement') {
                 updateStockList();
             } else if (pageId === 'timeTracking') {
-                updateTimeTracking();
+                loadTimeRecords();
+            } else if (pageId === 'schedule') {
+                loadSchedule();
             }
         }
 
@@ -2091,21 +2328,54 @@
             const crewManagementLink = document.getElementById('crewManagementLink');
             const adminOrderSection = document.getElementById('adminOrderSection');
             const stockFormContainer = document.getElementById('stockFormContainer');
-            const addScheduleBtn = document.getElementById('addScheduleBtn');
+            const editScheduleBtn = document.getElementById('editScheduleBtn');
             
-            if (currentUser) {
-                userRoleElement.textContent = currentUser.role;
-                
-                if (currentUser.role === 'Admin') {
-                    crewManagementLink.style.display = 'block';
-                    if (adminOrderSection) adminOrderSection.style.display = 'block';
-                    if (stockFormContainer) stockFormContainer.style.display = 'block';
-                    if (addScheduleBtn) addScheduleBtn.style.display = 'block';
+            userRoleElement.textContent = currentUser.role;
+            
+            if (currentUser.role === 'Admin' || currentUser.role === 'Supervisor') {
+                crewManagementLink.style.display = 'block';
+                adminOrderSection.style.display = 'block';
+                stockFormContainer.style.display = 'block';
+                editScheduleBtn.style.display = 'inline-block';
+            } else {
+                crewManagementLink.style.display = 'none';
+                adminOrderSection.style.display = 'none';
+                stockFormContainer.style.display = 'none';
+                editScheduleBtn.style.display = 'none';
+            }
+        }
+
+        // Toggle cashbill form
+        function toggleCashbillForm() {
+            const currentPage = document.querySelector('.page.active').id;
+            let formContainer, summaryContainer;
+            
+            switch(currentPage) {
+                case 'cashbill':
+                    formContainer = document.getElementById('cashbillFormContainer');
+                    summaryContainer = document.getElementById('cashbillSummaryContainer');
+                    break;
+                case 'logbook':
+                    formContainer = document.getElementById('logbookFormContainer');
+                    summaryContainer = document.getElementById('logbookSummaryContainer');
+                    break;
+                case 'quotation':
+                    formContainer = document.getElementById('quotationFormContainer');
+                    summaryContainer = document.getElementById('quotationSummaryContainer');
+                    break;
+                case 'onlineOrder':
+                    formContainer = document.getElementById('adminOrderSection');
+                    summaryContainer = document.getElementById('onlineOrderSummaryContainer');
+                    break;
+            }
+            
+            if (formContainer && summaryContainer) {
+                if (formContainer.style.display === 'none') {
+                    formContainer.style.display = 'block';
+                    summaryContainer.style.display = 'none';
                 } else {
-                    crewManagementLink.style.display = 'none';
-                    if (adminOrderSection) adminOrderSection.style.display = 'none';
-                    if (stockFormContainer) stockFormContainer.style.display = 'none';
-                    if (addScheduleBtn) addScheduleBtn.style.display = 'none';
+                    formContainer.style.display = 'none';
+                    summaryContainer.style.display = 'block';
                 }
             }
         }
@@ -2113,56 +2383,14 @@
         // Populate stock items dropdown
         function populateStockItemsDropdown() {
             const dropdown = document.getElementById('cashbillItem');
-            if (dropdown) {
-                dropdown.innerHTML = '<option value="">Select Item</option>';
-                
-                stockItems.forEach(item => {
-                    const option = document.createElement('option');
-                    option.value = item.name;
-                    option.textContent = `${item.name} (RM ${item.price})`;
-                    dropdown.appendChild(option);
-                });
-            }
-        }
-
-        // Toggle cashbill form
-        function toggleCashbillForm() {
-            const formContainer = document.getElementById('cashbillFormContainer');
-            if (formContainer.style.display === 'none') {
-                formContainer.style.display = 'block';
-            } else {
-                formContainer.style.display = 'none';
-            }
-        }
-
-        // Toggle logbook form
-        function toggleLogbookForm() {
-            const formContainer = document.getElementById('logbookFormContainer');
-            if (formContainer.style.display === 'none') {
-                formContainer.style.display = 'block';
-            } else {
-                formContainer.style.display = 'none';
-            }
-        }
-
-        // Toggle quotation form
-        function toggleQuotationForm() {
-            const formContainer = document.getElementById('quotationFormContainer');
-            if (formContainer.style.display === 'none') {
-                formContainer.style.display = 'block';
-            } else {
-                formContainer.style.display = 'none';
-            }
-        }
-
-        // Toggle order form
-        function toggleOrderForm() {
-            const formContainer = document.getElementById('orderFormContainer');
-            if (formContainer.style.display === 'none') {
-                formContainer.style.display = 'block';
-            } else {
-                formContainer.style.display = 'none';
-            }
+            dropdown.innerHTML = '<option value="">Select Item</option>';
+            
+            stockItems.forEach(item => {
+                const option = document.createElement('option');
+                option.value = item.name;
+                option.textContent = `${item.name} (RM ${item.price})`;
+                dropdown.appendChild(option);
+            });
         }
 
         // Calculate cashbill total
@@ -2201,7 +2429,6 @@
         // Update cashbill items table
         function updateCashbillItemsTable() {
             const tableBody = document.getElementById('cashbillItems');
-            if (!tableBody) return;
             
             if (currentCashbillItems.length === 0) {
                 tableBody.innerHTML = '<tr><td colspan="5" class="text-center">No items added</td></tr>';
@@ -2298,6 +2525,10 @@
             document.getElementById('invoiceNumber').value = `INV-${String(invoiceCounter).padStart(4, '0')}`;
             updateCashbillHistory();
             updateDashboard();
+            
+            // Switch to summary view
+            document.getElementById('cashbillFormContainer').style.display = 'none';
+            document.getElementById('cashbillSummaryContainer').style.display = 'block';
         }
 
         // Reset cashbill form
@@ -2317,7 +2548,9 @@
         // Update cashbill history
         function updateCashbillHistory() {
             const tableBody = document.getElementById('cashbillHistory');
-            if (!tableBody) return;
+            const totalCountElement = document.getElementById('cashbillTotalCount');
+            
+            totalCountElement.textContent = cashbills.length;
             
             if (cashbills.length === 0) {
                 tableBody.innerHTML = '<tr><td colspan="6" class="text-center">No cashbills found</td></tr>';
@@ -2338,7 +2571,7 @@
                     </button>
                 `;
                 
-                if (currentUser && currentUser.role === 'Admin') {
+                if (currentUser.role === 'Admin') {
                     actionButtons += `
                         <button class="btn btn-sm btn-warning" onclick="uncommitCashbill('${cashbill.id}')">
                             <i class="bi bi-arrow-counterclockwise"></i>
@@ -2390,27 +2623,8 @@
             const cashbill = cashbills.find(c => c.id === id);
             if (!cashbill) return;
             
-            // Show adjustment modal
-            document.getElementById('adjustmentModal').classList.add('active');
-            
-            // Set up confirmation button
-            document.getElementById('confirmButton').onclick = function() {
-                const reason = document.getElementById('adjustmentReason').value;
-                const amount = parseFloat(document.getElementById('adjustmentAmount').value) || 0;
-                
-                if (!reason || amount <= 0) {
-                    showToast('Please fill in all adjustment fields', 'error');
-                    return;
-                }
-                
-                // In a real application, this would send a request to the admin
-                showToast(`Adjustment request for cashbill ${id} has been submitted`, 'success');
-                closeModal('adjustmentModal');
-                
-                // Reset form
-                document.getElementById('adjustmentReason').value = '';
-                document.getElementById('adjustmentAmount').value = '';
-            };
+            // In a real application, this would send a request to the admin
+            showToast(`Adjustment request for cashbill ${id} has been submitted`, 'success');
         }
 
         // Print cashbill
@@ -2471,12 +2685,18 @@
             // Update displays
             updateLogbookEntries();
             updateDashboard();
+            
+            // Switch to summary view
+            document.getElementById('logbookFormContainer').style.display = 'none';
+            document.getElementById('logbookSummaryContainer').style.display = 'block';
         }
 
         // Update logbook entries
         function updateLogbookEntries() {
             const tableBody = document.getElementById('logbookEntries');
-            if (!tableBody) return;
+            const totalCountElement = document.getElementById('logbookTotalCount');
+            
+            totalCountElement.textContent = logEntries.length;
             
             if (logEntries.length === 0) {
                 tableBody.innerHTML = '<tr><td colspan="6" class="text-center">No log entries found</td></tr>';
@@ -2497,7 +2717,7 @@
                     </button>
                 `;
                 
-                if (currentUser && currentUser.role === 'Admin') {
+                if (currentUser.role === 'Admin') {
                     actionButtons += `
                         <button class="btn btn-sm btn-warning" onclick="uncommitLogEntry('${entry.id}')">
                             <i class="bi bi-arrow-counterclockwise"></i>
@@ -2564,27 +2784,8 @@
             const entry = logEntries.find(e => e.id === id);
             if (!entry) return;
             
-            // Show adjustment modal
-            document.getElementById('adjustmentModal').classList.add('active');
-            
-            // Set up confirmation button
-            document.getElementById('confirmButton').onclick = function() {
-                const reason = document.getElementById('adjustmentReason').value;
-                const amount = parseFloat(document.getElementById('adjustmentAmount').value) || 0;
-                
-                if (!reason || amount <= 0) {
-                    showToast('Please fill in all adjustment fields', 'error');
-                    return;
-                }
-                
-                // In a real application, this would send a request to the admin
-                showToast(`Adjustment request for log entry ${id} has been submitted`, 'success');
-                closeModal('adjustmentModal');
-                
-                // Reset form
-                document.getElementById('adjustmentReason').value = '';
-                document.getElementById('adjustmentAmount').value = '';
-            };
+            // In a real application, this would send a request to the admin
+            showToast(`Adjustment request for log entry ${id} has been submitted`, 'success');
         }
 
         // Add quotation service
@@ -2697,6 +2898,10 @@
             quotationCounter++;
             document.getElementById('quotationNumber').value = `QTN-${String(quotationCounter).padStart(4, '0')}`;
             updateQuotationHistory();
+            
+            // Switch to summary view
+            document.getElementById('quotationFormContainer').style.display = 'none';
+            document.getElementById('quotationSummaryContainer').style.display = 'block';
         }
 
         // Reset quotation form
@@ -2735,7 +2940,9 @@
         // Update quotation history
         function updateQuotationHistory() {
             const tableBody = document.getElementById('quotationHistory');
-            if (!tableBody) return;
+            const totalCountElement = document.getElementById('quotationTotalCount');
+            
+            totalCountElement.textContent = quotations.length;
             
             if (quotations.length === 0) {
                 tableBody.innerHTML = '<tr><td colspan="6" class="text-center">No quotations found</td></tr>';
@@ -2816,6 +3023,478 @@
             
             // In a real application, this would send an email
             showToast(`Quotation ${id} email sent to ${quotation.clientEmail}`, 'success');
+        }
+
+        // Load schedule
+        function loadSchedule() {
+            const scheduleDate = document.getElementById('scheduleDate').value;
+            if (!scheduleDate) {
+                const today = new Date();
+                document.getElementById('scheduleDate').value = today.toISOString().split('T')[0];
+                loadSchedule();
+                return;
+            }
+            
+            // Show loading animation
+            document.getElementById('scheduleLoadingContainer').style.display = 'block';
+            document.getElementById('scheduleTableContainer').style.display = 'none';
+            document.getElementById('noScheduleContainer').style.display = 'none';
+            
+            // Simulate loading delay
+            setTimeout(() => {
+                // Calculate the week dates
+                const selectedDate = new Date(scheduleDate);
+                const dayOfWeek = selectedDate.getDay(); // 0 = Sunday, 1 = Monday, etc.
+                
+                // Calculate the start of the week (Sunday)
+                const startDate = new Date(selectedDate);
+                startDate.setDate(selectedDate.getDate() - dayOfWeek);
+                
+                // Calculate the end of the week (Saturday)
+                const endDate = new Date(startDate);
+                endDate.setDate(startDate.getDate() + 6);
+                
+                // Update the date displays
+                const days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+                const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+                
+                for (let i = 0; i < 7; i++) {
+                    const date = new Date(startDate);
+                    date.setDate(startDate.getDate() + i);
+                    const dateStr = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                    document.getElementById(`${days[i]}Date`).textContent = dateStr;
+                }
+                
+                // Check if schedule exists for the selected week
+                const scheduleExists = scheduleData.length > 0;
+                
+                if (scheduleExists) {
+                    // Hide loading and no schedule messages
+                    document.getElementById('scheduleLoadingContainer').style.display = 'none';
+                    document.getElementById('noScheduleContainer').style.display = 'none';
+                    document.getElementById('scheduleTableContainer').style.display = 'block';
+                    
+                    const scheduleTableBody = document.getElementById('scheduleTableBody');
+                    scheduleTableBody.innerHTML = '';
+                    
+                    // Calculate day totals
+                    const dayTotals = {
+                        sunday: 0,
+                        monday: 0,
+                        tuesday: 0,
+                        wednesday: 0,
+                        thursday: 0,
+                        friday: 0,
+                        saturday: 0
+                    };
+                    
+                    scheduleData.forEach(crew => {
+                        const row = document.createElement('tr');
+                        
+                        let crewTotal = 0;
+                        
+                        // Create cells for each day
+                        let dayCells = '';
+                        
+                        days.forEach(day => {
+                            const dayData = crew[day];
+                            let cellClass = 'schedule-cell';
+                            let cellContent = '';
+                            let editButton = '';
+                            
+                            if (dayData.status === 'off-day') {
+                                cellClass += ' off-day';
+                                cellContent = 'Off Day';
+                            } else if (dayData.status === 'annual-leave') {
+                                cellClass += ' annual-leave';
+                                cellContent = 'Annual Leave';
+                            } else if (dayData.status === 'working') {
+                                cellClass += ' working';
+                                cellContent = dayData.hours;
+                                
+                                // Calculate hours (simplified)
+                                const hours = dayData.hours;
+                                if (hours.includes('AM') && hours.includes('PM')) {
+                                    const parts = hours.split(' - ');
+                                    if (parts.length === 2) {
+                                        const startPart = parts[0].trim();
+                                        const endPart = parts[1].trim();
+                                        
+                                        let startHour = parseInt(startPart.split(':')[0]);
+                                        const startAmPm = startPart.includes('AM') ? 'AM' : 'PM';
+                                        
+                                        let endHour = parseInt(endPart.split(':')[0]);
+                                        const endAmPm = endPart.includes('AM') ? 'AM' : 'PM';
+                                        
+                                        // Convert to 24-hour format for calculation
+                                        if (startAmPm === 'PM' && startHour !== 12) {
+                                            startHour += 12;
+                                        }
+                                        if (endAmPm === 'PM' && endHour !== 12) {
+                                            endHour += 12;
+                                        }
+                                        
+                                        const hoursWorked = endHour - startHour;
+                                        crewTotal += hoursWorked;
+                                        dayTotals[day] += hoursWorked;
+                                    }
+                                }
+                            }
+                            
+                            // Add edit button for admin or supervisor
+                            if ((currentUser.role === 'Admin' || currentUser.role === 'Supervisor') && isEditMode) {
+                                editButton = `<button class="edit-schedule-btn" onclick="editScheduleInline('${crew.crewId}', '${crew.crewName}', '${day}')">
+                                    <i class="bi bi-pencil"></i>
+                                </button>`;
+                            }
+                            
+                            dayCells += `<td class="${cellClass}" data-crew-id="${crew.crewId}" data-day="${day}">${cellContent} ${editButton}</td>`;
+                        });
+                        
+                        // Get crew role
+                        const crewInfo = crews.find(c => c.id === crew.crewId);
+                        const crewRole = crewInfo ? crewInfo.role : '';
+                        
+                        row.innerHTML = `
+                            <td class="crew-name">
+                                <div>${crew.crewName} (${crew.crewId})</div>
+                                <div style="font-size: 12px; color: #7f8c8d;">${crewRole}</div>
+                            </td>
+                            ${dayCells}
+                            <td class="total-hours">${crewTotal} hrs</td>
+                        `;
+                        
+                        scheduleTableBody.appendChild(row);
+                    });
+                    
+                    // Update day totals in footer
+                    document.getElementById('sundayTotal').textContent = dayTotals.sunday + ' hrs';
+                    document.getElementById('mondayTotal').textContent = dayTotals.monday + ' hrs';
+                    document.getElementById('tuesdayTotal').textContent = dayTotals.tuesday + ' hrs';
+                    document.getElementById('wednesdayTotal').textContent = dayTotals.wednesday + ' hrs';
+                    document.getElementById('thursdayTotal').textContent = dayTotals.thursday + ' hrs';
+                    document.getElementById('fridayTotal').textContent = dayTotals.friday + ' hrs';
+                    document.getElementById('saturdayTotal').textContent = dayTotals.saturday + ' hrs';
+                    
+                    const weeklyTotal = Object.values(dayTotals).reduce((sum, hours) => sum + hours, 0);
+                    document.getElementById('weeklyTotal').textContent = weeklyTotal + ' hrs';
+                    
+                    // If in edit mode, make cells editable
+                    if (isEditMode) {
+                        document.querySelectorAll('.schedule-cell').forEach(cell => {
+                            cell.classList.add('editable');
+                            cell.addEventListener('click', function() {
+                                if (!this.classList.contains('editing')) {
+                                    makeCellEditable(this);
+                                }
+                            });
+                        });
+                    }
+                } else {
+                    // Hide loading and table, show no schedule message
+                    document.getElementById('scheduleLoadingContainer').style.display = 'none';
+                    document.getElementById('scheduleTableContainer').style.display = 'none';
+                    document.getElementById('noScheduleContainer').style.display = 'block';
+                }
+            }, 500); // Simulate loading time
+        }
+
+        // Set today's date in schedule
+        function setTodaySchedule() {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('scheduleDate').value = today;
+            loadSchedule();
+        }
+
+        // Toggle edit mode
+        function toggleEditMode() {
+            if (currentUser.role !== 'Admin' && currentUser.role !== 'Supervisor') {
+                showToast('Only Admin or Supervisor can edit schedules', 'error');
+                return;
+            }
+            
+            isEditMode = !isEditMode;
+            
+            const editBtn = document.getElementById('editScheduleBtn');
+            const saveBtn = document.getElementById('saveScheduleChangesBtn');
+            
+            if (isEditMode) {
+                editBtn.style.display = 'none';
+                saveBtn.style.display = 'inline-block';
+                showToast('Edit mode enabled. Click on a cell to edit.', 'success');
+            } else {
+                editBtn.style.display = 'inline-block';
+                saveBtn.style.display = 'none';
+                showToast('Edit mode disabled.', 'warning');
+            }
+            
+            // Reload schedule to apply edit mode
+            loadSchedule();
+        }
+
+        // Make cell editable
+        function makeCellEditable(cell) {
+            if (!isEditMode) return;
+            
+            const crewId = cell.getAttribute('data-crew-id');
+            const day = cell.getAttribute('data-day');
+            
+            // Find the schedule data
+            const crewIndex = scheduleData.findIndex(c => c.crewId === crewId);
+            if (crewIndex === -1) return;
+            
+            const dayData = scheduleData[crewIndex][day];
+            
+            // Create edit form
+            const statusSelect = document.createElement('select');
+            statusSelect.className = 'status-select';
+            statusSelect.innerHTML = `
+                <option value="working" ${dayData.status === 'working' ? 'selected' : ''}>Working</option>
+                <option value="off-day" ${dayData.status === 'off-day' ? 'selected' : ''}>Off Day</option>
+                <option value="annual-leave" ${dayData.status === 'annual-leave' ? 'selected' : ''}>Annual Leave</option>
+            `;
+            
+            const hoursInput = document.createElement('input');
+            hoursInput.type = 'text';
+            hoursInput.className = 'edit-input';
+            hoursInput.placeholder = 'e.g., 9:00 AM - 5:00 PM';
+            hoursInput.value = dayData.hours;
+            
+            // Clear cell content
+            cell.innerHTML = '';
+            cell.classList.add('editing');
+            
+            // Add elements to cell
+            cell.appendChild(statusSelect);
+            
+            if (statusSelect.value === 'working') {
+                cell.appendChild(hoursInput);
+            }
+            
+            // Handle status change
+            statusSelect.addEventListener('change', function() {
+                if (this.value === 'working') {
+                    if (!cell.contains(hoursInput)) {
+                        cell.appendChild(hoursInput);
+                    }
+                } else {
+                    if (cell.contains(hoursInput)) {
+                        cell.removeChild(hoursInput);
+                    }
+                }
+            });
+            
+            // Save on blur
+            const saveCellEdit = function() {
+                const newStatus = statusSelect.value;
+                const newHours = hoursInput.value || '';
+                
+                // Update schedule data
+                scheduleData[crewIndex][day] = {
+                    status: newStatus,
+                    hours: newHours
+                };
+                
+                // Reload schedule to show changes
+                loadSchedule();
+            };
+            
+            hoursInput.addEventListener('blur', saveCellEdit);
+            statusSelect.addEventListener('blur', saveCellEdit);
+            
+            // Focus on the status select
+            statusSelect.focus();
+        }
+
+        // Create new schedule
+        function createNewSchedule() {
+            if (currentUser.role !== 'Admin') {
+                showToast('Only admin can create new schedules', 'error');
+                return;
+            }
+            
+            // Show the schedule form
+            document.getElementById('scheduleFormContainer').style.display = 'block';
+            
+            // Set the default week to next week
+            const nextWeek = new Date();
+            nextWeek.setDate(nextWeek.getDate() + 7);
+            document.getElementById('newScheduleWeek').value = nextWeek.toISOString().split('T')[0];
+            
+            // Generate crew checkboxes
+            const crewSelector = document.getElementById('crewSelector');
+            crewSelector.innerHTML = '';
+            
+            crews.forEach(crew => {
+                const checkbox = document.createElement('div');
+                checkbox.className = 'crew-checkbox';
+                checkbox.innerHTML = `
+                    <input type="checkbox" id="crew-${crew.id}" value="${crew.id}">
+                    <label for="crew-${crew.id}">${crew.name} (${crew.id})</label>
+                `;
+                crewSelector.appendChild(checkbox);
+            });
+        }
+
+        // Add crew to schedule
+        function addCrewToSchedule() {
+            const weekStart = document.getElementById('newScheduleWeek').value;
+            if (!weekStart) {
+                showToast('Please select a week', 'error');
+                return;
+            }
+            
+            // Get selected crew
+            const selectedCrew = [];
+            document.querySelectorAll('#crewSelector input:checked').forEach(checkbox => {
+                const crewId = checkbox.value;
+                const crew = crews.find(c => c.id === crewId);
+                if (crew) {
+                    selectedCrew.push(crew);
+                }
+            });
+            
+            if (selectedCrew.length === 0) {
+                showToast('Please select at least one crew member', 'error');
+                return;
+            }
+            
+            // Add crew to schedule data
+            selectedCrew.forEach(crew => {
+                // Check if crew already exists in schedule data
+                const existingCrew = scheduleData.find(s => s.crewId === crew.id);
+                if (!existingCrew) {
+                    scheduleData.push({
+                        crewId: crew.id,
+                        crewName: crew.name,
+                        sunday: { status: 'off-day', hours: '' },
+                        monday: { status: 'working', hours: '9:00 AM - 5:00 PM' },
+                        tuesday: { status: 'working', hours: '9:00 AM - 5:00 PM' },
+                        wednesday: { status: 'working', hours: '9:00 AM - 5:00 PM' },
+                        thursday: { status: 'working', hours: '9:00 AM - 5:00 PM' },
+                        friday: { status: 'working', hours: '9:00 AM - 5:00 PM' },
+                        saturday: { status: 'off-day', hours: '' }
+                    });
+                }
+            });
+            
+            // Hide the form and reload schedule
+            document.getElementById('scheduleFormContainer').style.display = 'none';
+            loadSchedule();
+            
+            showToast('Crew added to schedule successfully', 'success');
+        }
+
+        // Cancel new schedule
+        function cancelNewSchedule() {
+            document.getElementById('scheduleFormContainer').style.display = 'none';
+        }
+
+        // Save schedule
+        function saveSchedule() {
+            if (currentUser.role !== 'Admin') {
+                showToast('Only admin can save schedules', 'error');
+                return;
+            }
+            
+            saveDataToStorage();
+            showToast('Schedule saved successfully', 'success');
+        }
+
+        // Save schedule changes
+        function saveScheduleChanges() {
+            if (currentUser.role !== 'Admin' && currentUser.role !== 'Supervisor') {
+                showToast('Only Admin or Supervisor can save schedule changes', 'error');
+                return;
+            }
+            
+            saveDataToStorage();
+            toggleEditMode();
+            showToast('Schedule changes saved successfully', 'success');
+        }
+
+        // Edit schedule
+        function editSchedule(crewId, crewName, day, status, hours) {
+            currentScheduleEdit = {
+                crewId: crewId,
+                crewName: crewName,
+                day: day,
+                status: status,
+                hours: hours
+            };
+            
+            document.getElementById('editCrewName').value = crewName;
+            document.getElementById('editDay').value = day.charAt(0).toUpperCase() + day.slice(1);
+            document.getElementById('editStatus').value = status;
+            document.getElementById('editHours').value = hours;
+            
+            // Show/hide hours field based on status
+            const hoursGroup = document.getElementById('editHoursGroup');
+            if (status === 'working') {
+                hoursGroup.style.display = 'block';
+            } else {
+                hoursGroup.style.display = 'none';
+            }
+            
+            // Show modal
+            document.getElementById('scheduleEditModal').classList.add('active');
+        }
+
+        // Edit schedule inline
+        function editScheduleInline(crewId, crewName, day) {
+            if (!isEditMode) return;
+            
+            const crewIndex = scheduleData.findIndex(c => c.crewId === crewId);
+            if (crewIndex === -1) return;
+            
+            const dayData = scheduleData[crewIndex][day];
+            
+            currentScheduleEdit = {
+                crewId: crewId,
+                crewName: crewName,
+                day: day,
+                status: dayData.status,
+                hours: dayData.hours
+            };
+            
+            document.getElementById('editCrewName').value = crewName;
+            document.getElementById('editDay').value = day.charAt(0).toUpperCase() + day.slice(1);
+            document.getElementById('editStatus').value = dayData.status;
+            document.getElementById('editHours').value = dayData.hours;
+            
+            // Show/hide hours field based on status
+            const hoursGroup = document.getElementById('editHoursGroup');
+            if (dayData.status === 'working') {
+                hoursGroup.style.display = 'block';
+            } else {
+                hoursGroup.style.display = 'none';
+            }
+            
+            // Show modal
+            document.getElementById('scheduleEditModal').classList.add('active');
+        }
+
+        // Save schedule edit
+        function saveScheduleEdit() {
+            const crewId = currentScheduleEdit.crewId;
+            const day = currentScheduleEdit.day;
+            const status = document.getElementById('editStatus').value;
+            const hours = document.getElementById('editHours').value;
+            
+            // Find and update the schedule data
+            const crewIndex = scheduleData.findIndex(c => c.crewId === crewId);
+            if (crewIndex !== -1) {
+                scheduleData[crewIndex][day] = {
+                    status: status,
+                    hours: status === 'working' ? hours : ''
+                };
+                
+                saveDataToStorage();
+                loadSchedule();
+                closeModal('scheduleEditModal');
+                
+                showToast('Schedule updated successfully', 'success');
+            }
         }
 
         // Add order item
@@ -2927,6 +3606,10 @@
             document.getElementById('orderId').value = `ORD-${String(orderCounter).padStart(4, '0')}`;
             updateOnlineOrders();
             updateDashboard();
+            
+            // Switch to summary view
+            document.getElementById('adminOrderSection').style.display = 'none';
+            document.getElementById('onlineOrderSummaryContainer').style.display = 'block';
         }
 
         // Reset order form
@@ -2964,7 +3647,9 @@
         // Update online orders
         function updateOnlineOrders() {
             const tableBody = document.getElementById('onlineOrders');
-            if (!tableBody) return;
+            const totalCountElement = document.getElementById('onlineOrderTotalCount');
+            
+            totalCountElement.textContent = onlineOrders.length;
             
             if (onlineOrders.length === 0) {
                 tableBody.innerHTML = '<tr><td colspan="7" class="text-center">No orders found</td></tr>';
@@ -2985,7 +3670,7 @@
                     </button>
                 `;
                 
-                if (currentUser && currentUser.role === 'Admin') {
+                if (currentUser.role === 'Admin') {
                     actionButtons += `
                         <button class="btn btn-sm btn-danger" onclick="deleteOrder('${order.id}')">
                             <i class="bi bi-trash"></i>
@@ -3057,6 +3742,10 @@
             // Switch to cashbill page
             showPage('cashbill');
             
+            // Show cashbill form
+            document.getElementById('cashbillFormContainer').style.display = 'block';
+            document.getElementById('cashbillSummaryContainer').style.display = 'none';
+            
             // Pre-fill cashbill form with order details
             document.getElementById('customerName').value = order.customerName;
             document.getElementById('customerPhone').value = order.customerPhone;
@@ -3098,8 +3787,7 @@
                     name: name,
                     position: position,
                     role: role,
-                    outlet: outlet,
-                    password: crews[existingCrewIndex].password // Keep existing password
+                    outlet: outlet
                 };
                 
                 showToast(`Crew ${name} updated successfully`, 'success');
@@ -3110,8 +3798,20 @@
                     name: name,
                     position: position,
                     role: role,
-                    outlet: outlet,
-                    password: 'crew123' // Default password
+                    outlet: outlet
+                });
+                
+                // Add to schedule data
+                scheduleData.push({
+                    crewId: id,
+                    crewName: name,
+                    sunday: { status: 'off-day', hours: '' },
+                    monday: { status: 'working', hours: '9:00 AM - 5:00 PM' },
+                    tuesday: { status: 'working', hours: '9:00 AM - 5:00 PM' },
+                    wednesday: { status: 'working', hours: '9:00 AM - 5:00 PM' },
+                    thursday: { status: 'working', hours: '9:00 AM - 5:00 PM' },
+                    friday: { status: 'working', hours: '9:00 AM - 5:00 PM' },
+                    saturday: { status: 'off-day', hours: '' }
                 });
                 
                 showToast(`Crew ${name} added successfully`, 'success');
@@ -3120,7 +3820,7 @@
             saveDataToStorage();
             resetCrewForm();
             updateCrewList();
-            updateScheduleTable();
+            loadSchedule();
         }
 
         // Reset crew form
@@ -3135,7 +3835,6 @@
         // Update crew list
         function updateCrewList() {
             const tableBody = document.getElementById('crewList');
-            if (!tableBody) return;
             
             if (crews.length === 0) {
                 tableBody.innerHTML = '<tr><td colspan="6" class="text-center">No crew members found</td></tr>';
@@ -3185,9 +3884,10 @@
         function deleteCrew(id) {
             showConfirmation('Are you sure you want to delete this crew member?', function() {
                 crews = crews.filter(c => c.id !== id);
+                scheduleData = scheduleData.filter(s => s.crewId !== id);
                 saveDataToStorage();
                 updateCrewList();
-                updateScheduleTable();
+                loadSchedule();
                 
                 showToast('Crew member deleted successfully', 'success');
             });
@@ -3259,7 +3959,6 @@
         // Update stock list
         function updateStockList() {
             const tableBody = document.getElementById('stockList');
-            if (!tableBody) return;
             
             if (stockItems.length === 0) {
                 tableBody.innerHTML = '<tr><td colspan="7" class="text-center">No stock items found</td></tr>';
@@ -3275,7 +3974,7 @@
                 const row = document.createElement('tr');
                 
                 let actionButtons = '';
-                if (currentUser && currentUser.role === 'Admin') {
+                if (currentUser.role === 'Admin') {
                     actionButtons = `
                         <button class="btn btn-sm btn-primary" onclick="editStock('${item.sku}')">
                             <i class="bi bi-pencil"></i>
@@ -3325,6 +4024,181 @@
             });
         }
 
+        // Time tracking functions
+        function punchIn() {
+            // Check if user is scheduled today
+            const today = new Date().getDay(); // 0 = Sunday, 1 = Monday, etc.
+            const days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+            const todayDay = days[today];
+            
+            const crewSchedule = scheduleData.find(s => s.crewId === currentUser.id);
+            if (!crewSchedule || crewSchedule[todayDay].status !== 'working') {
+                showToast('You are not scheduled to work today', 'error');
+                return;
+            }
+            
+            // Record punch in time
+            const now = new Date();
+            const timeRecord = {
+                id: Date.now(),
+                crewId: currentUser.id,
+                action: 'punch-in',
+                time: now.toISOString(),
+                date: now.toISOString().split('T')[0]
+            };
+            
+            timeRecords.push(timeRecord);
+            saveDataToStorage();
+            
+            // Update UI
+            currentTimeStatus = 'in';
+            updateTimeStatus();
+            loadTimeRecords();
+            
+            showToast('Punched in successfully', 'success');
+        }
+
+        function takeBreak() {
+            if (currentTimeStatus !== 'in') {
+                showToast('You need to be punched in to take a break', 'error');
+                return;
+            }
+            
+            // Record break time
+            const now = new Date();
+            const timeRecord = {
+                id: Date.now(),
+                crewId: currentUser.id,
+                action: 'break',
+                time: now.toISOString(),
+                date: now.toISOString().split('T')[0]
+            };
+            
+            timeRecords.push(timeRecord);
+            saveDataToStorage();
+            
+            // Update UI
+            currentTimeStatus = 'break';
+            updateTimeStatus();
+            loadTimeRecords();
+            
+            showToast('Break started', 'success');
+        }
+
+        function punchOut() {
+            if (currentTimeStatus === 'out') {
+                showToast('You are not punched in', 'error');
+                return;
+            }
+            
+            // Record punch out time
+            const now = new Date();
+            const timeRecord = {
+                id: Date.now(),
+                crewId: currentUser.id,
+                action: 'punch-out',
+                time: now.toISOString(),
+                date: now.toISOString().split('T')[0]
+            };
+            
+            timeRecords.push(timeRecord);
+            saveDataToStorage();
+            
+            // Update UI
+            currentTimeStatus = 'out';
+            updateTimeStatus();
+            loadTimeRecords();
+            
+            showToast('Punched out successfully', 'success');
+        }
+
+        function updateTimeStatus() {
+            const statusElement = document.getElementById('timeStatus');
+            const punchInBtn = document.getElementById('punchInBtn');
+            const breakBtn = document.getElementById('breakBtn');
+            const punchOutBtn = document.getElementById('punchOutBtn');
+            
+            if (currentTimeStatus === 'in') {
+                statusElement.textContent = 'You are punched in';
+                punchInBtn.disabled = true;
+                breakBtn.disabled = false;
+                punchOutBtn.disabled = false;
+            } else if (currentTimeStatus === 'break') {
+                statusElement.textContent = 'You are on break';
+                punchInBtn.disabled = true;
+                breakBtn.disabled = true;
+                punchOutBtn.disabled = false;
+            } else {
+                statusElement.textContent = 'You are not punched in';
+                punchInBtn.disabled = false;
+                breakBtn.disabled = true;
+                punchOutBtn.disabled = true;
+            }
+        }
+
+        function loadTimeRecords() {
+            const tableBody = document.getElementById('timeRecordTable');
+            const today = new Date().toISOString().split('T')[0];
+            
+            // Get today's records for current user
+            const todayRecords = timeRecords.filter(r => 
+                r.date === today && r.crewId === currentUser.id
+            );
+            
+            if (todayRecords.length === 0) {
+                tableBody.innerHTML = '<tr><td colspan="3" class="text-center">No time records for today</td></tr>';
+                return;
+            }
+            
+            tableBody.innerHTML = '';
+            
+            // Sort records by time
+            const sortedRecords = [...todayRecords].sort((a, b) => new Date(a.time) - new Date(b.time));
+            
+            // Calculate durations
+            for (let i = 0; i < sortedRecords.length; i++) {
+                const record = sortedRecords[i];
+                let duration = '';
+                
+                if (i > 0 && record.action === 'punch-out' && sortedRecords[i-1].action === 'punch-in') {
+                    const startTime = new Date(sortedRecords[i-1].time);
+                    const endTime = new Date(record.time);
+                    const diffMs = endTime - startTime;
+                    const diffHrs = Math.floor(diffMs / 3600000);
+                    const diffMins = Math.floor((diffMs % 3600000) / 60000);
+                    duration = `${diffHrs}h ${diffMins}m`;
+                } else if (i > 0 && record.action === 'break' && sortedRecords[i-1].action === 'punch-in') {
+                    const startTime = new Date(sortedRecords[i-1].time);
+                    const endTime = new Date(record.time);
+                    const diffMs = endTime - startTime;
+                    const diffHrs = Math.floor(diffMs / 3600000);
+                    const diffMins = Math.floor((diffMs % 3600000) / 60000);
+                    duration = `${diffHrs}h ${diffMins}m`;
+                }
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${record.action.replace('-', ' ').toUpperCase()}</td>
+                    <td>${new Date(record.time).toLocaleTimeString()}</td>
+                    <td>${duration}</td>
+                `;
+                tableBody.appendChild(row);
+            }
+            
+            // Update current status based on last record
+            if (sortedRecords.length > 0) {
+                const lastRecord = sortedRecords[sortedRecords.length - 1];
+                if (lastRecord.action === 'punch-in') {
+                    currentTimeStatus = 'in';
+                } else if (lastRecord.action === 'break') {
+                    currentTimeStatus = 'break';
+                } else {
+                    currentTimeStatus = 'out';
+                }
+                updateTimeStatus();
+            }
+        }
+
         // Update dashboard
         function updateDashboard() {
             // Update dashboard cards
@@ -3340,511 +4214,52 @@
             
             // Update recent cashbills
             const recentCashbillsTable = document.getElementById('recentCashbills');
-            if (recentCashbillsTable) {
-                recentCashbillsTable.innerHTML = '';
+            recentCashbillsTable.innerHTML = '';
+            
+            if (cashbills.length === 0) {
+                recentCashbillsTable.innerHTML = '<tr><td colspan="5" class="text-center">No cashbills found</td></tr>';
+            } else {
+                // Sort cashbills by date (newest first) and take the first 5
+                const recentCashbills = [...cashbills]
+                    .sort((a, b) => new Date(b.date) - new Date(a.date))
+                    .slice(0, 5);
                 
-                if (cashbills.length === 0) {
-                    recentCashbillsTable.innerHTML = '<tr><td colspan="5" class="text-center">No cashbills found</td></tr>';
-                } else {
-                    // Sort cashbills by date (newest first) and take the first 5
-                    const recentCashbills = [...cashbills]
-                        .sort((a, b) => new Date(b.date) - new Date(a.date))
-                        .slice(0, 5);
-                    
-                    recentCashbills.forEach(cashbill => {
-                        const row = document.createElement('tr');
-                        row.innerHTML = `
-                            <td>${cashbill.id}</td>
-                            <td>${cashbill.customerName}</td>
-                            <td>${cashbill.date}</td>
-                            <td>RM ${cashbill.totalAmount.toFixed(2)}</td>
-                            <td><span class="badge badge-${cashbill.status}">${cashbill.status}</span></td>
-                        `;
-                        recentCashbillsTable.appendChild(row);
-                    });
-                }
+                recentCashbills.forEach(cashbill => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${cashbill.id}</td>
+                        <td>${cashbill.customerName}</td>
+                        <td>${cashbill.date}</td>
+                        <td>RM ${cashbill.totalAmount.toFixed(2)}</td>
+                        <td><span class="badge badge-${cashbill.status}">${cashbill.status}</span></td>
+                    `;
+                    recentCashbillsTable.appendChild(row);
+                });
             }
             
             // Update recent log entries
             const recentLogEntriesTable = document.getElementById('recentLogEntries');
-            if (recentLogEntriesTable) {
-                recentLogEntriesTable.innerHTML = '';
+            recentLogEntriesTable.innerHTML = '';
+            
+            if (logEntries.length === 0) {
+                recentLogEntriesTable.innerHTML = '<tr><td colspan="4" class="text-center">No log entries found</td></tr>';
+            } else {
+                // Sort log entries by date (newest first) and take the first 5
+                const recentLogEntries = [...logEntries]
+                    .sort((a, b) => new Date(b.date) - new Date(a.date))
+                    .slice(0, 5);
                 
-                if (logEntries.length === 0) {
-                    recentLogEntriesTable.innerHTML = '<tr><td colspan="4" class="text-center">No log entries found</td></tr>';
-                } else {
-                    // Sort log entries by date (newest first) and take the first 5
-                    const recentLogEntries = [...logEntries]
-                        .sort((a, b) => new Date(b.date) - new Date(a.date))
-                        .slice(0, 5);
-                    
-                    recentLogEntries.forEach(entry => {
-                        const row = document.createElement('tr');
-                        row.innerHTML = `
-                            <td>${entry.date}</td>
-                            <td>${entry.description.length > 50 ? entry.description.substring(0, 50) + '...' : entry.description}</td>
-                            <td>${entry.crew}</td>
-                            <td><span class="badge badge-${entry.status}">${entry.status}</span></td>
-                        `;
-                        recentLogEntriesTable.appendChild(row);
-                    });
-                }
-            }
-        }
-
-        // Update current week display
-        function updateCurrentWeekDisplay() {
-            const weekEnd = new Date(currentWeekStart);
-            weekEnd.setDate(weekEnd.getDate() + 6);
-            
-            const options = { month: 'short', day: 'numeric', year: 'numeric' };
-            const startDateStr = currentWeekStart.toLocaleDateString(undefined, options);
-            const endDateStr = weekEnd.toLocaleDateString(undefined, options);
-            
-            document.getElementById('currentWeek').textContent = `Week of ${startDateStr} - ${endDateStr}`;
-        }
-
-        // Update schedule table
-        function updateScheduleTable() {
-            const tableBody = document.getElementById('scheduleTableBody');
-            if (!tableBody) return;
-            
-            tableBody.innerHTML = '';
-            
-            // Generate time slots (8:00 AM to 10:00 PM)
-            const timeSlots = [];
-            for (let hour = 8; hour <= 22; hour++) {
-                timeSlots.push(`${hour}:00`);
-                if (hour < 22) {
-                    timeSlots.push(`${hour}:30`);
-                }
-            }
-            
-            // Create table rows for each time slot
-            timeSlots.forEach(time => {
-                const row = document.createElement('tr');
-                
-                // Time column
-                const timeCell = document.createElement('td');
-                timeCell.className = 'time-column';
-                timeCell.textContent = time;
-                row.appendChild(timeCell);
-                
-                // Day columns (Sunday to Saturday)
-                for (let day = 0; day < 7; day++) {
-                    const dayCell = document.createElement('td');
-                    dayCell.className = 'schedule-cell';
-                    dayCell.dataset.day = day;
-                    dayCell.dataset.time = time;
-                    
-                    // Check if there's a schedule for this day and time
-                    const daySchedules = schedules.filter(s => 
-                        s.day === day && 
-                        s.startTime <= time && 
-                        s.endTime > time
-                    );
-                    
-                    if (daySchedules.length > 0) {
-                        dayCell.classList.add('has-shift');
-                        
-                        daySchedules.forEach(schedule => {
-                            const shiftDiv = document.createElement('div');
-                            shiftDiv.className = 'shift-details';
-                            shiftDiv.innerHTML = `
-                                <div class="shift-crew">${schedule.crewName}</div>
-                                <div>${schedule.startTime} - ${schedule.endTime}</div>
-                            `;
-                            dayCell.appendChild(shiftDiv);
-                        });
-                    }
-                    
-                    // Add button for admin to add schedule
-                    if (currentUser && currentUser.role === 'Admin') {
-                        const addBtn = document.createElement('button');
-                        addBtn.className = 'add-shift-btn';
-                        addBtn.innerHTML = '<i class="bi bi-plus"></i>';
-                        addBtn.onclick = function() {
-                            openScheduleModal(day, time);
-                        };
-                        dayCell.appendChild(addBtn);
-                    }
-                    
-                    row.appendChild(dayCell);
+                recentLogEntries.forEach(entry => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${entry.date}</td>
+                        <td>${entry.description.length > 50 ? entry.description.substring(0, 50) + '...' : entry.description}</td>
+                        <td>${entry.crew}</td>
+                        <td><span class="badge badge-${entry.status}">${entry.status}</span></td>
+                    `;
+                    recentLogEntriesTable.appendChild(row);
                 });
-                
-                tableBody.appendChild(row);
-            });
-            
-            // Update daily hours summary
-            updateDailyHoursSummary();
-        }
-
-        // Update daily hours summary
-        function updateDailyHoursSummary() {
-            const summaryBody = document.getElementById('dailyHoursSummary');
-            if (!summaryBody) return;
-            
-            summaryBody.innerHTML = '';
-            
-            const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-            
-            days.forEach((day, index) => {
-                const daySchedules = schedules.filter(s => s.day === index);
-                
-                let totalHours = 0;
-                let staffCount = new Set();
-                
-                daySchedules.forEach(schedule => {
-                    const start = schedule.startTime.split(':');
-                    const end = schedule.endTime.split(':');
-                    
-                    const startHour = parseInt(start[0]);
-                    const startMinute = parseInt(start[1]);
-                    const endHour = parseInt(end[0]);
-                    const endMinute = parseInt(end[1]);
-                    
-                    const hours = (endHour + endMinute/60) - (startHour + startMinute/60);
-                    totalHours += hours;
-                    
-                    staffCount.add(schedule.crewId);
-                });
-                
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${day}</td>
-                    <td>${totalHours.toFixed(2)}</td>
-                    <td>${staffCount.size}</td>
-                `;
-                summaryBody.appendChild(row);
-            });
-        }
-
-        // Open schedule modal
-        function openScheduleModal(day, time) {
-            // Populate crew dropdown
-            const crewDropdown = document.getElementById('scheduleCrew');
-            crewDropdown.innerHTML = '';
-            
-            crews.forEach(crew => {
-                const option = document.createElement('option');
-                option.value = crew.id;
-                option.textContent = `${crew.name} (${crew.id})`;
-                crewDropdown.appendChild(option);
-            });
-            
-            // Set default values
-            document.getElementById('scheduleDay').value = day;
-            document.getElementById('scheduleStartTime').value = time;
-            
-            // Calculate default end time (1 hour later)
-            const [hour, minute] = time.split(':').map(Number);
-            const endHour = hour + 1;
-            document.getElementById('scheduleEndTime').value = `${endHour}:${minute.toString().padStart(2, '0')}`;
-            
-            // Show modal
-            document.getElementById('scheduleModal').classList.add('active');
-        }
-
-        // Save schedule
-        function saveSchedule() {
-            const day = parseInt(document.getElementById('scheduleDay').value);
-            const startTime = document.getElementById('scheduleStartTime').value;
-            const endTime = document.getElementById('scheduleEndTime').value;
-            const crewId = document.getElementById('scheduleCrew').value;
-            
-            if (!startTime || !endTime || !crewId) {
-                showToast('Please fill in all fields', 'error');
-                return;
             }
-            
-            // Find crew name
-            const crew = crews.find(c => c.id === crewId);
-            if (!crew) return;
-            
-            // Check for overlapping schedules
-            const overlappingSchedule = schedules.find(s => 
-                s.day === day && 
-                s.crewId === crewId && 
-                ((s.startTime <= startTime && s.endTime > startTime) || 
-                 (s.startTime < endTime && s.endTime >= endTime))
-            );
-            
-            if (overlappingSchedule) {
-                showToast('This crew already has a schedule during this time', 'error');
-                return;
-            }
-            
-            // Add new schedule
-            schedules.push({
-                id: `SCH-${Date.now()}`,
-                day: day,
-                startTime: startTime,
-                endTime: endTime,
-                crewId: crewId,
-                crewName: crew.name,
-                createdBy: currentUser.name,
-                createdAt: new Date().toISOString()
-            });
-            
-            saveDataToStorage();
-            updateScheduleTable();
-            closeModal('scheduleModal');
-            
-            showToast('Schedule added successfully', 'success');
-        }
-
-        // Update time tracking
-        function updateTimeTracking() {
-            if (!currentUser) return;
-            
-            // Update status display
-            updatePunchStatus();
-            
-            // Update today's schedule
-            updateTodaySchedule();
-            
-            // Update time records
-            updateTimeRecords();
-            
-            // Update time summary
-            updateTimeSummary();
-        }
-
-        // Update punch status
-        function updatePunchStatus() {
-            const statusDot = document.getElementById('statusDot');
-            const statusText = document.getElementById('statusText');
-            const punchInBtn = document.getElementById('punchInBtn');
-            const breakBtn = document.getElementById('breakBtn');
-            const breakEndBtn = document.getElementById('breakEndBtn');
-            const punchOutBtn = document.getElementById('punchOutBtn');
-            
-            if (!currentPunch) {
-                statusDot.className = 'status-dot';
-                statusText.textContent = 'Not Punched In';
-                punchInBtn.disabled = false;
-                breakBtn.disabled = true;
-                breakEndBtn.disabled = true;
-                punchOutBtn.disabled = true;
-            } else if (currentPunch.punchIn && !currentPunch.punchOut) {
-                statusDot.className = 'status-dot active';
-                statusText.textContent = `Punched In at ${currentPunch.punchIn}`;
-                punchInBtn.disabled = true;
-                punchOutBtn.disabled = false;
-                
-                if (currentPunch.breakStart && !currentPunch.breakEnd) {
-                    statusDot.className = 'status-dot break';
-                    statusText.textContent += ` (On Break)`;
-                    breakBtn.disabled = true;
-                    breakEndBtn.disabled = false;
-                } else {
-                    breakBtn.disabled = false;
-                    breakEndBtn.disabled = true;
-                }
-            }
-        }
-
-        // Update today's schedule
-        function updateTodaySchedule() {
-            const today = new Date().getDay(); // 0 = Sunday, 1 = Monday, etc.
-            const todaySchedule = schedules.filter(s => s.day === today && s.crewId === currentUser.id);
-            
-            const scheduleContainer = document.getElementById('todaySchedule');
-            
-            if (todaySchedule.length === 0) {
-                scheduleContainer.innerHTML = '<p>You are not scheduled for today</p>';
-                return;
-            }
-            
-            let scheduleHtml = '';
-            todaySchedule.forEach(schedule => {
-                scheduleHtml += `
-                    <div class="today-shift">
-                        <strong>${schedule.startTime} - ${schedule.endTime}</strong>
-                    </div>
-                `;
-            });
-            
-            scheduleContainer.innerHTML = scheduleHtml;
-        }
-
-        // Update time records
-        function updateTimeRecords() {
-            const tableBody = document.getElementById('timeRecords');
-            if (!tableBody) return;
-            
-            // Filter records for current user
-            const userRecords = timeRecords.filter(r => r.crewId === currentUser.id);
-            
-            if (userRecords.length === 0) {
-                tableBody.innerHTML = '<tr><td colspan="5" class="text-center">No time records found</td></tr>';
-                return;
-            }
-            
-            tableBody.innerHTML = '';
-            
-            // Sort by date (newest first)
-            const sortedRecords = [...userRecords].sort((a, b) => new Date(b.date) - new Date(a.date));
-            
-            sortedRecords.forEach(record => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${record.date}</td>
-                    <td>${record.punchIn}</td>
-                    <td>${record.punchOut || '-'}</td>
-                    <td>${record.breakStart && record.breakEnd ? `${record.breakStart} - ${record.breakEnd}` : '-'}</td>
-                    <td>${record.totalHours || '-'}</td>
-                `;
-                tableBody.appendChild(row);
-            });
-        }
-
-        // Update time summary
-        function updateTimeSummary() {
-            const today = new Date().toISOString().split('T')[0];
-            const thisWeekStart = new Date();
-            thisWeekStart.setDate(thisWeekStart.getDate() - thisWeekStart.getDay());
-            const thisWeekEnd = new Date(thisWeekStart);
-            thisWeekEnd.setDate(thisWeekEnd.getDate() + 6);
-            
-            const thisMonthStart = new Date();
-            thisMonthStart.setDate(1);
-            
-            // Filter records for current user
-            const userRecords = timeRecords.filter(r => r.crewId === currentUser.id);
-            
-            // Calculate today's hours
-            const todayRecords = userRecords.filter(r => r.date === today);
-            const todayHours = todayRecords.reduce((sum, record) => sum + (parseFloat(record.totalHours) || 0), 0);
-            document.getElementById('todayHours').textContent = todayHours.toFixed(2);
-            
-            // Calculate this week's hours
-            const weekRecords = userRecords.filter(r => {
-                const recordDate = new Date(r.date);
-                return recordDate >= thisWeekStart && recordDate <= thisWeekEnd;
-            });
-            const weekHours = weekRecords.reduce((sum, record) => sum + (parseFloat(record.totalHours) || 0), 0);
-            document.getElementById('weekHours').textContent = weekHours.toFixed(2);
-            
-            // Calculate this month's hours
-            const monthRecords = userRecords.filter(r => {
-                const recordDate = new Date(r.date);
-                return recordDate >= thisMonthStart;
-            });
-            const monthHours = monthRecords.reduce((sum, record) => sum + (parseFloat(record.totalHours) || 0), 0);
-            document.getElementById('monthHours').textContent = monthHours.toFixed(2);
-        }
-
-        // Update current time
-        function updateCurrentTime() {
-            const now = new Date();
-            const timeString = now.toLocaleTimeString();
-            const currentTimeElement = document.getElementById('currentTime');
-            if (currentTimeElement) {
-                currentTimeElement.textContent = timeString;
-            }
-        }
-
-        // Punch in
-        function punchIn() {
-            // Check if the user is scheduled today
-            const today = new Date().getDay(); // 0 = Sunday, 1 = Monday, etc.
-            const todaySchedule = schedules.filter(s => s.day === today && s.crewId === currentUser.id);
-            
-            if (todaySchedule.length === 0) {
-                showToast('You are not scheduled for today', 'error');
-                return;
-            }
-            
-            // Check if already punched in
-            if (currentPunch && currentPunch.punchIn && !currentPunch.punchOut) {
-                showToast('You are already punched in', 'warning');
-                return;
-            }
-            
-            currentPunch = {
-                date: new Date().toISOString().split('T')[0],
-                punchIn: new Date().toLocaleTimeString(),
-                punchOut: null,
-                breakStart: null,
-                breakEnd: null,
-                crewId: currentUser.id,
-                crewName: currentUser.name
-            };
-            
-            updatePunchStatus();
-            showToast('Punched in successfully', 'success');
-        }
-
-        // Punch out
-        function punchOut() {
-            if (!currentPunch || !currentPunch.punchIn) {
-                showToast('You need to punch in first', 'error');
-                return;
-            }
-            
-            if (currentPunch.breakStart && !currentPunch.breakEnd) {
-                showToast('Please end your break first', 'warning');
-                return;
-            }
-            
-            currentPunch.punchOut = new Date().toLocaleTimeString();
-            
-            // Calculate total hours
-            const punchInTime = new Date(`1970-01-01T${currentPunch.punchIn}`);
-            const punchOutTime = new Date(`1970-01-01T${currentPunch.punchOut}`);
-            let totalHours = (punchOutTime - punchInTime) / (1000 * 60 * 60); // in hours
-            
-            // Subtract break time if any
-            if (currentPunch.breakStart && currentPunch.breakEnd) {
-                const breakStartTime = new Date(`1970-01-01T${currentPunch.breakStart}`);
-                const breakEndTime = new Date(`1970-01-01T${currentPunch.breakEnd}`);
-                const breakHours = (breakEndTime - breakStartTime) / (1000 * 60 * 60);
-                totalHours -= breakHours;
-            }
-            
-            currentPunch.totalHours = totalHours.toFixed(2);
-            
-            // Save to time records
-            timeRecords.push({...currentPunch});
-            saveDataToStorage();
-            
-            // Reset current punch
-            currentPunch = null;
-            
-            updatePunchStatus();
-            updateTimeRecords();
-            updateTimeSummary();
-            showToast('Punched out successfully', 'success');
-        }
-
-        // Take break
-        function takeBreak() {
-            if (!currentPunch || !currentPunch.punchIn) {
-                showToast('You need to punch in first', 'error');
-                return;
-            }
-            
-            if (currentPunch.breakStart && !currentPunch.breakEnd) {
-                showToast('You are already on break', 'warning');
-                return;
-            }
-            
-            currentPunch.breakStart = new Date().toLocaleTimeString();
-            updatePunchStatus();
-            showToast('Break started', 'success');
-        }
-
-        // End break
-        function endBreak() {
-            if (!currentPunch || !currentPunch.breakStart) {
-                showToast('You need to start a break first', 'error');
-                return;
-            }
-            
-            currentPunch.breakEnd = new Date().toLocaleTimeString();
-            updatePunchStatus();
-            showToast('Break ended', 'success');
         }
 
         // Show toast notification
@@ -3909,7 +4324,7 @@
                 onlineOrders: onlineOrders,
                 crews: crews,
                 stockItems: stockItems,
-                schedules: schedules,
+                scheduleData: scheduleData,
                 timeRecords: timeRecords,
                 invoiceCounter: invoiceCounter,
                 orderCounter: orderCounter,
@@ -3930,7 +4345,7 @@
                 if (data.onlineOrders) onlineOrders = data.onlineOrders;
                 if (data.crews) crews = data.crews;
                 if (data.stockItems) stockItems = data.stockItems;
-                if (data.schedules) schedules = data.schedules;
+                if (data.scheduleData) scheduleData = data.scheduleData;
                 if (data.timeRecords) timeRecords = data.timeRecords;
                 if (data.invoiceCounter) invoiceCounter = data.invoiceCounter;
                 if (data.orderCounter) orderCounter = data.orderCounter;
