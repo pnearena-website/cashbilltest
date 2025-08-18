@@ -439,30 +439,47 @@
         .schedule-table {
             width: 100%;
             border-collapse: collapse;
+            font-size: 14px;
         }
         .schedule-table th,
         .schedule-table td {
             padding: 12px;
             border: 1px solid var(--border);
             text-align: center;
+            vertical-align: middle;
         }
         .schedule-table th {
             background-color: var(--primary);
             color: var(--white);
+            font-weight: 600;
         }
         .schedule-table .employee-info {
             text-align: left;
+            padding: 15px;
+            width: 200px;
         }
         .schedule-table .day-header {
             background-color: var(--secondary);
+            color: var(--text);
+            position: sticky;
+            top: 0;
         }
         .schedule-cell {
-            min-width: 100px;
+            min-width: 120px;
+            height: 100px;
+            position: relative;
         }
         .schedule-status {
             padding: 6px;
             border-radius: 4px;
             font-size: 14px;
+            font-weight: 600;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
         }
         .schedule-working {
             background-color: #e8f5e9;
@@ -475,6 +492,44 @@
         .schedule-leave {
             background-color: #fff8e1;
             color: var(--warning);
+        }
+        .schedule-cell input, .schedule-cell select {
+            margin-bottom: 5px;
+            width: 100%;
+        }
+        .schedule-filters {
+            margin-bottom: 15px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .filter-btn {
+            padding: 6px 12px;
+            border: 1px solid var(--border);
+            background-color: var(--white);
+            border-radius: 4px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .filter-btn.active {
+            background-color: var(--primary);
+            color: var(--white);
+        }
+        .schedule-legend {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .legend-color {
+            width: 16px;
+            height: 16px;
+            border-radius: 4px;
         }
         .no-schedule {
             text-align: center;
@@ -617,6 +672,32 @@
             display: flex;
             gap: 8px;
         }
+        /* Stock Receiving Styles */
+        .receiving-item {
+            margin-bottom: 15px;
+            padding: 15px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background-color: var(--secondary);
+        }
+        .receiving-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .receiving-item-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 15px;
+        }
+        .receiving-summary {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid var(--border);
+        }
         /* Responsive */
         @media (max-width: 768px) {
             .sidebar {
@@ -648,6 +729,9 @@
             .modal-content {
                 width: 98%;
                 max-width: none;
+            }
+            .receiving-item-details {
+                grid-template-columns: 1fr;
             }
         }
         /* Notification */
@@ -729,6 +813,7 @@
     <div class="loading-overlay" id="loadingOverlay">
         <div class="loading-spinner"></div>
     </div>
+    
     <!-- Login Page -->
     <div class="login-container" id="loginPage">
         <div class="login-card">
@@ -754,6 +839,7 @@
             </form>
         </div>
     </div>
+    
     <!-- Main App -->
     <div class="app-container" id="appContainer">
         <!-- Top Navigation -->
@@ -775,6 +861,7 @@
                 </button>
             </div>
         </nav>
+        
         <!-- Sidebar -->
         <aside class="sidebar" id="sidebar">
             <div class="sidebar-menu">
@@ -808,8 +895,12 @@
                 <a href="#" class="menu-item" data-page="stock">
                     <i class="fas fa-boxes"></i> Stock Management
                 </a>
+                <a href="#" class="menu-item admin-only" data-page="stock-receiving">
+                    <i class="fas fa-truck-loading"></i> Stock Receiving
+                </a>
             </div>
         </aside>
+        
         <!-- Main Content -->
         <main class="main-content" id="mainContent">
             <!-- Dashboard Page -->
@@ -818,6 +909,7 @@
                     <h1 class="content-title">Dashboard</h1>
                     <p class="content-subtitle">Welcome back! Here's what's happening today.</p>
                 </div>
+                
                 <div class="dashboard-info">
                     <div class="info-card">
                         <div class="info-icon">
@@ -851,6 +943,7 @@
                         <div class="info-value" id="currentSchedule">--</div>
                     </div>
                 </div>
+                
                 <div class="card">
                     <div class="card-header">
                         <h2 class="card-title">Time Tracking</h2>
@@ -875,13 +968,39 @@
                         </button>
                     </div>
                 </div>
+                
+                <div class="card" style="margin-top: 20px;">
+                    <div class="card-header">
+                        <h2 class="card-title">Recent Activities</h2>
+                        <a href="#" class="btn btn-sm btn-primary" onclick="navigateTo('activity')">View All</a>
+                    </div>
+                    
+                    <div class="table-container">
+                        <table class="activity-log-table">
+                            <thead>
+                                <tr>
+                                    <th>Time</th>
+                                    <th>User</th>
+                                    <th>Activity</th>
+                                </tr>
+                            </thead>
+                            <tbody id="dashboardActivityTableBody">
+                                <tr>
+                                    <td colspan="3" class="no-schedule">No recent activities</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
+            
             <!-- Cashbill Page -->
             <div id="cashbillPage" class="page" style="display: none;">
                 <div class="content-header">
                     <h1 class="content-title">Cashbill Management</h1>
                     <p class="content-subtitle">Create and manage cashbills</p>
                 </div>
+                
                 <div class="card">
                     <div class="card-header">
                         <h2 class="card-title">Cashbills</h2>
@@ -912,12 +1031,14 @@
                     </div>
                 </div>
             </div>
+            
             <!-- Logbook Page -->
             <div id="logbookPage" class="page" style="display: none;">
                 <div class="content-header">
                     <h1 class="content-title">Logbook</h1>
                     <p class="content-subtitle">Record and view daily activities</p>
                 </div>
+                
                 <div class="card">
                     <div class="card-header">
                         <h2 class="card-title">Log Entries</h2>
@@ -946,12 +1067,14 @@
                     </div>
                 </div>
             </div>
+            
             <!-- Quotation Page -->
             <div id="quotationPage" class="page" style="display: none;">
                 <div class="content-header">
                     <h1 class="content-title">Quotation Management</h1>
                     <p class="content-subtitle">Create and manage quotations</p>
                 </div>
+                
                 <div class="card">
                     <div class="card-header">
                         <h2 class="card-title">Quotations</h2>
@@ -982,12 +1105,14 @@
                     </div>
                 </div>
             </div>
+            
             <!-- Schedule Page -->
             <div id="schedulePage" class="page" style="display: none;">
                 <div class="content-header">
                     <h1 class="content-title">Schedule Timetable</h1>
                     <p class="content-subtitle">View and manage weekly schedules</p>
                 </div>
+                
                 <div class="card">
                     <div class="schedule-controls">
                         <div class="week-nav">
@@ -1015,6 +1140,31 @@
                         </div>
                     </div>
                     
+                    <!-- Schedule filters -->
+                    <div class="schedule-filters">
+                        <button class="filter-btn active" data-filter="all">All</button>
+                        <button class="filter-btn" data-filter="hq">HQ</button>
+                        <button class="filter-btn" data-filter="blm">BLM</button>
+                        <button class="filter-btn" data-filter="working">Working</button>
+                        <button class="filter-btn" data-filter="off">Off/Leave</button>
+                    </div>
+                    
+                    <!-- Schedule legend -->
+                    <div class="schedule-legend">
+                        <div class="legend-item">
+                            <div class="legend-color" style="background-color: #e8f5e9;"></div>
+                            <span>Working</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background-color: #ffebee;"></div>
+                            <span>Off</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background-color: #fff8e1;"></div>
+                            <span>Leave</span>
+                        </div>
+                    </div>
+                    
                     <div id="scheduleTableContainer">
                         <div class="no-schedule" id="noScheduleMessage">
                             This week schedule is not yet available
@@ -1022,12 +1172,14 @@
                     </div>
                 </div>
             </div>
+            
             <!-- Online Orders Page -->
             <div id="ordersPage" class="page" style="display: none;">
                 <div class="content-header">
                     <h1 class="content-title">Online Orders</h1>
                     <p class="content-subtitle">Manage online orders</p>
                 </div>
+                
                 <div class="card">
                     <div class="card-header">
                         <h2 class="card-title">Orders</h2>
@@ -1059,12 +1211,14 @@
                     </div>
                 </div>
             </div>
+            
             <!-- Activity Logs Page -->
             <div id="activityPage" class="page" style="display: none;">
                 <div class="content-header">
                     <h1 class="content-title">Activity Logs</h1>
                     <p class="content-subtitle">View punch in/out and break activities</p>
                 </div>
+                
                 <div class="card">
                     <div class="card-header">
                         <h2 class="card-title">Recent Activities</h2>
@@ -1099,12 +1253,14 @@
                     </div>
                 </div>
             </div>
+            
             <!-- Attendance Management Page -->
             <div id="attendancePage" class="page" style="display: none;">
                 <div class="content-header">
                     <h1 class="content-title">Attendance Management</h1>
                     <p class="content-subtitle">Manage and amend crew attendance records</p>
                 </div>
+                
                 <div class="card">
                     <div class="attendance-controls">
                         <div class="date-filter">
@@ -1148,12 +1304,14 @@
                     </div>
                 </div>
             </div>
+            
             <!-- Crew Management Page -->
             <div id="crewPage" class="page" style="display: none;">
                 <div class="content-header">
                     <h1 class="content-title">Crew Management</h1>
                     <p class="content-subtitle">Manage crew members (Admin Only)</p>
                 </div>
+                
                 <div class="card">
                     <div class="card-header">
                         <h2 class="card-title">Crew Members</h2>
@@ -1183,12 +1341,14 @@
                     </div>
                 </div>
             </div>
+            
             <!-- Stock Management Page -->
             <div id="stockPage" class="page" style="display: none;">
                 <div class="content-header">
                     <h1 class="content-title">Stock Management</h1>
                     <p class="content-subtitle">Manage inventory and stock</p>
                 </div>
+                
                 <div class="card">
                     <div class="card-header">
                         <h2 class="card-title">Stock Items</h2>
@@ -1219,8 +1379,139 @@
                     </div>
                 </div>
             </div>
+            
+            <!-- Stock Receiving Page -->
+            <div id="stockReceivingPage" class="page" style="display: none;">
+                <div class="content-header">
+                    <h1 class="content-title">Stock Receiving</h1>
+                    <p class="content-subtitle">Record received stock items and update inventory</p>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">Receive New Stock</h2>
+                    </div>
+                    
+                    <form id="stockReceivingForm">
+                        <div class="form-row">
+                            <div class="form-col">
+                                <div class="form-group">
+                                    <label class="form-label" for="receivingDate">Date</label>
+                                    <input type="date" class="form-input" id="receivingDate" required>
+                                </div>
+                            </div>
+                            <div class="form-col">
+                                <div class="form-group">
+                                    <label class="form-label" for="supplierName">Supplier</label>
+                                    <input type="text" class="form-input" id="supplierName" placeholder="Supplier name" required>
+                                </div>
+                            </div>
+                            <div class="form-col">
+                                <div class="form-group">
+                                    <label class="form-label" for="invoiceNumber">Invoice #</label>
+                                    <input type="text" class="form-input" id="invoiceNumber" placeholder="Invoice number">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Items Received</label>
+                            <div id="receivingItems">
+                                <div class="form-row receiving-item">
+                                    <div class="form-col">
+                                        <div class="form-group">
+                                            <select class="form-input item-select" required>
+                                                <option value="">Select Item</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="form-col">
+                                        <div class="form-group">
+                                            <input type="number" class="form-input item-quantity" placeholder="Quantity" min="1" value="1" required>
+                                        </div>
+                                    </div>
+                                    <div class="form-col">
+                                        <div class="form-group">
+                                            <input type="number" class="form-input item-cost" placeholder="Cost (RM)" step="0.01" required>
+                                        </div>
+                                    </div>
+                                    <div class="form-col" style="display: flex; align-items: end;">
+                                        <button type="button" class="btn btn-danger remove-receiving-item" style="display: none;">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <button type="button" class="btn btn-primary" id="addReceivingItemBtn">
+                                <i class="fas fa-plus"></i> Add Item
+                            </button>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-col">
+                                <div class="form-group">
+                                    <label class="form-label" for="totalCost">Total Cost (RM)</label>
+                                    <input type="number" class="form-input" id="totalCost" step="0.01" readonly>
+                                </div>
+                            </div>
+                            <div class="form-col">
+                                <div class="form-group">
+                                    <label class="form-label" for="receivedBy">Received By</label>
+                                    <input type="text" class="form-input" id="receivedBy" value="" readonly>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label" for="receivingNotes">Notes</label>
+                            <textarea class="form-input" id="receivingNotes" rows="3" placeholder="Any additional notes"></textarea>
+                        </div>
+                        
+                        <div style="margin-top: 20px;">
+                            <button type="button" class="btn btn-primary" id="previewReceivingBtn">Preview</button>
+                            <button type="button" class="btn btn-success" id="saveReceivingBtn">Save & Update Stock</button>
+                        </div>
+                    </form>
+                </div>
+                
+                <div class="card" style="margin-top: 20px;">
+                    <div class="card-header">
+                        <h2 class="card-title">Recent Stock Receiving Records</h2>
+                        <div>
+                            <select id="receivingFilter" class="form-input">
+                                <option value="all">All Records</option>
+                                <option value="today">Today</option>
+                                <option value="week">This Week</option>
+                                <option value="month">This Month</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Invoice #</th>
+                                    <th>Supplier</th>
+                                    <th>Items</th>
+                                    <th>Total Cost</th>
+                                    <th>Received By</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="receivingTableBody">
+                                <tr>
+                                    <td colspan="7" class="no-schedule">No receiving records found</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
         </main>
     </div>
+    
     <!-- Cashbill Modal -->
     <div class="modal" id="cashbillModal">
         <div class="modal-content">
@@ -1315,6 +1606,7 @@
             </div>
         </div>
     </div>
+    
     <!-- Logbook Modal -->
     <div class="modal" id="logbookModal">
         <div class="modal-content">
@@ -1352,6 +1644,7 @@
             </div>
         </div>
     </div>
+    
     <!-- Quotation Modal -->
     <div class="modal" id="quotationModal">
         <div class="modal-content">
@@ -1434,6 +1727,7 @@
             </div>
         </div>
     </div>
+    
     <!-- Order Modal -->
     <div class="modal" id="orderModal">
         <div class="modal-content">
@@ -1526,6 +1820,7 @@
             </div>
         </div>
     </div>
+    
     <!-- Assign Order Modal -->
     <div class="modal" id="assignOrderModal">
         <div class="modal-content">
@@ -1559,6 +1854,7 @@
             </div>
         </div>
     </div>
+    
     <!-- Crew Modal -->
     <div class="modal" id="crewModal">
         <div class="modal-content">
@@ -1614,6 +1910,7 @@
             </div>
         </div>
     </div>
+    
     <!-- Stock Modal -->
     <div class="modal" id="stockModal">
         <div class="modal-content">
@@ -1675,6 +1972,7 @@
             </div>
         </div>
     </div>
+    
     <!-- Attendance Edit Modal -->
     <div class="modal" id="attendanceEditModal">
         <div class="modal-content">
@@ -1757,6 +2055,7 @@
             </div>
         </div>
     </div>
+    
     <!-- Notification -->
     <div class="notification" id="notification">
         <div class="notification-icon">
@@ -1769,6 +2068,7 @@
             <i class="fas fa-times"></i>
         </button>
     </div>
+    
     <script>
         // App State
         const app = {
@@ -1786,8 +2086,10 @@
             punchStatus: 'out', // 'in', 'out', 'break'
             scheduleEditMode: false,
             activityLogs: [],
-            attendanceRecords: []
+            attendanceRecords: [],
+            stockReceivingRecords: []
         };
+        
         // DOM Elements
         const elements = {
             loginPage: document.getElementById('loginPage'),
@@ -1840,8 +2142,18 @@
             editBreakStartTime: document.getElementById('editBreakStartTime'),
             editBreakEndTime: document.getElementById('editBreakEndTime'),
             punchInStatus: document.getElementById('punchInStatus'),
-            breakStatus: document.getElementById('breakStatus')
+            breakStatus: document.getElementById('breakStatus'),
+            // Stock Receiving elements
+            receivingDate: document.getElementById('receivingDate'),
+            supplierName: document.getElementById('supplierName'),
+            invoiceNumber: document.getElementById('invoiceNumber'),
+            receivingItems: document.getElementById('receivingItems'),
+            totalCost: document.getElementById('totalCost'),
+            receivedBy: document.getElementById('receivedBy'),
+            receivingNotes: document.getElementById('receivingNotes'),
+            receivingFilter: document.getElementById('receivingFilter')
         };
+        
         // Initialize App
         function initApp() {
             // Check if user is logged in
@@ -1852,19 +2164,24 @@
             } else {
                 showLogin();
             }
+            
             // Load data from localStorage
             loadData();
+            
             // Set up event listeners
             setupEventListeners();
+            
             // Update date and time
             updateDateTime();
             setInterval(updateDateTime, 1000);
         }
+        
         // Show login page
         function showLogin() {
             elements.loginPage.style.display = 'flex';
             elements.appContainer.style.display = 'none';
         }
+        
         // Show app
         function showApp() {
             elements.loginPage.style.display = 'none';
@@ -1884,6 +2201,7 @@
             // Check today's schedule
             checkTodaySchedule();
         }
+        
         // Setup event listeners
         function setupEventListeners() {
             // Login form
@@ -1980,6 +2298,12 @@
             document.getElementById('cancelStockBtn').addEventListener('click', closeStockModal);
             document.getElementById('saveStockBtn').addEventListener('click', saveStock);
             
+            // Stock Receiving
+            document.getElementById('addReceivingItemBtn').addEventListener('click', addReceivingItem);
+            document.getElementById('previewReceivingBtn').addEventListener('click', previewReceiving);
+            document.getElementById('saveReceivingBtn').addEventListener('click', saveReceiving);
+            elements.receivingFilter.addEventListener('change', loadReceivingRecords);
+            
             // Notification close
             elements.notificationClose.addEventListener('click', hideNotification);
             
@@ -1991,9 +2315,12 @@
                     removeQuotationService(e.target.closest('.quotation-service'));
                 } else if (e.target.closest('.remove-order-item')) {
                     removeOrderItem(e.target.closest('.order-item'));
+                } else if (e.target.closest('.remove-receiving-item')) {
+                    removeReceivingItem(e.target.closest('.receiving-item'));
                 }
             });
         }
+        
         // Handle login
         function handleLogin(e) {
             e.preventDefault();
@@ -2022,6 +2349,7 @@
             showApp();
             showNotification('Login successful', 'success');
         }
+        
         // Get user by ID
         function getUserById(id) {
             const users = [
@@ -2033,6 +2361,7 @@
             
             return users.find(user => user.id === id);
         }
+        
         // Handle logout
         function handleLogout() {
             localStorage.removeItem('pneUser');
@@ -2040,6 +2369,7 @@
             showLogin();
             showNotification('Logged out successfully', 'success');
         }
+        
         // Toggle sidebar
         function toggleSidebar() {
             app.sidebarVisible = !app.sidebarVisible;
@@ -2052,6 +2382,7 @@
                 elements.mainContent.classList.add('expanded');
             }
         }
+        
         // Navigate to page
         function navigateTo(page) {
             // Hide all pages
@@ -2076,6 +2407,7 @@
             // Load page data
             loadPageData(page);
         }
+        
         // Load page data
         function loadPageData(page) {
             switch (page) {
@@ -2106,8 +2438,15 @@
                 case 'stock':
                     loadStockItems();
                     break;
+                case 'stock-receiving':
+                    loadStockReceivingPage();
+                    break;
+                case 'dashboard':
+                    loadDashboardActivities();
+                    break;
             }
         }
+        
         // Update admin features
         function updateAdminFeatures() {
             const isAdmin = app.user && app.user.isAdmin;
@@ -2139,6 +2478,7 @@
                 scheduleAdminControls.style.display = 'none';
             }
         }
+        
         // Update date and time
         function updateDateTime() {
             const now = new Date();
@@ -2151,40 +2491,72 @@
             const timeOptions = { hour: '2-digit', minute: '2-digit', second: '2-digit' };
             elements.currentTime.textContent = now.toLocaleTimeString('en-US', timeOptions);
         }
-        // Check today's schedule
+        
+        // Check today's schedule (Improved version)
         function checkTodaySchedule() {
             const today = new Date();
             const todayStr = formatDate(today);
-            const userSchedule = getUserSchedule(app.user.id, todayStr);
+            
+            // Check if user has a schedule for today in the actual schedule data
+            let userSchedule = null;
+            
+            // Look through all weeks to find today's schedule for this user
+            Object.keys(app.schedules).forEach(weekKey => {
+                const weekSchedule = app.schedules[weekKey];
+                if (weekSchedule && weekSchedule.entries) {
+                    const todayEntry = weekSchedule.entries.find(entry => 
+                        entry.crewId === app.user.id && entry.date === todayStr
+                    );
+                    
+                    if (todayEntry && todayEntry.startTime && todayEntry.endTime) {
+                        userSchedule = {
+                            startTime: todayEntry.startTime,
+                            endTime: todayEntry.endTime,
+                            duties: todayEntry.duties,
+                            remarks: todayEntry.remarks
+                        };
+                    }
+                }
+            });
             
             if (userSchedule) {
-                elements.currentSchedule.textContent = `${userSchedule.startTime} - ${userSchedule.endTime}`;
-                elements.punchSection.style.display = 'flex';
-                elements.scheduleMessage.style.display = 'none';
+                // Check if it's a day off or leave
+                if (userSchedule.remarks === 'Off') {
+                    elements.currentSchedule.textContent = 'Day Off';
+                } else if (userSchedule.remarks === 'Annual Leave') {
+                    elements.currentSchedule.textContent = 'Annual Leave';
+                } else if (userSchedule.remarks === 'Emergency Leave') {
+                    elements.currentSchedule.textContent = 'Emergency Leave';
+                } else {
+                    elements.currentSchedule.textContent = `${userSchedule.startTime} - ${userSchedule.endTime}`;
+                    if (userSchedule.duties) {
+                        elements.currentSchedule.textContent += ` (${userSchedule.duties})`;
+                    }
+                }
+                
+                // Only show punch buttons if it's a regular working day
+                if (!userSchedule.remarks || userSchedule.remarks === '') {
+                    elements.punchSection.style.display = 'flex';
+                    elements.scheduleMessage.style.display = 'none';
+                } else {
+                    elements.punchSection.style.display = 'none';
+                    elements.scheduleMessage.textContent = `You have ${userSchedule.remarks.toLowerCase()} today.`;
+                    elements.scheduleMessage.style.display = 'block';
+                }
             } else {
                 elements.currentSchedule.textContent = 'Not scheduled';
                 elements.punchSection.style.display = 'none';
+                elements.scheduleMessage.textContent = 'No schedule found for you today.';
                 elements.scheduleMessage.style.display = 'block';
             }
         }
-        // Get user schedule for a specific date
-        function getUserSchedule(userId, dateStr) {
-            // This is a simplified implementation
-            // In a real app, this would fetch from a database
-            const schedules = [
-                { userId: '0001', date: getCurrentDateStr(), startTime: '09:00', endTime: '17:00' },
-                { userId: '0002', date: getCurrentDateStr(), startTime: '09:00', endTime: '17:00' },
-                { userId: '0003', date: getCurrentDateStr(), startTime: '10:00', endTime: '18:00' },
-                { userId: '0004', date: getCurrentDateStr(), startTime: '09:00', endTime: '17:00' }
-            ];
-            
-            return schedules.find(s => s.userId === userId && s.date === dateStr);
-        }
+        
         // Get current date string (YYYY-MM-DD)
         function getCurrentDateStr() {
             const today = new Date();
             return formatDate(today);
         }
+        
         // Format date as YYYY-MM-DD
         function formatDate(date) {
             const year = date.getFullYear();
@@ -2192,6 +2564,7 @@
             const day = String(date.getDate()).padStart(2, '0');
             return `${year}-${month}-${day}`;
         }
+        
         // Handle punch in/out
         function handlePunch(action) {
             // Check if user has a schedule for today
@@ -2285,11 +2658,31 @@
                 loadActivityLogs();
             }
             
+            // Reload dashboard activities if on dashboard
+            if (app.currentPage === 'dashboard') {
+                loadDashboardActivities();
+            }
+            
             // Reload attendance records if on that page
             if (app.currentPage === 'attendance') {
                 loadAttendanceRecords();
             }
         }
+        
+        // Get user schedule for a specific date
+        function getUserSchedule(userId, dateStr) {
+            // This is a simplified implementation
+            // In a real app, this would fetch from a database
+            const schedules = [
+                { userId: '0001', date: getCurrentDateStr(), startTime: '09:00', endTime: '17:00' },
+                { userId: '0002', date: getCurrentDateStr(), startTime: '09:00', endTime: '17:00' },
+                { userId: '0003', date: getCurrentDateStr(), startTime: '10:00', endTime: '18:00' },
+                { userId: '0004', date: getCurrentDateStr(), startTime: '09:00', endTime: '17:00' }
+            ];
+            
+            return schedules.find(s => s.userId === userId && s.date === dateStr);
+        }
+        
         // Calculate time difference
         function calculateTimeDifference(start, end) {
             const diffMs = end - start;
@@ -2297,6 +2690,7 @@
             const diffMinutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
             return `${diffHours}h ${diffMinutes}m`;
         }
+        
         // Show login alert
         function showLoginAlert(message) {
             elements.loginAlert.textContent = message;
@@ -2306,6 +2700,7 @@
                 elements.loginAlert.style.display = 'none';
             }, 3000);
         }
+        
         // Show notification
         function showNotification(message, type = 'success') {
             elements.notificationMessage.textContent = message;
@@ -2316,10 +2711,12 @@
                 hideNotification();
             }, 3000);
         }
+        
         // Hide notification
         function hideNotification() {
             elements.notification.classList.remove('show');
         }
+        
         // Load data from localStorage
         function loadData() {
             // Load cashbills
@@ -2392,7 +2789,11 @@
             if (attendanceRecordsData) {
                 app.attendanceRecords = JSON.parse(attendanceRecordsData);
             }
+            
+            // Load stock receiving records
+            loadStockReceivingData();
         }
+        
         // Save data to localStorage
         function saveData() {
             localStorage.setItem('pneCashbills', JSON.stringify(app.cashbills));
@@ -2404,7 +2805,67 @@
             localStorage.setItem('pneSchedules', JSON.stringify(app.schedules));
             localStorage.setItem('pneActivityLogs', JSON.stringify(app.activityLogs));
             localStorage.setItem('pneAttendanceRecords', JSON.stringify(app.attendanceRecords));
+            saveStockReceivingData();
         }
+        
+        // Load dashboard activities
+        function loadDashboardActivities() {
+            const tbody = document.getElementById('dashboardActivityTableBody');
+            if (!tbody) return;
+            
+            tbody.innerHTML = '';
+            
+            // Get today's activities, sorted by most recent
+            const today = new Date();
+            const todayStr = formatDate(today);
+            
+            // Filter activities for today
+            const todayActivities = app.activityLogs.filter(log => log.date === todayStr);
+            
+            // Sort by timestamp (newest first)
+            todayActivities.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+            
+            // Show only the 5 most recent activities
+            const recentActivities = todayActivities.slice(0, 5);
+            
+            if (recentActivities.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="3" class="no-schedule">No recent activities</td></tr>';
+                return;
+            }
+            
+            recentActivities.forEach(log => {
+                const tr = document.createElement('tr');
+                
+                // Format time
+                const timestamp = new Date(log.timestamp);
+                const formattedTime = timestamp.toLocaleTimeString();
+                
+                // Get activity display
+                let activityDisplay = '';
+                switch (log.type) {
+                    case 'punch-in':
+                        activityDisplay = log.isLate ? 'Punched In (Late)' : 'Punched In';
+                        break;
+                    case 'punch-out':
+                        activityDisplay = 'Punched Out';
+                        break;
+                    case 'break':
+                        activityDisplay = 'Break Started';
+                        break;
+                    case 'resume':
+                        activityDisplay = log.isOverbreak ? 'Resumed (Overbreak)' : 'Resumed Work';
+                        break;
+                }
+                
+                tr.innerHTML = `
+                    <td>${formattedTime}</td>
+                    <td>${log.userName}</td>
+                    <td>${activityDisplay}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+        
         // Cashbill Functions
         function loadCashbills() {
             const tbody = document.getElementById('cashbillTableBody');
@@ -2437,6 +2898,7 @@
                 tbody.appendChild(tr);
             });
         }
+        
         function openCashbillModal() {
             // Reset form
             elements.cashbillForm.reset();
@@ -2465,14 +2927,17 @@
             // Show modal
             elements.cashbillModal.classList.add('active');
         }
+        
         function closeCashbillModal() {
             elements.cashbillModal.classList.remove('active');
         }
+        
         function generateInvoiceNo() {
             const prefix = 'INV-';
             const nextNumber = app.cashbills.length + 1;
             return `${prefix}${String(nextNumber).padStart(4, '0')}`;
         }
+        
         function populateItemDropdown() {
             const selects = document.querySelectorAll('.item-select');
             
@@ -2491,6 +2956,7 @@
                 select.addEventListener('change', updateItemPrice);
             });
         }
+        
         function updateItemPrice(e) {
             const select = e.target;
             const priceInput = select.closest('.cashbill-item').querySelector('.item-price');
@@ -2503,6 +2969,7 @@
                 priceInput.value = '';
             }
         }
+        
         function addCashbillItem() {
             const itemsContainer = document.getElementById('cashbillItems');
             const itemTemplate = document.querySelector('.cashbill-item').cloneNode(true);
@@ -2523,6 +2990,7 @@
             // Populate dropdown
             populateItemDropdown();
         }
+        
         function removeCashbillItem(item) {
             item.remove();
             calculateTotal();
@@ -2538,6 +3006,7 @@
                 }
             });
         }
+        
         function resetCashbillItems() {
             const itemsContainer = document.getElementById('cashbillItems');
             itemsContainer.innerHTML = `
@@ -2570,6 +3039,7 @@
             // Populate dropdown
             populateItemDropdown();
         }
+        
         function calculateTotal() {
             const items = document.querySelectorAll('.cashbill-item');
             let total = 0;
@@ -2588,6 +3058,7 @@
             
             document.getElementById('totalAmount').value = total.toFixed(2);
         }
+        
         function saveCashbill(status) {
             // Get form data
             const customerName = document.getElementById('customerName').value;
@@ -2649,6 +3120,7 @@
             // Show notification
             showNotification(`Cashbill ${status === 'commit' ? 'committed' : 'saved as draft'} successfully`, 'success');
         }
+        
         function viewCashbill(invoiceNo) {
             // Find cashbill
             const cashbill = app.cashbills.find(c => c.invoiceNo === invoiceNo);
@@ -2737,6 +3209,7 @@
                 });
             }
         }
+        
         function editCashbill(invoiceNo) {
             // Find cashbill
             const cashbill = app.cashbills.find(c => c.invoiceNo === invoiceNo);
@@ -2800,6 +3273,7 @@
                 }
             });
         }
+        
         function deleteCashbill(invoiceNo) {
             if (confirm('Are you sure you want to delete this cashbill?')) {
                 // Find and remove cashbill
@@ -2816,6 +3290,7 @@
                 showNotification('Cashbill deleted successfully', 'success');
             }
         }
+        
         function uncommitCashbill(invoiceNo) {
             // Find cashbill
             const cashbillIndex = app.cashbills.findIndex(c => c.invoiceNo === invoiceNo);
@@ -2831,10 +3306,12 @@
             // Show notification
             showNotification('Cashbill uncommitted successfully', 'success');
         }
+        
         function printCashbill() {
             // This would open a print dialog in a real app
             showNotification('Print functionality would be implemented here', 'success');
         }
+        
         // Logbook Functions
         function loadLogEntries() {
             const tbody = document.getElementById('logbookTableBody');
@@ -2865,6 +3342,7 @@
                 tbody.appendChild(tr);
             });
         }
+        
         function openLogbookModal() {
             // Reset form
             elements.logbookForm.reset();
@@ -2886,9 +3364,11 @@
             // Show modal
             elements.logbookModal.classList.add('active');
         }
+        
         function closeLogbookModal() {
             elements.logbookModal.classList.remove('active');
         }
+        
         function saveLogEntry(status) {
             // Get form data
             const date = document.getElementById('logDate').value;
@@ -2931,6 +3411,7 @@
             // Show notification
             showNotification(`Log entry ${status === 'commit' ? 'committed' : 'saved as draft'} successfully`, 'success');
         }
+        
         function viewLogEntry(id) {
             // Find log entry
             const logEntry = app.logEntries.find(e => e.id === id);
@@ -2977,6 +3458,7 @@
                 });
             }
         }
+        
         function editLogEntry(id) {
             // Find log entry
             const logEntry = app.logEntries.find(e => e.id === id);
@@ -3001,6 +3483,7 @@
                 }
             });
         }
+        
         function deleteLogEntry(id) {
             if (confirm('Are you sure you want to delete this log entry?')) {
                 // Find and remove log entry
@@ -3017,6 +3500,7 @@
                 showNotification('Log entry deleted successfully', 'success');
             }
         }
+        
         function uncommitLogEntry(id) {
             // Find log entry
             const logEntryIndex = app.logEntries.findIndex(e => e.id === id);
@@ -3032,6 +3516,7 @@
             // Show notification
             showNotification('Log entry uncommitted successfully', 'success');
         }
+        
         // Quotation Functions
         function loadQuotations() {
             const tbody = document.getElementById('quotationTableBody');
@@ -3062,6 +3547,7 @@
                 tbody.appendChild(tr);
             });
         }
+        
         function openQuotationModal() {
             // Reset form
             elements.quotationForm.reset();
@@ -3075,14 +3561,17 @@
             // Show modal
             elements.quotationModal.classList.add('active');
         }
+        
         function closeQuotationModal() {
             elements.quotationModal.classList.remove('active');
         }
+        
         function generateQuoteNo() {
             const prefix = 'QUOTE-';
             const nextNumber = app.quotations.length + 1;
             return `${prefix}${String(nextNumber).padStart(4, '0')}`;
         }
+        
         function addQuotationService() {
             const servicesContainer = document.getElementById('quotationServices');
             const serviceTemplate = document.querySelector('.quotation-service').cloneNode(true);
@@ -3096,6 +3585,7 @@
             
             servicesContainer.appendChild(serviceTemplate);
         }
+        
         function removeQuotationService(service) {
             service.remove();
             calculateQuoteTotal();
@@ -3111,6 +3601,7 @@
                 }
             });
         }
+        
         function resetQuotationServices() {
             const servicesContainer = document.getElementById('quotationServices');
             servicesContainer.innerHTML = `
@@ -3138,6 +3629,7 @@
                 input.addEventListener('input', calculateQuoteTotal);
             });
         }
+        
         function calculateQuoteTotal() {
             const services = document.querySelectorAll('.quotation-service');
             let total = 0;
@@ -3149,6 +3641,7 @@
             
             document.getElementById('quoteTotal').value = total.toFixed(2);
         }
+        
         function saveQuotation() {
             // Get form data
             const clientName = document.getElementById('clientName').value;
@@ -3207,6 +3700,7 @@
             // Show notification
             showNotification('Quotation saved successfully', 'success');
         }
+        
         function viewQuotation(quoteNo) {
             // Find quotation
             const quotation = app.quotations.find(q => q.quoteNo === quoteNo);
@@ -3257,6 +3751,7 @@
                 input.addEventListener('input', calculateQuoteTotal);
             });
         }
+        
         function editQuotation(quoteNo) {
             // Find quotation
             const quotation = app.quotations.find(q => q.quoteNo === quoteNo);
@@ -3307,6 +3802,7 @@
                 input.addEventListener('input', calculateQuoteTotal);
             });
         }
+        
         function deleteQuotation(quoteNo) {
             if (confirm('Are you sure you want to delete this quotation?')) {
                 // Find and remove quotation
@@ -3323,14 +3819,17 @@
                 showNotification('Quotation deleted successfully', 'success');
             }
         }
+        
         function downloadQuotation() {
             // This would generate and download a PDF in a real app
             showNotification('PDF download functionality would be implemented here', 'success');
         }
+        
         function emailQuotation() {
             // This would send an email in a real app
             showNotification('Email functionality would be implemented here', 'success');
         }
+        
         // Schedule Functions
         function loadSchedule() {
             // Set current week
@@ -3353,6 +3852,7 @@
                 showNoSchedule();
             }
         }
+        
         function getCurrentWeek() {
             const today = new Date();
             const dayOfWeek = today.getDay(); // 0 = Sunday, 1 = Monday, etc.
@@ -3364,16 +3864,19 @@
             
             return { start: startDate, end: endDate };
         }
+        
         function getWeekKey(week) {
             const startStr = formatDate(week.start);
             const endStr = formatDate(week.end);
             return `${startStr}_${endStr}`;
         }
+        
         function updateWeekDisplay() {
             const startStr = app.currentWeek.start.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
             const endStr = app.currentWeek.end.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
             document.getElementById('currentWeek').textContent = `${startStr} - ${endStr}`;
         }
+        
         function updateWeekPicker() {
             // Format the current week for the week picker input
             const year = app.currentWeek.start.getFullYear();
@@ -3386,6 +3889,7 @@
             
             elements.weekPicker.value = `${year}-W${String(weekNumber).padStart(2, '0')}`;
         }
+        
         function handleWeekPickerChange(e) {
             const weekValue = e.target.value;
             if (!weekValue) return;
@@ -3404,6 +3908,7 @@
             
             loadSchedule();
         }
+        
         function changeWeek(direction) {
             const newStart = new Date(app.currentWeek.start);
             newStart.setDate(newStart.getDate() + (direction * 7));
@@ -3415,6 +3920,7 @@
             
             loadSchedule();
         }
+        
         function createSchedule() {
             // Create empty schedule
             const weekKey = getWeekKey(app.currentWeek);
@@ -3452,6 +3958,7 @@
             // Render schedule
             renderSchedule(app.schedules[weekKey]);
         }
+        
         function saveSchedule() {
             // Save to localStorage
             saveData();
@@ -3463,6 +3970,7 @@
             // Show notification
             showNotification('Schedule saved successfully', 'success');
         }
+        
         function updateScheduleControls() {
             const createBtn = document.getElementById('createScheduleBtn');
             const saveBtn = document.getElementById('saveScheduleBtn');
@@ -3475,10 +3983,12 @@
                 saveBtn.style.display = 'none';
             }
         }
+        
         function showNoSchedule() {
             const container = document.getElementById('scheduleTableContainer');
             container.innerHTML = '<div class="no-schedule" id="noScheduleMessage">This week schedule is not yet available</div>';
         }
+        
         function renderSchedule(schedule) {
             const container = document.getElementById('scheduleTableContainer');
             
@@ -3524,13 +4034,21 @@
                 crewEntries[entry.crewId].push(entry);
             });
             
+            // Get active filter
+            const activeFilter = document.querySelector('.filter-btn.active').dataset.filter;
+            
             // Add rows for each crew
             Object.keys(crewEntries).forEach(crewId => {
                 const entries = crewEntries[crewId];
                 const crew = app.crewMembers.find(c => c.id === crewId);
                 
+                // Apply filter
+                if (activeFilter === 'hq' && crew.outlet !== 'HQ') return;
+                if (activeFilter === 'blm' && crew.outlet !== 'BLM') return;
+                
                 // Create crew info row
                 const crewRow = document.createElement('tr');
+                crewRow.dataset.outlet = crew.outlet.toLowerCase();
                 
                 // Crew info cell
                 const crewCell = document.createElement('td');
@@ -3543,6 +4061,8 @@
                 crewRow.appendChild(crewCell);
                 
                 // Add schedule cells for each day
+                let hasWorkingDay = false;
+                
                 for (let i = 0; i < 7; i++) {
                     const date = new Date(app.currentWeek.start);
                     date.setDate(date.getDate() + i);
@@ -3559,11 +4079,12 @@
                         if (entry.remarks === 'Off') {
                             statusClass = 'schedule-off';
                             statusText = 'Off Day';
-                        } else if (entry.remarks === 'Annual Leave') {
+                        } else if (entry.remarks === 'Annual Leave' || entry.remarks === 'Emergency Leave') {
                             statusClass = 'schedule-leave';
-                            statusText = 'Annual Leave';
+                            statusText = entry.remarks;
                         } else if (entry.startTime && entry.endTime) {
                             statusText = `${entry.startTime} - ${entry.endTime}`;
+                            hasWorkingDay = true;
                         }
                         
                         if (app.scheduleEditMode) {
@@ -3587,14 +4108,20 @@
                             });
                         } else {
                             scheduleCell.innerHTML = `
-                                <div class="schedule-status ${statusClass}">${statusText}</div>
-                                ${entry.duties ? `<div style="font-size: 12px; margin-top: 5px;">${entry.duties}</div>` : ''}
+                                <div class="schedule-status ${statusClass}">
+                                    ${statusText}
+                                    ${entry.duties ? `<div style="font-size: 12px; margin-top: 5px;">${entry.duties}</div>` : ''}
+                                </div>
                             `;
                         }
                     }
                     
                     crewRow.appendChild(scheduleCell);
                 }
+                
+                // Apply working/off filter
+                if (activeFilter === 'working' && !hasWorkingDay) return;
+                if (activeFilter === 'off' && hasWorkingDay) return;
                 
                 tbody.appendChild(crewRow);
             });
@@ -3639,7 +4166,17 @@
             table.appendChild(tbody);
             container.innerHTML = '';
             container.appendChild(table);
+            
+            // Add event listeners for filter buttons
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    renderSchedule(schedule);
+                });
+            });
         }
+        
         function updateScheduleEntry(e) {
             const crewId = e.target.dataset.crew;
             const date = e.target.dataset.date;
@@ -3656,6 +4193,7 @@
                 }
             }
         }
+        
         // Orders Functions
         function loadOrders() {
             const tbody = document.getElementById('ordersTableBody');
@@ -3714,6 +4252,7 @@
                 tbody.appendChild(tr);
             });
         }
+        
         function openOrderModal() {
             // Reset form
             elements.orderForm.reset();
@@ -3730,9 +4269,11 @@
             // Show modal
             elements.orderModal.classList.add('active');
         }
+        
         function closeOrderModal() {
             elements.orderModal.classList.remove('active');
         }
+        
         function populateOrderItemDropdown() {
             const selects = document.querySelectorAll('.order-item-select');
             
@@ -3751,6 +4292,7 @@
                 select.addEventListener('change', updateOrderItemPrice);
             });
         }
+        
         function updateOrderItemPrice(e) {
             const select = e.target;
             const priceInput = select.closest('.order-item').querySelector('.order-item-price');
@@ -3763,6 +4305,7 @@
                 priceInput.value = '';
             }
         }
+        
         function addOrderItem() {
             const itemsContainer = document.getElementById('orderItems');
             const itemTemplate = document.querySelector('.order-item').cloneNode(true);
@@ -3783,6 +4326,7 @@
             // Populate dropdown
             populateOrderItemDropdown();
         }
+        
         function removeOrderItem(item) {
             item.remove();
             calculateOrderTotal();
@@ -3798,6 +4342,7 @@
                 }
             });
         }
+        
         function resetOrderItems() {
             const itemsContainer = document.getElementById('orderItems');
             itemsContainer.innerHTML = `
@@ -3830,6 +4375,7 @@
             // Populate dropdown
             populateOrderItemDropdown();
         }
+        
         function calculateOrderTotal() {
             const items = document.querySelectorAll('.order-item');
             let total = 0;
@@ -3842,6 +4388,7 @@
             
             document.getElementById('orderTotal').value = total.toFixed(2);
         }
+        
         function saveOrder() {
             // Get form data
             const customer = document.getElementById('orderCustomer').value;
@@ -3894,11 +4441,13 @@
             // Show notification
             showNotification('Order created successfully', 'success');
         }
+        
         function generateOrderId() {
             const prefix = 'ORD-';
             const nextNumber = app.orders.length + 1;
             return `${prefix}${String(nextNumber).padStart(4, '0')}`;
         }
+        
         function assignOrder(orderId) {
             // Find order
             const order = app.orders.find(o => o.id === orderId);
@@ -3913,9 +4462,11 @@
             // Populate crew dropdown based on selected outlet
             updateCrewDropdownForOutlet(order.outlet);
         }
+        
         function closeAssignOrderModal() {
             elements.assignOrderModal.classList.remove('active');
         }
+        
         function updateCrewDropdownForOutlet(outlet) {
             const crewSelect = document.getElementById('assignOrderCrew');
             crewSelect.innerHTML = '<option value="">Select Crew Member</option>';
@@ -3938,6 +4489,7 @@
                 updateCrewDropdownForOutlet(e.target.value);
             });
         }
+        
         function confirmAssignOrder() {
             const orderId = document.getElementById('confirmAssignOrderBtn').dataset.orderId;
             const outlet = document.getElementById('assignOrderOutlet').value;
@@ -3963,6 +4515,7 @@
             // Show notification
             showNotification('Order assigned successfully', 'success');
         }
+        
         function generateCashbillFromOrder(orderId) {
             // Find order
             const order = app.orders.find(o => o.id === orderId);
@@ -4030,6 +4583,7 @@
             // Calculate total
             calculateTotal();
         }
+        
         // Activity Log Functions
         function loadActivityLogs() {
             const tbody = document.getElementById('activityTableBody');
@@ -4101,9 +4655,11 @@
                 tbody.appendChild(tr);
             });
         }
+        
         function filterActivityLogs() {
             loadActivityLogs();
         }
+        
         // Attendance Management Functions
         function loadAttendancePage() {
             // Set today's date as default
@@ -4123,6 +4679,7 @@
             // Load attendance records
             loadAttendanceRecords();
         }
+        
         function loadAttendanceRecords() {
             const date = elements.attendanceDate.value;
             const crewId = elements.crewFilter.value;
@@ -4212,6 +4769,7 @@
                 tbody.appendChild(tr);
             });
         }
+        
         function editAttendanceRecord(recordId) {
             // Find attendance record
             const record = app.attendanceRecords.find(r => r.id === recordId);
@@ -4237,9 +4795,11 @@
             updatePunchInStatus();
             updateBreakStatus();
         }
+        
         function closeAttendanceEditModal() {
             elements.attendanceEditModal.classList.remove('active');
         }
+        
         function updatePunchInStatus() {
             const punchInTime = elements.editPunchInTime.value;
             const scheduledTimeText = document.getElementById('editScheduledTime').value;
@@ -4269,6 +4829,7 @@
                 elements.punchInStatus.className = 'time-status status-normal';
             }
         }
+        
         function updateBreakStatus() {
             const breakStartTime = elements.editBreakStartTime.value;
             const breakEndTime = elements.editBreakEndTime.value;
@@ -4301,6 +4862,7 @@
                 elements.breakStatus.className = 'time-status status-normal';
             }
         }
+        
         function saveAttendanceEdit() {
             const recordId = document.getElementById('saveAttendanceEditBtn').dataset.recordId;
             
@@ -4421,6 +4983,7 @@
             // Show notification
             showNotification('Attendance record updated successfully', 'success');
         }
+        
         // Crew Management Functions
         function loadCrewMembers() {
             const tbody = document.getElementById('crewTableBody');
@@ -4442,6 +5005,7 @@
                 tbody.appendChild(tr);
             });
         }
+        
         function openCrewModal() {
             // Reset form
             elements.crewForm.reset();
@@ -4452,9 +5016,11 @@
             // Show modal
             elements.crewModal.classList.add('active');
         }
+        
         function closeCrewModal() {
             elements.crewModal.classList.remove('active');
         }
+        
         function saveCrew() {
             // Get form data
             const id = document.getElementById('crewId').value;
@@ -4496,9 +5062,11 @@
             // Show notification
             showNotification('Crew member saved successfully', 'success');
         }
+        
         function saveCrewMembers() {
             localStorage.setItem('pneCrewMembers', JSON.stringify(app.crewMembers));
         }
+        
         function editCrew(id) {
             // Find crew member
             const crew = app.crewMembers.find(c => c.id === id);
@@ -4517,6 +5085,7 @@
             document.getElementById('crewRole').value = crew.role;
             document.getElementById('crewOutlet').value = crew.outlet;
         }
+        
         function deleteCrew(id) {
             if (confirm('Are you sure you want to delete this crew member?')) {
                 // Find and remove crew member
@@ -4535,6 +5104,7 @@
                 showNotification('Crew member deleted successfully', 'success');
             }
         }
+        
         // Stock Management Functions
         function loadStockItems() {
             const tbody = document.getElementById('stockTableBody');
@@ -4559,6 +5129,7 @@
                 tbody.appendChild(tr);
             });
         }
+        
         function openStockModal() {
             // Reset form
             elements.stockForm.reset();
@@ -4569,9 +5140,11 @@
             // Show modal
             elements.stockModal.classList.add('active');
         }
+        
         function closeStockModal() {
             elements.stockModal.classList.remove('active');
         }
+        
         function saveStock() {
             // Get form data
             const code = document.getElementById('itemCode').value;
@@ -4618,9 +5191,11 @@
             // Show notification
             showNotification('Stock item saved successfully', 'success');
         }
+        
         function saveStockItems() {
             localStorage.setItem('pneStockItems', JSON.stringify(app.stockItems));
         }
+        
         function editStock(code) {
             // Find stock item
             const stock = app.stockItems.find(s => s.code === code);
@@ -4641,6 +5216,7 @@
             document.getElementById('itemQuantity').value = stock.quantity;
             document.getElementById('itemOutlet').value = stock.outlet;
         }
+        
         function deleteStock(code) {
             if (confirm('Are you sure you want to delete this stock item?')) {
                 // Find and remove stock item
@@ -4659,10 +5235,402 @@
                 showNotification('Stock item deleted successfully', 'success');
             }
         }
+        
+        // Stock Receiving Functions
+        function loadStockReceivingData() {
+            const receivingData = localStorage.getItem('pneStockReceivingRecords');
+            if (receivingData) {
+                app.stockReceivingRecords = JSON.parse(receivingData);
+            }
+        }
+        
+        function saveStockReceivingData() {
+            localStorage.setItem('pneStockReceivingRecords', JSON.stringify(app.stockReceivingRecords));
+        }
+        
+        function loadStockReceivingPage() {
+            // Set today's date as default
+            elements.receivingDate.value = getCurrentDateStr();
+            
+            // Set received by to current user
+            elements.receivedBy.value = app.user.name;
+            
+            // Populate item dropdown
+            populateReceivingItemDropdown();
+            
+            // Reset items
+            resetReceivingItems();
+            
+            // Load receiving records
+            loadReceivingRecords();
+            
+            // Set up event listeners
+            setupReceivingEventListeners();
+        }
+        
+        function populateReceivingItemDropdown() {
+            const selects = document.querySelectorAll('.item-select');
+            
+            selects.forEach(select => {
+                select.innerHTML = '<option value="">Select Item</option>';
+                
+                app.stockItems.forEach(item => {
+                    const option = document.createElement('option');
+                    option.value = item.code;
+                    option.textContent = `${item.name} (Current Stock: ${item.quantity})`;
+                    option.dataset.price = item.price;
+                    select.appendChild(option);
+                });
+                
+                // Add change event listener
+                select.addEventListener('change', updateReceivingItemDetails);
+            });
+        }
+        
+        function updateReceivingItemDetails(e) {
+            const select = e.target;
+            const itemRow = select.closest('.receiving-item');
+            const costInput = itemRow.querySelector('.item-cost');
+            const selectedOption = select.options[select.selectedIndex];
+            
+            if (selectedOption && selectedOption.value) {
+                // Pre-fill with current price, but allow editing
+                costInput.value = selectedOption.dataset.price || '';
+                calculateReceivingTotal();
+            } else {
+                costInput.value = '';
+            }
+        }
+        
+        function addReceivingItem() {
+            const itemsContainer = document.getElementById('receivingItems');
+            const itemTemplate = document.querySelector('.receiving-item').cloneNode(true);
+            
+            // Reset values
+            itemTemplate.querySelector('.item-select').value = '';
+            itemTemplate.querySelector('.item-quantity').value = '1';
+            itemTemplate.querySelector('.item-cost').value = '';
+            
+            // Show remove button
+            itemTemplate.querySelector('.remove-receiving-item').style.display = 'inline-flex';
+            
+            // Add event listener
+            itemTemplate.querySelector('.item-select').addEventListener('change', updateReceivingItemDetails);
+            itemTemplate.querySelector('.item-quantity').addEventListener('input', calculateReceivingTotal);
+            itemTemplate.querySelector('.item-cost').addEventListener('input', calculateReceivingTotal);
+            
+            itemsContainer.appendChild(itemTemplate);
+            
+            // Populate dropdown
+            populateReceivingItemDropdown();
+            
+            // Show/hide remove buttons
+            updateReceivingRemoveButtons();
+        }
+        
+        function removeReceivingItem(item) {
+            item.remove();
+            calculateReceivingTotal();
+            updateReceivingRemoveButtons();
+        }
+        
+        function resetReceivingItems() {
+            const itemsContainer = document.getElementById('receivingItems');
+            itemsContainer.innerHTML = `
+                <div class="form-row receiving-item">
+                    <div class="form-col">
+                        <div class="form-group">
+                            <select class="form-input item-select" required>
+                                <option value="">Select Item</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-col">
+                        <div class="form-group">
+                            <input type="number" class="form-input item-quantity" placeholder="Quantity" min="1" value="1" required>
+                        </div>
+                    </div>
+                    <div class="form-col">
+                        <div class="form-group">
+                            <input type="number" class="form-input item-cost" placeholder="Cost (RM)" step="0.01" required>
+                        </div>
+                    </div>
+                    <div class="form-col" style="display: flex; align-items: end;">
+                        <button type="button" class="btn btn-danger remove-receiving-item" style="display: none;">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            // Populate dropdown
+            populateReceivingItemDropdown();
+            
+            // Add event listeners
+            document.querySelector('.item-select').addEventListener('change', updateReceivingItemDetails);
+            document.querySelector('.item-quantity').addEventListener('input', calculateReceivingTotal);
+            document.querySelector('.item-cost').addEventListener('input', calculateReceivingTotal);
+        }
+        
+        function updateReceivingRemoveButtons() {
+            const items = document.querySelectorAll('.receiving-item');
+            items.forEach((item, index) => {
+                const removeBtn = item.querySelector('.remove-receiving-item');
+                if (items.length > 1) {
+                    removeBtn.style.display = 'inline-flex';
+                } else {
+                    removeBtn.style.display = 'none';
+                }
+            });
+        }
+        
+        function calculateReceivingTotal() {
+            const items = document.querySelectorAll('.receiving-item');
+            let total = 0;
+            
+            items.forEach(item => {
+                const quantity = parseInt(item.querySelector('.item-quantity').value) || 0;
+                const cost = parseFloat(item.querySelector('.item-cost').value) || 0;
+                total += quantity * cost;
+            });
+            
+            document.getElementById('totalCost').value = total.toFixed(2);
+        }
+        
+        function setupReceivingEventListeners() {
+            // Add item button
+            document.getElementById('addReceivingItemBtn').addEventListener('click', addReceivingItem);
+            
+            // Preview button
+            document.getElementById('previewReceivingBtn').addEventListener('click', previewReceiving);
+            
+            // Save button
+            document.getElementById('saveReceivingBtn').addEventListener('click', saveReceiving);
+            
+            // Filter dropdown
+            elements.receivingFilter.addEventListener('change', loadReceivingRecords);
+        }
+        
+        function previewReceiving() {
+            // Validate form
+            const date = elements.receivingDate.value;
+            const supplier = elements.supplierName.value;
+            
+            if (!date || !supplier) {
+                showNotification('Please fill in all required fields', 'error');
+                return;
+            }
+            
+            // Check if at least one item is added
+            const items = document.querySelectorAll('.receiving-item');
+            let hasValidItem = false;
+            
+            items.forEach(item => {
+                const itemCode = item.querySelector('.item-select').value;
+                const quantity = parseInt(item.querySelector('.item-quantity').value) || 0;
+                const cost = parseFloat(item.querySelector('.item-cost').value) || 0;
+                
+                if (itemCode && quantity > 0 && cost > 0) {
+                    hasValidItem = true;
+                }
+            });
+            
+            if (!hasValidItem) {
+                showNotification('Please add at least one valid item', 'error');
+                return;
+            }
+            
+            // Show preview notification
+            showNotification('Preview functionality would be implemented here', 'success');
+        }
+        
+        function saveReceiving() {
+            // Validate form
+            const date = elements.receivingDate.value;
+            const supplier = elements.supplierName.value;
+            const invoiceNumber = elements.invoiceNumber.value;
+            const receivedBy = elements.receivedBy.value;
+            const notes = elements.receivingNotes.value;
+            const totalCost = parseFloat(document.getElementById('totalCost').value) || 0;
+            
+            if (!date || !supplier) {
+                showNotification('Please fill in all required fields', 'error');
+                return;
+            }
+            
+            // Get items
+            const items = [];
+            const itemElements = document.querySelectorAll('.receiving-item');
+            
+            itemElements.forEach(itemElement => {
+                const itemCode = itemElement.querySelector('.item-select').value;
+                const quantity = parseInt(itemElement.querySelector('.item-quantity').value) || 0;
+                const cost = parseFloat(itemElement.querySelector('.item-cost').value) || 0;
+                
+                if (itemCode && quantity > 0 && cost > 0) {
+                    const stockItem = app.stockItems.find(si => si.code === itemCode);
+                    if (stockItem) {
+                        items.push({
+                            code: itemCode,
+                            name: stockItem.name,
+                            quantity: quantity,
+                            cost: cost
+                        });
+                        
+                        // Update stock quantity
+                        const stockIndex = app.stockItems.findIndex(si => si.code === itemCode);
+                        if (stockIndex !== -1) {
+                            app.stockItems[stockIndex].quantity += quantity;
+                        }
+                    }
+                }
+            });
+            
+            if (items.length === 0) {
+                showNotification('Please add at least one valid item', 'error');
+                return;
+            }
+            
+            // Create receiving record
+            const receivingRecord = {
+                id: generateId(),
+                date,
+                supplier,
+                invoiceNumber,
+                items,
+                totalCost,
+                receivedBy,
+                notes,
+                createdAt: new Date().toISOString()
+            };
+            
+            // Add to app state
+            app.stockReceivingRecords.push(receivingRecord);
+            
+            // Save data
+            saveStockReceivingData();
+            saveStockItems();
+            
+            // Show notification
+            showNotification('Stock received and inventory updated successfully', 'success');
+            
+            // Reset form
+            document.getElementById('stockReceivingForm').reset();
+            elements.receivingDate.value = getCurrentDateStr();
+            elements.receivedBy.value = app.user.name;
+            resetReceivingItems();
+            
+            // Reload records
+            loadReceivingRecords();
+        }
+        
+        function loadReceivingRecords() {
+            const tbody = document.getElementById('receivingTableBody');
+            if (!tbody) return;
+            
+            tbody.innerHTML = '';
+            
+            // Get filter value
+            const filter = elements.receivingFilter.value;
+            
+            // Filter records based on selection
+            let filteredRecords = [...app.stockReceivingRecords];
+            
+            if (filter !== 'all') {
+                const today = new Date();
+                
+                switch (filter) {
+                    case 'today':
+                        const todayStr = formatDate(today);
+                        filteredRecords = filteredRecords.filter(record => record.date === todayStr);
+                        break;
+                    case 'week':
+                        const weekStart = new Date(today);
+                        weekStart.setDate(today.getDate() - today.getDay() + (today.getDay() === 0 ? -6 : 1));
+                        const weekEnd = new Date(weekStart);
+                        weekEnd.setDate(weekStart.getDate() + 6);
+                        
+                        filteredRecords = filteredRecords.filter(record => {
+                            const recordDate = new Date(record.date);
+                            return recordDate >= weekStart && recordDate <= weekEnd;
+                        });
+                        break;
+                    case 'month':
+                        const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
+                        const monthEnd = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+                        
+                        filteredRecords = filteredRecords.filter(record => {
+                            const recordDate = new Date(record.date);
+                            return recordDate >= monthStart && recordDate <= monthEnd;
+                        });
+                        break;
+                }
+            }
+            
+            // Sort records by date (newest first)
+            filteredRecords.sort((a, b) => new Date(b.date) - new Date(a.date));
+            
+            if (filteredRecords.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" class="no-schedule">No receiving records found</td></tr>';
+                return;
+            }
+            
+            // Display records
+            filteredRecords.forEach(record => {
+                const tr = document.createElement('tr');
+                
+                // Format items display
+                const itemsDisplay = record.items.map(item => 
+                    `${item.name} (x${item.quantity})`
+                ).join(', ');
+                
+                tr.innerHTML = `
+                    <td>${record.date}</td>
+                    <td>${record.invoiceNumber || '-'}</td>
+                    <td>${record.supplier}</td>
+                    <td>${itemsDisplay}</td>
+                    <td>RM${record.totalCost.toFixed(2)}</td>
+                    <td>${record.receivedBy}</td>
+                    <td>
+                        <button class="btn btn-sm btn-primary" onclick="viewReceivingRecord('${record.id}')">View</button>
+                        <button class="btn btn-sm btn-danger" onclick="deleteReceivingRecord('${record.id}')">Delete</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+        
+        function viewReceivingRecord(id) {
+            // Find record
+            const record = app.stockReceivingRecords.find(r => r.id === id);
+            if (!record) return;
+            
+            // This would open a modal with record details in a real app
+            alert(`Viewing record #${record.invoiceNumber || 'N/A'} from ${record.supplier}`);
+        }
+        
+        function deleteReceivingRecord(id) {
+            if (confirm('Are you sure you want to delete this receiving record? This will NOT revert the stock quantities.')) {
+                // Find and remove record
+                const recordIndex = app.stockReceivingRecords.findIndex(r => r.id === id);
+                if (recordIndex === -1) return;
+                
+                app.stockReceivingRecords.splice(recordIndex, 1);
+                saveStockReceivingData();
+                
+                // Reload records
+                loadReceivingRecords();
+                
+                // Show notification
+                showNotification('Receiving record deleted successfully', 'success');
+            }
+        }
+        
         // Utility Functions
         function generateId() {
             return Date.now().toString(36) + Math.random().toString(36).substr(2);
         }
+        
         // Initialize app when DOM is loaded
         document.addEventListener('DOMContentLoaded', () => {
             // Hide loading overlay
