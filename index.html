@@ -20,6 +20,8 @@
             --light-gray: #f5f7fa;
             --shadow: 0 4px 20px rgba(0,0,0,0.08);
             --transition: all 0.3s ease;
+            --announcement-height: 40px;
+            --nav-height: 70px;
         }
         * {
             margin: 0;
@@ -33,14 +35,36 @@
             min-height: 100vh;
             display: flex;
             flex-direction: column;
+            padding-top: var(--announcement-height);
         }
-        /* Loading Screen */
-        .loading-overlay {
+        
+        /* Announcements Bar */
+        .announcements-bar {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
-            height: 100%;
+            background-color: var(--primary);
+            color: var(--white);
+            text-align: center;
+            padding: 10px;
+            font-size: 14px;
+            font-weight: 500;
+            z-index: 1001;
+            height: var(--announcement-height);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        /* Loading Screen */
+        .loading-overlay {
+            position: fixed;
+            top: var(--announcement-height);
+            left: 0;
+            width: 100%;
+            height: calc(100% - var(--announcement-height));
             background-color: rgba(255, 255, 255, 0.9);
             display: flex;
             justify-content: center;
@@ -60,6 +84,7 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+        
         /* Login Page - White Clean Theme */
         .login-container {
             display: flex;
@@ -165,6 +190,7 @@
             color: var(--danger);
             border-left: 4px solid var(--danger);
         }
+        
         /* Main App Layout */
         .app-container {
             display: flex;
@@ -172,6 +198,7 @@
             min-height: 100vh;
             display: none;
         }
+        
         /* Top Navigation */
         .top-nav {
             background-color: var(--white);
@@ -181,8 +208,9 @@
             justify-content: space-between;
             align-items: center;
             position: sticky;
-            top: 0;
+            top: var(--announcement-height);
             z-index: 100;
+            height: var(--nav-height);
         }
         .nav-left {
             display: flex;
@@ -216,13 +244,14 @@
             font-size: 14px;
             color: #666;
         }
+        
         /* Sidebar */
         .sidebar {
             width: 250px;
             background-color: var(--white);
             box-shadow: var(--shadow);
             position: fixed;
-            top: 70px;
+            top: calc(var(--announcement-height) + var(--nav-height));
             left: 0;
             bottom: 0;
             overflow-y: auto;
@@ -268,6 +297,7 @@
             border-left-color: var(--admin);
             color: var(--admin);
         }
+        
         /* Main Content */
         .main-content {
             flex: 1;
@@ -275,6 +305,7 @@
             margin-left: 250px;
             transition: margin-left 0.3s ease;
             background-color: var(--light-gray);
+            margin-top: var(--nav-height);
         }
         .main-content.expanded {
             margin-left: 0;
@@ -310,6 +341,7 @@
             font-size: 20px;
             font-weight: 600;
         }
+        
         /* Dashboard Styles */
         .dashboard-info {
             display: grid;
@@ -351,6 +383,55 @@
             border-radius: 8px;
             min-width: 150px;
         }
+        
+        /* Enhanced Activity Log Styles */
+        .activity-log-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .activity-log-table th,
+        .activity-log-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+        .activity-log-table th {
+            background-color: var(--secondary);
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+        }
+        .activity-log-table tr:hover {
+            background-color: rgba(74, 108, 247, 0.05);
+        }
+        .log-type {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .log-punch-in {
+            background-color: #e8f5e9;
+            color: var(--success);
+        }
+        .log-punch-out {
+            background-color: #ffebee;
+            color: var(--danger);
+        }
+        .log-break {
+            background-color: #fff8e1;
+            color: var(--warning);
+        }
+        .log-late {
+            background-color: #e1f5fe;
+            color: #0288d1;
+        }
+        .log-overbreak {
+            background-color: #f3e5f5;
+            color: #7b1fa2;
+        }
+        
         /* Table Styles */
         .table-container {
             overflow-x: auto;
@@ -374,6 +455,7 @@
         .data-table tr:hover {
             background-color: rgba(74, 108, 247, 0.05);
         }
+        
         /* Form Styles */
         .form-row {
             display: flex;
@@ -385,6 +467,7 @@
             flex: 1;
             min-width: 250px;
         }
+        
         /* Status Badge */
         .status-badge {
             display: inline-block;
@@ -406,6 +489,7 @@
             background-color: #fff8e1;
             color: var(--warning);
         }
+        
         /* Schedule Table Styles */
         .schedule-controls {
             display: flex;
@@ -537,14 +621,15 @@
             color: #666;
             font-style: italic;
         }
+        
         /* Modal Styles - Increased size */
         .modal {
             display: none;
             position: fixed;
-            top: 0;
+            top: var(--announcement-height);
             left: 0;
             width: 100%;
-            height: 100%;
+            height: calc(100% - var(--announcement-height));
             background-color: rgba(0, 0, 0, 0.5);
             z-index: 1000;
             justify-content: center;
@@ -590,51 +675,7 @@
             justify-content: flex-end;
             gap: 15px;
         }
-        /* Activity Log Styles */
-        .activity-log-table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        .activity-log-table th,
-        .activity-log-table td {
-            padding: 12px 15px;
-            text-align: left;
-            border-bottom: 1px solid var(--border);
-        }
-        .activity-log-table th {
-            background-color: var(--secondary);
-            font-weight: 600;
-        }
-        .activity-log-table tr:hover {
-            background-color: rgba(74, 108, 247, 0.05);
-        }
-        .log-type {
-            display: inline-block;
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-        }
-        .log-punch-in {
-            background-color: #e8f5e9;
-            color: var(--success);
-        }
-        .log-punch-out {
-            background-color: #ffebee;
-            color: var(--danger);
-        }
-        .log-break {
-            background-color: #fff8e1;
-            color: var(--warning);
-        }
-        .log-late {
-            background-color: #e1f5fe;
-            color: #0288d1;
-        }
-        .log-overbreak {
-            background-color: #f3e5f5;
-            color: #7b1fa2;
-        }
+        
         /* Attendance Management Styles */
         .attendance-controls {
             display: flex;
@@ -672,6 +713,7 @@
             display: flex;
             gap: 8px;
         }
+        
         /* Stock Receiving Styles */
         .receiving-item {
             margin-bottom: 15px;
@@ -698,8 +740,16 @@
             padding-top: 15px;
             border-top: 1px solid var(--border);
         }
+        
         /* Responsive */
         @media (max-width: 768px) {
+            .announcements-bar {
+                font-size: 12px;
+                padding: 8px;
+                height: auto;
+                line-height: 1.4;
+            }
+            
             .sidebar {
                 width: 100%;
                 max-width: 300px;
@@ -733,7 +783,17 @@
             .receiving-item-details {
                 grid-template-columns: 1fr;
             }
+            
+            /* Enhanced activity log table for mobile */
+            .activity-log-table {
+                font-size: 12px;
+            }
+            .activity-log-table th,
+            .activity-log-table td {
+                padding: 8px 5px;
+            }
         }
+        
         /* Notification */
         .notification {
             position: fixed;
@@ -775,6 +835,7 @@
             cursor: pointer;
             color: #666;
         }
+        
         /* Time Input Styles */
         .time-input-group {
             display: flex;
@@ -806,9 +867,33 @@
             background-color: #f3e5f5;
             color: #7b1fa2;
         }
+        
+        /* Enhanced Dashboard Activity Table */
+        .dashboard-activity-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .dashboard-activity-table th,
+        .dashboard-activity-table td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+        .dashboard-activity-table th {
+            background-color: var(--secondary);
+            font-weight: 600;
+        }
+        .dashboard-activity-table tr:hover {
+            background-color: rgba(74, 108, 247, 0.05);
+        }
     </style>
 </head>
 <body>
+    <!-- Announcements Bar -->
+    <div class="announcements-bar">
+        Any bugs founded contact Danial Danish (IT) to fix / Adjustment contact Danial / Attendance Amendment contact Danial. Thank you.
+    </div>
+    
     <!-- Loading Overlay -->
     <div class="loading-overlay" id="loadingOverlay">
         <div class="loading-spinner"></div>
@@ -976,17 +1061,23 @@
                     </div>
                     
                     <div class="table-container">
-                        <table class="activity-log-table">
+                        <table class="dashboard-activity-table">
                             <thead>
                                 <tr>
-                                    <th>Time</th>
-                                    <th>User</th>
-                                    <th>Activity</th>
+                                    <th>No</th>
+                                    <th>ID</th>
+                                    <th>Name</th>
+                                    <th>Location</th>
+                                    <th>In</th>
+                                    <th>Out</th>
+                                    <th>Effective Hours</th>
+                                    <th>Break</th>
+                                    <th>Remark</th>
                                 </tr>
                             </thead>
                             <tbody id="dashboardActivityTableBody">
                                 <tr>
-                                    <td colspan="3" class="no-schedule">No recent activities</td>
+                                    <td colspan="9" class="no-schedule">No recent activities</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -994,6 +1085,53 @@
                 </div>
             </div>
             
+            <!-- Activity Logs Page -->
+            <div id="activityPage" class="page" style="display: none;">
+                <div class="content-header">
+                    <h1 class="content-title">Activity Logs</h1>
+                    <p class="content-subtitle">View punch in/out and break activities</p>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">Recent Activities</h2>
+                        <div>
+                            <select id="activityFilter" class="form-input">
+                                <option value="all">All Activities</option>
+                                <option value="punch-in">Punch In</option>
+                                <option value="punch-out">Punch Out</option>
+                                <option value="break">Break</option>
+                                <option value="resume">Resume</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="table-container">
+                        <table class="activity-log-table">
+                            <thead>
+                                <tr>
+                                    <th>No</th>
+                                    <th>ID</th>
+                                    <th>Name</th>
+                                    <th>Location</th>
+                                    <th>In</th>
+                                    <th>Out</th>
+                                    <th>Effective Hours</th>
+                                    <th>Break</th>
+                                    <th>Remark</th>
+                                </tr>
+                            </thead>
+                            <tbody id="activityTableBody">
+                                <tr>
+                                    <td colspan="9" class="no-schedule">No activity logs found</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Other pages remain unchanged -->
             <!-- Cashbill Page -->
             <div id="cashbillPage" class="page" style="display: none;">
                 <div class="content-header">
@@ -1205,48 +1343,6 @@
                             <tbody id="ordersTableBody">
                                 <tr>
                                     <td colspan="8" class="no-schedule">No orders found</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Activity Logs Page -->
-            <div id="activityPage" class="page" style="display: none;">
-                <div class="content-header">
-                    <h1 class="content-title">Activity Logs</h1>
-                    <p class="content-subtitle">View punch in/out and break activities</p>
-                </div>
-                
-                <div class="card">
-                    <div class="card-header">
-                        <h2 class="card-title">Recent Activities</h2>
-                        <div>
-                            <select id="activityFilter" class="form-input">
-                                <option value="all">All Activities</option>
-                                <option value="punch-in">Punch In</option>
-                                <option value="punch-out">Punch Out</option>
-                                <option value="break">Break</option>
-                                <option value="resume">Resume</option>
-                            </select>
-                        </div>
-                    </div>
-                    
-                    <div class="table-container">
-                        <table class="activity-log-table">
-                            <thead>
-                                <tr>
-                                    <th>Date & Time</th>
-                                    <th>User</th>
-                                    <th>Activity Type</th>
-                                    <th>Duration</th>
-                                    <th>Notes</th>
-                                </tr>
-                            </thead>
-                            <tbody id="activityTableBody">
-                                <tr>
-                                    <td colspan="5" class="no-schedule">No activity logs found</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -2582,6 +2678,7 @@
                 id: generateId(),
                 userId: app.user.id,
                 userName: app.user.name,
+                userOutlet: app.user.outlet,
                 type: action,
                 timestamp: new Date().toISOString(),
                 date: todayStr
@@ -2808,7 +2905,7 @@
             saveStockReceivingData();
         }
         
-        // Load dashboard activities
+        // Load dashboard activities with enhanced details
         function loadDashboardActivities() {
             const tbody = document.getElementById('dashboardActivityTableBody');
             if (!tbody) return;
@@ -2822,48 +2919,236 @@
             // Filter activities for today
             const todayActivities = app.activityLogs.filter(log => log.date === todayStr);
             
-            // Sort by timestamp (newest first)
-            todayActivities.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+            // Group activities by user
+            const userActivities = {};
+            todayActivities.forEach(log => {
+                if (!userActivities[log.userId]) {
+                    userActivities[log.userId] = {
+                        id: log.userId,
+                        name: log.userName,
+                        location: log.userOutlet,
+                        punchIn: '',
+                        punchOut: '',
+                        breakStart: '',
+                        breakEnd: '',
+                        effectiveHours: '',
+                        breakDuration: '',
+                        remark: ''
+                    };
+                }
+                
+                // Update activity details
+                switch (log.type) {
+                    case 'punch-in':
+                        userActivities[log.userId].punchIn = new Date(log.timestamp).toLocaleTimeString();
+                        if (log.isLate) {
+                            userActivities[log.userId].remark = `Late by ${log.lateBy}`;
+                        }
+                        break;
+                    case 'punch-out':
+                        userActivities[log.userId].punchOut = new Date(log.timestamp).toLocaleTimeString();
+                        break;
+                    case 'break':
+                        userActivities[log.userId].breakStart = new Date(log.timestamp).toLocaleTimeString();
+                        break;
+                    case 'resume':
+                        userActivities[log.userId].breakEnd = new Date(log.timestamp).toLocaleTimeString();
+                        if (log.isOverbreak) {
+                            userActivities[log.userId].remark = `Overbreak by ${log.overbreakBy}`;
+                        }
+                        break;
+                }
+            });
             
-            // Show only the 5 most recent activities
-            const recentActivities = todayActivities.slice(0, 5);
+            // Calculate effective hours and break duration for each user
+            Object.keys(userActivities).forEach(userId => {
+                const user = userActivities[userId];
+                
+                // Calculate break duration
+                if (user.breakStart && user.breakEnd) {
+                    const breakStart = new Date(`${todayStr}T${user.breakStart}`);
+                    const breakEnd = new Date(`${todayStr}T${user.breakEnd}`);
+                    const breakDurationMs = breakEnd - breakStart;
+                    const breakHours = Math.floor(breakDurationMs / (1000 * 60 * 60));
+                    const breakMinutes = Math.floor((breakDurationMs % (1000 * 60 * 60)) / (1000 * 60));
+                    user.breakDuration = `${breakHours}h ${breakMinutes}m`;
+                }
+                
+                // Calculate effective hours
+                if (user.punchIn && user.punchOut) {
+                    const punchIn = new Date(`${todayStr}T${user.punchIn}`);
+                    const punchOut = new Date(`${todayStr}T${user.punchOut}`);
+                    let effectiveMs = punchOut - punchIn;
+                    
+                    // Subtract break time if both break start and end are recorded
+                    if (user.breakStart && user.breakEnd) {
+                        const breakStart = new Date(`${todayStr}T${user.breakStart}`);
+                        const breakEnd = new Date(`${todayStr}T${user.breakEnd}`);
+                        effectiveMs -= (breakEnd - breakStart);
+                    }
+                    
+                    const effectiveHours = Math.floor(effectiveMs / (1000 * 60 * 60));
+                    const effectiveMinutes = Math.floor((effectiveMs % (1000 * 60 * 60)) / (1000 * 60));
+                    user.effectiveHours = `${effectiveHours}h ${effectiveMinutes}m`;
+                }
+            });
             
-            if (recentActivities.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="3" class="no-schedule">No recent activities</td></tr>';
+            // Convert to array and sort by name
+            const userActivitiesArray = Object.values(userActivities).sort((a, b) => a.name.localeCompare(b.name));
+            
+            // Display activities
+            if (userActivitiesArray.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="9" class="no-schedule">No recent activities</td></tr>';
                 return;
             }
             
-            recentActivities.forEach(log => {
+            userActivitiesArray.forEach((user, index) => {
                 const tr = document.createElement('tr');
-                
-                // Format time
-                const timestamp = new Date(log.timestamp);
-                const formattedTime = timestamp.toLocaleTimeString();
-                
-                // Get activity display
-                let activityDisplay = '';
-                switch (log.type) {
-                    case 'punch-in':
-                        activityDisplay = log.isLate ? 'Punched In (Late)' : 'Punched In';
-                        break;
-                    case 'punch-out':
-                        activityDisplay = 'Punched Out';
-                        break;
-                    case 'break':
-                        activityDisplay = 'Break Started';
-                        break;
-                    case 'resume':
-                        activityDisplay = log.isOverbreak ? 'Resumed (Overbreak)' : 'Resumed Work';
-                        break;
-                }
-                
                 tr.innerHTML = `
-                    <td>${formattedTime}</td>
-                    <td>${log.userName}</td>
-                    <td>${activityDisplay}</td>
+                    <td>${index + 1}</td>
+                    <td>${user.id}</td>
+                    <td>${user.name}</td>
+                    <td>${user.location}</td>
+                    <td>${user.punchIn || '-'}</td>
+                    <td>${user.punchOut || '-'}</td>
+                    <td>${user.effectiveHours || '-'}</td>
+                    <td>${user.breakDuration || '-'}</td>
+                    <td>${user.remark || '-'}</td>
                 `;
                 tbody.appendChild(tr);
             });
+        }
+        
+        // Load enhanced activity logs
+        function loadActivityLogs() {
+            const tbody = document.getElementById('activityTableBody');
+            if (!tbody) return;
+            
+            tbody.innerHTML = '';
+            
+            if (app.activityLogs.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="9" class="no-schedule">No activity logs found</td></tr>';
+                return;
+            }
+            
+            // Get filter value
+            const filterType = elements.activityFilter.value;
+            
+            // Filter logs based on selection
+            let filteredLogs = app.activityLogs;
+            if (filterType !== 'all') {
+                filteredLogs = app.activityLogs.filter(log => log.type === filterType);
+            }
+            
+            // Sort logs by timestamp (newest first)
+            filteredLogs.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+            
+            // Group activities by user and date
+            const userDateActivities = {};
+            filteredLogs.forEach(log => {
+                const key = `${log.userId}_${log.date}`;
+                if (!userDateActivities[key]) {
+                    userDateActivities[key] = {
+                        id: log.userId,
+                        name: log.userName,
+                        location: log.userOutlet,
+                        date: log.date,
+                        punchIn: '',
+                        punchOut: '',
+                        breakStart: '',
+                        breakEnd: '',
+                        effectiveHours: '',
+                        breakDuration: '',
+                        remark: ''
+                    };
+                }
+                
+                // Update activity details
+                switch (log.type) {
+                    case 'punch-in':
+                        userDateActivities[key].punchIn = new Date(log.timestamp).toLocaleTimeString();
+                        if (log.isLate) {
+                            userDateActivities[key].remark = `Late by ${log.lateBy}`;
+                        }
+                        break;
+                    case 'punch-out':
+                        userDateActivities[key].punchOut = new Date(log.timestamp).toLocaleTimeString();
+                        break;
+                    case 'break':
+                        userDateActivities[key].breakStart = new Date(log.timestamp).toLocaleTimeString();
+                        break;
+                    case 'resume':
+                        userDateActivities[key].breakEnd = new Date(log.timestamp).toLocaleTimeString();
+                        if (log.isOverbreak) {
+                            userDateActivities[key].remark = `Overbreak by ${log.overbreakBy}`;
+                        }
+                        break;
+                }
+            });
+            
+            // Calculate effective hours and break duration for each user
+            Object.keys(userDateActivities).forEach(key => {
+                const user = userDateActivities[key];
+                const date = user.date;
+                
+                // Calculate break duration
+                if (user.breakStart && user.breakEnd) {
+                    const breakStart = new Date(`${date}T${user.breakStart}`);
+                    const breakEnd = new Date(`${date}T${user.breakEnd}`);
+                    const breakDurationMs = breakEnd - breakStart;
+                    const breakHours = Math.floor(breakDurationMs / (1000 * 60 * 60));
+                    const breakMinutes = Math.floor((breakDurationMs % (1000 * 60 * 60)) / (1000 * 60));
+                    user.breakDuration = `${breakHours}h ${breakMinutes}m`;
+                }
+                
+                // Calculate effective hours
+                if (user.punchIn && user.punchOut) {
+                    const punchIn = new Date(`${date}T${user.punchIn}`);
+                    const punchOut = new Date(`${date}T${user.punchOut}`);
+                    let effectiveMs = punchOut - punchIn;
+                    
+                    // Subtract break time if both break start and end are recorded
+                    if (user.breakStart && user.breakEnd) {
+                        const breakStart = new Date(`${date}T${user.breakStart}`);
+                        const breakEnd = new Date(`${date}T${user.breakEnd}`);
+                        effectiveMs -= (breakEnd - breakStart);
+                    }
+                    
+                    const effectiveHours = Math.floor(effectiveMs / (1000 * 60 * 60));
+                    const effectiveMinutes = Math.floor((effectiveMs % (1000 * 60 * 60)) / (1000 * 60));
+                    user.effectiveHours = `${effectiveHours}h ${effectiveMinutes}m`;
+                }
+            });
+            
+            // Convert to array and sort by date and name
+            const userDateActivitiesArray = Object.values(userDateActivities).sort((a, b) => {
+                if (a.date !== b.date) {
+                    return new Date(b.date) - new Date(a.date);
+                }
+                return a.name.localeCompare(b.name);
+            });
+            
+            // Display logs
+            userDateActivitiesArray.forEach((user, index) => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${index + 1}</td>
+                    <td>${user.id}</td>
+                    <td>${user.name}</td>
+                    <td>${user.location}</td>
+                    <td>${user.punchIn || '-'}</td>
+                    <td>${user.punchOut || '-'}</td>
+                    <td>${user.effectiveHours || '-'}</td>
+                    <td>${user.breakDuration || '-'}</td>
+                    <td>${user.remark || '-'}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+        
+        // Filter activity logs
+        function filterActivityLogs() {
+            loadActivityLogs();
         }
         
         // Cashbill Functions
@@ -4582,82 +4867,6 @@
             
             // Calculate total
             calculateTotal();
-        }
-        
-        // Activity Log Functions
-        function loadActivityLogs() {
-            const tbody = document.getElementById('activityTableBody');
-            tbody.innerHTML = '';
-            
-            if (app.activityLogs.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="5" class="no-schedule">No activity logs found</td></tr>';
-                return;
-            }
-            
-            // Get filter value
-            const filterType = elements.activityFilter.value;
-            
-            // Filter logs based on selection
-            let filteredLogs = app.activityLogs;
-            if (filterType !== 'all') {
-                filteredLogs = app.activityLogs.filter(log => log.type === filterType);
-            }
-            
-            // Sort logs by timestamp (newest first)
-            filteredLogs.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-            
-            // Display logs
-            filteredLogs.forEach(log => {
-                const tr = document.createElement('tr');
-                
-                // Format timestamp
-                const timestamp = new Date(log.timestamp);
-                const formattedDateTime = timestamp.toLocaleDateString() + ' ' + timestamp.toLocaleTimeString();
-                
-                // Get log type display
-                let logTypeDisplay = '';
-                let logTypeClass = '';
-                
-                switch (log.type) {
-                    case 'punch-in':
-                        logTypeDisplay = 'Punch In';
-                        logTypeClass = 'log-punch-in';
-                        if (log.isLate) {
-                            logTypeDisplay += ' (Late)';
-                            logTypeClass = 'log-late';
-                        }
-                        break;
-                    case 'punch-out':
-                        logTypeDisplay = 'Punch Out';
-                        logTypeClass = 'log-punch-out';
-                        break;
-                    case 'break':
-                        logTypeDisplay = 'Break';
-                        logTypeClass = 'log-break';
-                        break;
-                    case 'resume':
-                        logTypeDisplay = 'Resume';
-                        logTypeClass = 'log-break';
-                        if (log.isOverbreak) {
-                            logTypeDisplay += ' (Overbreak)';
-                            logTypeClass = 'log-overbreak';
-                        }
-                        break;
-                }
-                
-                tr.innerHTML = `
-                    <td>${formattedDateTime}</td>
-                    <td>${log.userName}</td>
-                    <td><span class="log-type ${logTypeClass}">${logTypeDisplay}</span></td>
-                    <td>${log.duration || '-'}</td>
-                    <td>${log.notes || (log.isLate ? `Late by ${log.lateBy}` : '') || (log.isOverbreak ? `Overbreak by ${log.overbreakBy}` : '') || '-'}</td>
-                `;
-                tbody.appendChild(tr);
-            });
-        }
-        
-        function filterActivityLogs() {
-            loadActivityLogs();
         }
         
         // Attendance Management Functions
