@@ -6,6 +6,7 @@
     <title>PNE Arena System</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        /* Keep all your existing CSS styles unchanged */
         :root {
             --primary: #4a6cf7;
             --primary-dark: #2c3e8f;
@@ -2166,6 +2167,9 @@
     </div>
     
     <script>
+        // API Configuration
+        const API_BASE_URL = "https://script.google.com/macros/s/AKfycbxXCLLqj-SX1exeP1vmvPiQ6MpBFz4yElL61sQGsVaqwP3pl6xZCaQ9t_yXaiAXqI7GCA/exec";
+        
         // App State
         const app = {
             user: null,
@@ -2251,7 +2255,7 @@
         };
         
         // Initialize App
-        function initApp() {
+        async function initApp() {
             // Check if user is logged in
             const savedUser = localStorage.getItem('pneUser');
             if (savedUser) {
@@ -2261,8 +2265,8 @@
                 showLogin();
             }
             
-            // Load data from localStorage
-            loadData();
+            // Load data from API
+            await loadData();
             
             // Set up event listeners
             setupEventListeners();
@@ -2418,44 +2422,47 @@
         }
         
         // Handle login
-        function handleLogin(e) {
+        async function handleLogin(e) {
             e.preventDefault();
             
             const userId = document.getElementById('userId').value;
             const password = document.getElementById('password').value;
             
-            // Default password is 0000
-            if (password !== '0000') {
-                showLoginAlert('Invalid password');
-                return;
+            try {
+                const response = await fetch(`${API_BASE_URL}/authenticate`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ userId, password })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    app.user = result.user;
+                    localStorage.setItem('pneUser', JSON.stringify(app.user));
+                    showApp();
+                    showNotification('Login successful', 'success');
+                } else {
+                    showLoginAlert('Invalid User ID or password');
+                }
+            } catch (error) {
+                console.error("Login error:", error);
+                showLoginAlert('Error during login. Please try again.');
             }
-            
-            // Get user data
-            const user = getUserById(userId);
-            if (!user) {
-                showLoginAlert('User ID not found');
-                return;
-            }
-            
-            // Save user to app state and localStorage
-            app.user = user;
-            localStorage.setItem('pneUser', JSON.stringify(user));
-            
-            // Show app
-            showApp();
-            showNotification('Login successful', 'success');
         }
         
-        // Get user by ID
-        function getUserById(id) {
-            const users = [
-                { id: '0001', name: 'Danial Danish', role: 'Head IT (Admin)', outlet: 'HQ', isAdmin: true },
-                { id: '0002', name: 'Aida', role: 'Director/Business Manager', outlet: 'HQ', isAdmin: false },
-                { id: '0003', name: 'Putri Erinna', role: 'Business Development Manager', outlet: 'HQ', isAdmin: false },
-                { id: '0004', name: 'Putri Farah', role: 'Business Marketing Manager', outlet: 'HQ', isAdmin: false }
-            ];
-            
-            return users.find(user => user.id === id);
+        // Get user by ID (now uses API)
+        async function getUserById(id) {
+            try {
+                const response = await fetch(`${API_BASE_URL}/users`);
+                const users = await response.json();
+                return users.find(user => user.ID === id);
+            } catch (error) {
+                console.error("Error getting user:", error);
+                return null;
+            }
         }
         
         // Handle logout
@@ -2662,7 +2669,7 @@
         }
         
         // Handle punch in/out
-        function handlePunch(action) {
+        async function handlePunch(action) {
             // Check if user has a schedule for today
             const today = new Date();
             const todayStr = formatDate(today);
@@ -2712,57 +2719,77 @@
                 }
             }
             
-            app.activityLogs.push(activity);
-            saveData();
-            
-            // Update UI
-            switch (action) {
-                case 'in':
-                    app.punchStatus = 'in';
-                    elements.punchInBtn.disabled = true;
-                    elements.punchOutBtn.disabled = false;
-                    elements.breakBtn.disabled = false;
-                    showNotification('Punched in successfully', 'success');
-                    break;
-                case 'out':
-                    app.punchStatus = 'out';
-                    elements.punchInBtn.disabled = false;
-                    elements.punchOutBtn.disabled = true;
-                    elements.breakBtn.disabled = true;
-                    elements.resumeBtn.style.display = 'none';
-                    showNotification('Punched out successfully', 'success');
-                    break;
-                case 'break':
-                    app.punchStatus = 'break';
-                    elements.punchInBtn.disabled = true;
-                    elements.punchOutBtn.disabled = true;
-                    elements.breakBtn.disabled = true;
-                    elements.resumeBtn.style.display = 'inline-flex';
-                    showNotification('Break started', 'success');
-                    break;
-                case 'resume':
-                    app.punchStatus = 'in';
-                    elements.punchInBtn.disabled = true;
-                    elements.punchOutBtn.disabled = false;
-                    elements.breakBtn.disabled = false;
-                    elements.resumeBtn.style.display = 'none';
-                    showNotification('Resumed work', 'success');
-                    break;
-            }
-            
-            // Reload activity logs if on that page
-            if (app.currentPage === 'activity') {
-                loadActivityLogs();
-            }
-            
-            // Reload dashboard activities if on dashboard
-            if (app.currentPage === 'dashboard') {
-                loadDashboardActivities();
-            }
-            
-            // Reload attendance records if on that page
-            if (app.currentPage === 'attendance') {
-                loadAttendanceRecords();
+            // Save activity to API
+            try {
+                const response = await fetch(`${API_BASE_URL}/activityLogs`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(activity)
+                });
+                
+                const result = await response.json();
+                
+                if (result) {
+                    // Add to local state
+                    app.activityLogs.push(activity);
+                    
+                    // Update UI
+                    switch (action) {
+                        case 'in':
+                            app.punchStatus = 'in';
+                            elements.punchInBtn.disabled = true;
+                            elements.punchOutBtn.disabled = false;
+                            elements.breakBtn.disabled = false;
+                            showNotification('Punched in successfully', 'success');
+                            break;
+                        case 'out':
+                            app.punchStatus = 'out';
+                            elements.punchInBtn.disabled = false;
+                            elements.punchOutBtn.disabled = true;
+                            elements.breakBtn.disabled = true;
+                            elements.resumeBtn.style.display = 'none';
+                            showNotification('Punched out successfully', 'success');
+                            break;
+                        case 'break':
+                            app.punchStatus = 'break';
+                            elements.punchInBtn.disabled = true;
+                            elements.punchOutBtn.disabled = true;
+                            elements.breakBtn.disabled = true;
+                            elements.resumeBtn.style.display = 'inline-flex';
+                            showNotification('Break started', 'success');
+                            break;
+                        case 'resume':
+                            app.punchStatus = 'in';
+                            elements.punchInBtn.disabled = true;
+                            elements.punchOutBtn.disabled = false;
+                            elements.breakBtn.disabled = false;
+                            elements.resumeBtn.style.display = 'none';
+                            showNotification('Resumed work', 'success');
+                            break;
+                    }
+                    
+                    // Reload activity logs if on that page
+                    if (app.currentPage === 'activity') {
+                        loadActivityLogs();
+                    }
+                    
+                    // Reload dashboard activities if on dashboard
+                    if (app.currentPage === 'dashboard') {
+                        loadDashboardActivities();
+                    }
+                    
+                    // Reload attendance records if on that page
+                    if (app.currentPage === 'attendance') {
+                        loadAttendanceRecords();
+                    }
+                } else {
+                    showNotification('Error recording activity', 'error');
+                }
+            } catch (error) {
+                console.error("Error recording activity:", error);
+                showNotification('Error recording activity', 'error');
             }
         }
         
@@ -2814,95 +2841,53 @@
             elements.notification.classList.remove('show');
         }
         
-        // Load data from localStorage
-        function loadData() {
-            // Load cashbills
-            const cashbillsData = localStorage.getItem('pneCashbills');
-            if (cashbillsData) {
-                app.cashbills = JSON.parse(cashbillsData);
+        // Load data from API
+        async function loadData() {
+            try {
+                // Load cashbills
+                const cashbillsResponse = await fetch(`${API_BASE_URL}/cashbills`);
+                app.cashbills = await cashbillsResponse.json();
+                
+                // Load log entries
+                const logEntriesResponse = await fetch(`${API_BASE_URL}/logEntries`);
+                app.logEntries = await logEntriesResponse.json();
+                
+                // Load quotations
+                const quotationsResponse = await fetch(`${API_BASE_URL}/quotations`);
+                app.quotations = await quotationsResponse.json();
+                
+                // Load orders
+                const ordersResponse = await fetch(`${API_BASE_URL}/orders`);
+                app.orders = await ordersResponse.json();
+                
+                // Load crew members
+                const crewMembersResponse = await fetch(`${API_BASE_URL}/crewMembers`);
+                app.crewMembers = await crewMembersResponse.json();
+                
+                // Load stock items
+                const stockItemsResponse = await fetch(`${API_BASE_URL}/stockItems`);
+                app.stockItems = await stockItemsResponse.json();
+                
+                // Load schedules
+                const schedulesResponse = await fetch(`${API_BASE_URL}/schedules`);
+                app.schedules = await schedulesResponse.json();
+                
+                // Load activity logs
+                const activityLogsResponse = await fetch(`${API_BASE_URL}/activityLogs`);
+                app.activityLogs = await activityLogsResponse.json();
+                
+                // Load attendance records
+                const attendanceRecordsResponse = await fetch(`${API_BASE_URL}/attendanceRecords`);
+                app.attendanceRecords = await attendanceRecordsResponse.json();
+                
+                // Load stock receiving records
+                const stockReceivingResponse = await fetch(`${API_BASE_URL}/stockReceiving`);
+                app.stockReceivingRecords = await stockReceivingResponse.json();
+                
+            } catch (error) {
+                console.error("Error loading data:", error);
+                showNotification("Error loading data from server", "error");
             }
-            
-            // Load log entries
-            const logEntriesData = localStorage.getItem('pneLogEntries');
-            if (logEntriesData) {
-                app.logEntries = JSON.parse(logEntriesData);
-            }
-            
-            // Load quotations
-            const quotationsData = localStorage.getItem('pneQuotations');
-            if (quotationsData) {
-                app.quotations = JSON.parse(quotationsData);
-            }
-            
-            // Load orders
-            const ordersData = localStorage.getItem('pneOrders');
-            if (ordersData) {
-                app.orders = JSON.parse(ordersData);
-            }
-            
-            // Load crew members
-            const crewMembersData = localStorage.getItem('pneCrewMembers');
-            if (crewMembersData) {
-                app.crewMembers = JSON.parse(crewMembersData);
-            } else {
-                // Initialize with default crew members
-                app.crewMembers = [
-                    { id: '0001', name: 'Danial Danish', role: 'Head IT (Admin)', outlet: 'HQ', status: 'Active' },
-                    { id: '0002', name: 'Aida', role: 'Director/Business Manager', outlet: 'HQ', status: 'Active' },
-                    { id: '0003', name: 'Putri Erinna', role: 'Business Development Manager', outlet: 'HQ', status: 'Active' },
-                    { id: '0004', name: 'Putri Farah', role: 'Business Marketing Manager', outlet: 'HQ', status: 'Active' }
-                ];
-                saveCrewMembers();
-            }
-            
-            // Load stock items
-            const stockItemsData = localStorage.getItem('pneStockItems');
-            if (stockItemsData) {
-                app.stockItems = JSON.parse(stockItemsData);
-            } else {
-                // Initialize with sample stock items
-                app.stockItems = [
-                    { code: 'ITEM001', name: 'Sample Item 1', description: 'Description for item 1', price: 10.00, quantity: 50, outlet: 'HQ' },
-                    { code: 'ITEM002', name: 'Sample Item 2', description: 'Description for item 2', price: 20.00, quantity: 30, outlet: 'HQ' },
-                    { code: 'ITEM003', name: 'Sample Item 3', description: 'Description for item 3', price: 15.00, quantity: 25, outlet: 'BLM' }
-                ];
-                saveStockItems();
-            }
-            
-            // Load schedules
-            const schedulesData = localStorage.getItem('pneSchedules');
-            if (schedulesData) {
-                app.schedules = JSON.parse(schedulesData);
-            }
-            
-            // Load activity logs
-            const activityLogsData = localStorage.getItem('pneActivityLogs');
-            if (activityLogsData) {
-                app.activityLogs = JSON.parse(activityLogsData);
-            }
-            
-            // Load attendance records
-            const attendanceRecordsData = localStorage.getItem('pneAttendanceRecords');
-            if (attendanceRecordsData) {
-                app.attendanceRecords = JSON.parse(attendanceRecordsData);
-            }
-            
-            // Load stock receiving records
-            loadStockReceivingData();
-        }
-        
-        // Save data to localStorage
-        function saveData() {
-            localStorage.setItem('pneCashbills', JSON.stringify(app.cashbills));
-            localStorage.setItem('pneLogEntries', JSON.stringify(app.logEntries));
-            localStorage.setItem('pneQuotations', JSON.stringify(app.quotations));
-            localStorage.setItem('pneOrders', JSON.stringify(app.orders));
-            localStorage.setItem('pneCrewMembers', JSON.stringify(app.crewMembers));
-            localStorage.setItem('pneStockItems', JSON.stringify(app.stockItems));
-            localStorage.setItem('pneSchedules', JSON.stringify(app.schedules));
-            localStorage.setItem('pneActivityLogs', JSON.stringify(app.activityLogs));
-            localStorage.setItem('pneAttendanceRecords', JSON.stringify(app.attendanceRecords));
-            saveStockReceivingData();
         }
         
         // Load dashboard activities with enhanced details
@@ -3164,20 +3149,20 @@
             app.cashbills.forEach(cashbill => {
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
-                    <td>${cashbill.invoiceNo}</td>
-                    <td>${cashbill.date}</td>
-                    <td>${cashbill.customerName}</td>
-                    <td>${cashbill.customerPhone}</td>
-                    <td>RM${cashbill.totalAmount.toFixed(2)}</td>
-                    <td><span class="status-badge ${cashbill.status === 'Committed' ? 'status-active' : 'status-inactive'}">${cashbill.status}</span></td>
+                    <td>${cashbill.InvoiceNo}</td>
+                    <td>${cashbill.Date}</td>
+                    <td>${cashbill.CustomerName}</td>
+                    <td>${cashbill.CustomerPhone}</td>
+                    <td>RM${parseFloat(cashbill.TotalAmount).toFixed(2)}</td>
+                    <td><span class="status-badge ${cashbill.Status === 'Committed' ? 'status-active' : 'status-inactive'}">${cashbill.Status}</span></td>
                     <td>
-                        <button class="btn btn-sm btn-primary" onclick="viewCashbill('${cashbill.invoiceNo}')">View</button>
-                        ${cashbill.status === 'Draft' ? 
-                            `<button class="btn btn-sm btn-warning" onclick="editCashbill('${cashbill.invoiceNo}')">Edit</button>
-                             <button class="btn btn-sm btn-danger" onclick="deleteCashbill('${cashbill.invoiceNo}')">Delete</button>` : 
+                        <button class="btn btn-sm btn-primary" onclick="viewCashbill('${cashbill.InvoiceNo}')">View</button>
+                        ${cashbill.Status === 'Draft' ? 
+                            `<button class="btn btn-sm btn-warning" onclick="editCashbill('${cashbill.InvoiceNo}')">Edit</button>
+                             <button class="btn btn-sm btn-danger" onclick="deleteCashbill('${cashbill.InvoiceNo}')">Delete</button>` : 
                             ''}
-                        ${app.user.isAdmin && cashbill.status === 'Committed' ? 
-                            `<button class="btn btn-sm btn-danger" onclick="uncommitCashbill('${cashbill.invoiceNo}')">Uncommit</button>` : ''}
+                        ${app.user.isAdmin && cashbill.Status === 'Committed' ? 
+                            `<button class="btn btn-sm btn-danger" onclick="uncommitCashbill('${cashbill.InvoiceNo}')">Uncommit</button>` : ''}
                     </td>
                 `;
                 tbody.appendChild(tr);
@@ -3231,9 +3216,9 @@
                 
                 app.stockItems.forEach(item => {
                     const option = document.createElement('option');
-                    option.value = item.code;
-                    option.textContent = `${item.name} - RM${item.price.toFixed(2)}`;
-                    option.dataset.price = item.price;
+                    option.value = item.Code;
+                    option.textContent = `${item.Name} - RM${parseFloat(item.Price).toFixed(2)}`;
+                    option.dataset.price = item.Price;
                     select.appendChild(option);
                 });
                 
@@ -3344,7 +3329,7 @@
             document.getElementById('totalAmount').value = total.toFixed(2);
         }
         
-        function saveCashbill(status) {
+        async function saveCashbill(status) {
             // Get form data
             const customerName = document.getElementById('customerName').value;
             const customerPhone = document.getElementById('customerPhone').value;
@@ -3360,10 +3345,10 @@
                 const price = parseFloat(item.querySelector('.item-price').value);
                 
                 if (itemCode && quantity && price) {
-                    const stockItem = app.stockItems.find(si => si.code === itemCode);
+                    const stockItem = app.stockItems.find(si => si.Code === itemCode);
                     items.push({
                         code: itemCode,
-                        name: stockItem.name,
+                        name: stockItem.Name,
                         quantity: quantity,
                         price: price
                     });
@@ -3372,43 +3357,53 @@
             
             // Create cashbill object
             const cashbill = {
-                invoiceNo,
-                date,
-                customerName,
-                customerPhone,
-                items,
-                totalAmount,
-                status: status === 'commit' ? 'Committed' : 'Draft',
-                createdBy: app.user.id,
-                createdAt: new Date().toISOString()
+                InvoiceNo: invoiceNo,
+                Date: date,
+                CustomerName: customerName,
+                CustomerPhone: customerPhone,
+                Items: JSON.stringify(items),
+                TotalAmount: totalAmount,
+                Status: status === 'commit' ? 'Committed' : 'Draft',
+                CreatedBy: app.user.id,
+                CreatedAt: new Date().toISOString()
             };
             
-            // Check if we're editing an existing cashbill
-            const existingIndex = app.cashbills.findIndex(c => c.invoiceNo === invoiceNo);
-            
-            if (existingIndex !== -1) {
-                // Update existing cashbill
-                app.cashbills[existingIndex] = cashbill;
-            } else {
-                // Add new cashbill
-                app.cashbills.push(cashbill);
+            // Save to API
+            try {
+                const response = await fetch(`${API_BASE_URL}/cashbills`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(cashbill)
+                });
+                
+                const result = await response.json();
+                
+                if (result) {
+                    // Add to local state
+                    app.cashbills.push(cashbill);
+                    
+                    // Close modal
+                    closeCashbillModal();
+                    
+                    // Reload cashbills
+                    loadCashbills();
+                    
+                    // Show notification
+                    showNotification(`Cashbill ${status === 'commit' ? 'committed' : 'saved as draft'} successfully`, 'success');
+                } else {
+                    showNotification('Error saving cashbill', 'error');
+                }
+            } catch (error) {
+                console.error("Error saving cashbill:", error);
+                showNotification('Error saving cashbill', 'error');
             }
-            
-            saveData();
-            
-            // Close modal
-            closeCashbillModal();
-            
-            // Reload cashbills
-            loadCashbills();
-            
-            // Show notification
-            showNotification(`Cashbill ${status === 'commit' ? 'committed' : 'saved as draft'} successfully`, 'success');
         }
         
         function viewCashbill(invoiceNo) {
             // Find cashbill
-            const cashbill = app.cashbills.find(c => c.invoiceNo === invoiceNo);
+            const cashbill = app.cashbills.find(c => c.InvoiceNo === invoiceNo);
             if (!cashbill) return;
             
             // Open modal with cashbill data
@@ -3418,17 +3413,18 @@
             document.getElementById('cashbillModalTitle').textContent = 'View Cashbill';
             
             // Populate form
-            document.getElementById('invoiceNo').value = cashbill.invoiceNo;
-            document.getElementById('customerName').value = cashbill.customerName;
-            document.getElementById('customerPhone').value = cashbill.customerPhone;
-            document.getElementById('cashbillDate').value = cashbill.date;
-            document.getElementById('totalAmount').value = cashbill.totalAmount.toFixed(2);
+            document.getElementById('invoiceNo').value = cashbill.InvoiceNo;
+            document.getElementById('customerName').value = cashbill.CustomerName;
+            document.getElementById('customerPhone').value = cashbill.CustomerPhone;
+            document.getElementById('cashbillDate').value = cashbill.Date;
+            document.getElementById('totalAmount').value = parseFloat(cashbill.TotalAmount).toFixed(2);
             
             // Populate items
             const itemsContainer = document.getElementById('cashbillItems');
             itemsContainer.innerHTML = '';
             
-            cashbill.items.forEach((item, index) => {
+            const items = JSON.parse(cashbill.Items || '[]');
+            items.forEach((item, index) => {
                 const itemElement = document.createElement('div');
                 itemElement.className = 'form-row cashbill-item';
                 itemElement.innerHTML = `
@@ -3464,8 +3460,8 @@
             // Set selected values
             const itemSelects = document.querySelectorAll('.item-select');
             itemSelects.forEach((select, index) => {
-                if (cashbill.items[index]) {
-                    select.value = cashbill.items[index].code;
+                if (items[index]) {
+                    select.value = items[index].code;
                 }
             });
             
@@ -3474,7 +3470,7 @@
             const commitBtn = document.getElementById('commitCashbillBtn');
             const printBtn = document.getElementById('printCashbillBtn');
             
-            if (cashbill.status === 'Committed') {
+            if (cashbill.Status === 'Committed') {
                 draftBtn.style.display = 'none';
                 commitBtn.style.display = 'none';
                 printBtn.style.display = 'inline-flex';
@@ -3497,7 +3493,7 @@
         
         function editCashbill(invoiceNo) {
             // Find cashbill
-            const cashbill = app.cashbills.find(c => c.invoiceNo === invoiceNo);
+            const cashbill = app.cashbills.find(c => c.InvoiceNo === invoiceNo);
             if (!cashbill) return;
             
             // Open modal with cashbill data
@@ -3507,17 +3503,18 @@
             document.getElementById('cashbillModalTitle').textContent = 'Edit Cashbill';
             
             // Populate form
-            document.getElementById('invoiceNo').value = cashbill.invoiceNo;
-            document.getElementById('customerName').value = cashbill.customerName;
-            document.getElementById('customerPhone').value = cashbill.customerPhone;
-            document.getElementById('cashbillDate').value = cashbill.date;
-            document.getElementById('totalAmount').value = cashbill.totalAmount.toFixed(2);
+            document.getElementById('invoiceNo').value = cashbill.InvoiceNo;
+            document.getElementById('customerName').value = cashbill.CustomerName;
+            document.getElementById('customerPhone').value = cashbill.CustomerPhone;
+            document.getElementById('cashbillDate').value = cashbill.Date;
+            document.getElementById('totalAmount').value = parseFloat(cashbill.TotalAmount).toFixed(2);
             
             // Populate items
             const itemsContainer = document.getElementById('cashbillItems');
             itemsContainer.innerHTML = '';
             
-            cashbill.items.forEach((item, index) => {
+            const items = JSON.parse(cashbill.Items || '[]');
+            items.forEach((item, index) => {
                 const itemElement = document.createElement('div');
                 itemElement.className = 'form-row cashbill-item';
                 itemElement.innerHTML = `
@@ -3553,43 +3550,75 @@
             // Set selected values
             const itemSelects = document.querySelectorAll('.item-select');
             itemSelects.forEach((select, index) => {
-                if (cashbill.items[index]) {
-                    select.value = cashbill.items[index].code;
+                if (items[index]) {
+                    select.value = items[index].code;
                 }
             });
         }
         
-        function deleteCashbill(invoiceNo) {
+        async function deleteCashbill(invoiceNo) {
             if (confirm('Are you sure you want to delete this cashbill?')) {
-                // Find and remove cashbill
-                const cashbillIndex = app.cashbills.findIndex(c => c.invoiceNo === invoiceNo);
-                if (cashbillIndex === -1) return;
-                
-                app.cashbills.splice(cashbillIndex, 1);
-                saveData();
-                
-                // Reload cashbills
-                loadCashbills();
-                
-                // Show notification
-                showNotification('Cashbill deleted successfully', 'success');
+                try {
+                    const response = await fetch(`${API_BASE_URL}/cashbills?id=${invoiceNo}`, {
+                        method: 'DELETE'
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        // Find and remove cashbill
+                        const cashbillIndex = app.cashbills.findIndex(c => c.InvoiceNo === invoiceNo);
+                        if (cashbillIndex !== -1) {
+                            app.cashbills.splice(cashbillIndex, 1);
+                        }
+                        
+                        // Reload cashbills
+                        loadCashbills();
+                        
+                        // Show notification
+                        showNotification('Cashbill deleted successfully', 'success');
+                    } else {
+                        showNotification('Error deleting cashbill', 'error');
+                    }
+                } catch (error) {
+                    console.error("Error deleting cashbill:", error);
+                    showNotification('Error deleting cashbill', 'error');
+                }
             }
         }
         
-        function uncommitCashbill(invoiceNo) {
-            // Find cashbill
-            const cashbillIndex = app.cashbills.findIndex(c => c.invoiceNo === invoiceNo);
-            if (cashbillIndex === -1) return;
-            
-            // Update status
-            app.cashbills[cashbillIndex].status = 'Draft';
-            saveData();
-            
-            // Reload cashbills
-            loadCashbills();
-            
-            // Show notification
-            showNotification('Cashbill uncommitted successfully', 'success');
+        async function uncommitCashbill(invoiceNo) {
+            try {
+                // Find cashbill
+                const cashbill = app.cashbills.find(c => c.InvoiceNo === invoiceNo);
+                if (!cashbill) return;
+                
+                // Update status
+                cashbill.Status = 'Draft';
+                
+                const response = await fetch(`${API_BASE_URL}/cashbills`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(cashbill)
+                });
+                
+                const result = await response.json();
+                
+                if (result) {
+                    // Reload cashbills
+                    loadCashbills();
+                    
+                    // Show notification
+                    showNotification('Cashbill uncommitted successfully', 'success');
+                } else {
+                    showNotification('Error uncommitting cashbill', 'error');
+                }
+            } catch (error) {
+                console.error("Error uncommitting cashbill:", error);
+                showNotification('Error uncommitting cashbill', 'error');
+            }
         }
         
         function printCashbill() {
@@ -3608,20 +3637,21 @@
             }
             
             app.logEntries.forEach(entry => {
+                const crewInvolved = JSON.parse(entry.CrewInvolved || '[]');
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
-                    <td>${entry.date}</td>
-                    <td>${entry.description}</td>
-                    <td>${entry.crewInvolved.join(', ')}</td>
-                    <td><span class="status-badge ${entry.status === 'Committed' ? 'status-active' : 'status-inactive'}">${entry.status}</span></td>
+                    <td>${entry.Date}</td>
+                    <td>${entry.Description}</td>
+                    <td>${crewInvolved.join(', ')}</td>
+                    <td><span class="status-badge ${entry.Status === 'Committed' ? 'status-active' : 'status-inactive'}">${entry.Status}</span></td>
                     <td>
-                        <button class="btn btn-sm btn-primary" onclick="viewLogEntry('${entry.id}')">View</button>
-                        ${entry.status === 'Draft' ? 
-                            `<button class="btn btn-sm btn-warning" onclick="editLogEntry('${entry.id}')">Edit</button>
-                             <button class="btn btn-sm btn-danger" onclick="deleteLogEntry('${entry.id}')">Delete</button>` : 
+                        <button class="btn btn-sm btn-primary" onclick="viewLogEntry('${entry.ID}')">View</button>
+                        ${entry.Status === 'Draft' ? 
+                            `<button class="btn btn-sm btn-warning" onclick="editLogEntry('${entry.ID}')">Edit</button>
+                             <button class="btn btn-sm btn-danger" onclick="deleteLogEntry('${entry.ID}')">Delete</button>` : 
                             ''}
-                        ${app.user.isAdmin && entry.status === 'Committed' ? 
-                            `<button class="btn btn-sm btn-danger" onclick="uncommitLogEntry('${entry.id}')">Uncommit</button>` : ''}
+                        ${app.user.isAdmin && entry.Status === 'Committed' ? 
+                            `<button class="btn btn-sm btn-danger" onclick="uncommitLogEntry('${entry.ID}')">Uncommit</button>` : ''}
                     </td>
                 `;
                 tbody.appendChild(tr);
@@ -3641,8 +3671,8 @@
             
             app.crewMembers.forEach(crew => {
                 const option = document.createElement('option');
-                option.value = crew.id;
-                option.textContent = `${crew.name} (${crew.role})`;
+                option.value = crew.ID;
+                option.textContent = `${crew.Name} (${crew.Role})`;
                 crewSelect.appendChild(option);
             });
             
@@ -3654,52 +3684,62 @@
             elements.logbookModal.classList.remove('active');
         }
         
-        function saveLogEntry(status) {
+        async function saveLogEntry(status) {
             // Get form data
             const date = document.getElementById('logDate').value;
             const description = document.getElementById('logDescription').value;
             const crewInvolved = Array.from(document.getElementById('logCrew').selectedOptions).map(option => {
-                const crew = app.crewMembers.find(c => c.id === option.value);
-                return crew ? crew.name : option.value;
+                const crew = app.crewMembers.find(c => c.ID === option.value);
+                return crew ? crew.Name : option.value;
             });
             
             // Create log entry object
             const logEntry = {
-                id: generateId(),
-                date,
-                description,
-                crewInvolved,
-                status: status === 'commit' ? 'Committed' : 'Draft',
-                createdBy: app.user.id,
-                createdAt: new Date().toISOString()
+                ID: generateId(),
+                Date: date,
+                Description: description,
+                CrewInvolved: JSON.stringify(crewInvolved),
+                Status: status === 'commit' ? 'Committed' : 'Draft',
+                CreatedBy: app.user.id,
+                CreatedAt: new Date().toISOString()
             };
             
-            // Check if we're editing an existing log entry
-            const existingIndex = app.logEntries.findIndex(e => e.id === logEntry.id);
-            
-            if (existingIndex !== -1) {
-                // Update existing log entry
-                app.logEntries[existingIndex] = logEntry;
-            } else {
-                // Add new log entry
-                app.logEntries.push(logEntry);
+            // Save to API
+            try {
+                const response = await fetch(`${API_BASE_URL}/logEntries`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(logEntry)
+                });
+                
+                const result = await response.json();
+                
+                if (result) {
+                    // Add to local state
+                    app.logEntries.push(logEntry);
+                    
+                    // Close modal
+                    closeLogbookModal();
+                    
+                    // Reload log entries
+                    loadLogEntries();
+                    
+                    // Show notification
+                    showNotification(`Log entry ${status === 'commit' ? 'committed' : 'saved as draft'} successfully`, 'success');
+                } else {
+                    showNotification('Error saving log entry', 'error');
+                }
+            } catch (error) {
+                console.error("Error saving log entry:", error);
+                showNotification('Error saving log entry', 'error');
             }
-            
-            saveData();
-            
-            // Close modal
-            closeLogbookModal();
-            
-            // Reload log entries
-            loadLogEntries();
-            
-            // Show notification
-            showNotification(`Log entry ${status === 'commit' ? 'committed' : 'saved as draft'} successfully`, 'success');
         }
         
         function viewLogEntry(id) {
             // Find log entry
-            const logEntry = app.logEntries.find(e => e.id === id);
+            const logEntry = app.logEntries.find(e => e.ID === id);
             if (!logEntry) return;
             
             // Open modal with log entry data
@@ -3709,14 +3749,15 @@
             document.getElementById('logbookModalTitle').textContent = 'View Log Entry';
             
             // Populate form
-            document.getElementById('logDate').value = logEntry.date;
-            document.getElementById('logDescription').value = logEntry.description;
+            document.getElementById('logDate').value = logEntry.Date;
+            document.getElementById('logDescription').value = logEntry.Description;
             
             // Set selected crew
             const crewSelect = document.getElementById('logCrew');
+            const crewInvolved = JSON.parse(logEntry.CrewInvolved || '[]');
             Array.from(crewSelect.options).forEach(option => {
-                const crew = app.crewMembers.find(c => c.id === option.value);
-                if (crew && logEntry.crewInvolved.includes(crew.name)) {
+                const crew = app.crewMembers.find(c => c.ID === option.value);
+                if (crew && crewInvolved.includes(crew.Name)) {
                     option.selected = true;
                 }
             });
@@ -3725,7 +3766,7 @@
             const draftBtn = document.getElementById('draftLogBtn');
             const commitBtn = document.getElementById('commitLogBtn');
             
-            if (logEntry.status === 'Committed') {
+            if (logEntry.Status === 'Committed') {
                 draftBtn.style.display = 'none';
                 commitBtn.style.display = 'none';
                 
@@ -3746,7 +3787,7 @@
         
         function editLogEntry(id) {
             // Find log entry
-            const logEntry = app.logEntries.find(e => e.id === id);
+            const logEntry = app.logEntries.find(e => e.ID === id);
             if (!logEntry) return;
             
             // Open modal with log entry data
@@ -3756,50 +3797,83 @@
             document.getElementById('logbookModalTitle').textContent = 'Edit Log Entry';
             
             // Populate form
-            document.getElementById('logDate').value = logEntry.date;
-            document.getElementById('logDescription').value = logEntry.description;
+            document.getElementById('logDate').value = logEntry.Date;
+            document.getElementById('logDescription').value = logEntry.Description;
             
             // Set selected crew
             const crewSelect = document.getElementById('logCrew');
+            const crewInvolved = JSON.parse(logEntry.CrewInvolved || '[]');
             Array.from(crewSelect.options).forEach(option => {
-                const crew = app.crewMembers.find(c => c.id === option.value);
-                if (crew && logEntry.crewInvolved.includes(crew.name)) {
+                const crew = app.crewMembers.find(c => c.ID === option.value);
+                if (crew && crewInvolved.includes(crew.Name)) {
                     option.selected = true;
                 }
             });
         }
         
-        function deleteLogEntry(id) {
+        async function deleteLogEntry(id) {
             if (confirm('Are you sure you want to delete this log entry?')) {
-                // Find and remove log entry
-                const logEntryIndex = app.logEntries.findIndex(e => e.id === id);
-                if (logEntryIndex === -1) return;
-                
-                app.logEntries.splice(logEntryIndex, 1);
-                saveData();
-                
-                // Reload log entries
-                loadLogEntries();
-                
-                // Show notification
-                showNotification('Log entry deleted successfully', 'success');
+                try {
+                    const response = await fetch(`${API_BASE_URL}/logEntries?id=${id}`, {
+                        method: 'DELETE'
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        // Find and remove log entry
+                        const logEntryIndex = app.logEntries.findIndex(e => e.ID === id);
+                        if (logEntryIndex !== -1) {
+                            app.logEntries.splice(logEntryIndex, 1);
+                        }
+                        
+                        // Reload log entries
+                        loadLogEntries();
+                        
+                        // Show notification
+                        showNotification('Log entry deleted successfully', 'success');
+                    } else {
+                        showNotification('Error deleting log entry', 'error');
+                    }
+                } catch (error) {
+                    console.error("Error deleting log entry:", error);
+                    showNotification('Error deleting log entry', 'error');
+                }
             }
         }
         
-        function uncommitLogEntry(id) {
-            // Find log entry
-            const logEntryIndex = app.logEntries.findIndex(e => e.id === id);
-            if (logEntryIndex === -1) return;
-            
-            // Update status
-            app.logEntries[logEntryIndex].status = 'Draft';
-            saveData();
-            
-            // Reload log entries
-            loadLogEntries();
-            
-            // Show notification
-            showNotification('Log entry uncommitted successfully', 'success');
+        async function uncommitLogEntry(id) {
+            try {
+                // Find log entry
+                const logEntry = app.logEntries.find(e => e.ID === id);
+                if (!logEntry) return;
+                
+                // Update status
+                logEntry.Status = 'Draft';
+                
+                const response = await fetch(`${API_BASE_URL}/logEntries`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(logEntry)
+                });
+                
+                const result = await response.json();
+                
+                if (result) {
+                    // Reload log entries
+                    loadLogEntries();
+                    
+                    // Show notification
+                    showNotification('Log entry uncommitted successfully', 'success');
+                } else {
+                    showNotification('Error uncommitting log entry', 'error');
+                }
+            } catch (error) {
+                console.error("Error uncommitting log entry:", error);
+                showNotification('Error uncommitting log entry', 'error');
+            }
         }
         
         // Quotation Functions
@@ -3813,19 +3887,20 @@
             }
             
             app.quotations.forEach(quotation => {
+                const services = JSON.parse(quotation.Services || '[]');
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
-                    <td>${quotation.quoteNo}</td>
-                    <td>${quotation.date}</td>
-                    <td>${quotation.clientName}</td>
-                    <td>${quotation.services.map(s => s.name).join(', ')}</td>
-                    <td>RM${quotation.totalAmount.toFixed(2)}</td>
-                    <td><span class="status-badge status-active">${quotation.status}</span></td>
+                    <td>${quotation.QuoteNo}</td>
+                    <td>${quotation.Date}</td>
+                    <td>${quotation.ClientName}</td>
+                    <td>${services.map(s => s.name).join(', ')}</td>
+                    <td>RM${parseFloat(quotation.TotalAmount).toFixed(2)}</td>
+                    <td><span class="status-badge status-active">${quotation.Status}</span></td>
                     <td>
-                        <button class="btn btn-sm btn-primary" onclick="viewQuotation('${quotation.quoteNo}')">View</button>
-                        ${quotation.status === 'Draft' ? 
-                            `<button class="btn btn-sm btn-warning" onclick="editQuotation('${quotation.quoteNo}')">Edit</button>
-                             <button class="btn btn-sm btn-danger" onclick="deleteQuotation('${quotation.quoteNo}')">Delete</button>` : 
+                        <button class="btn btn-sm btn-primary" onclick="viewQuotation('${quotation.QuoteNo}')">View</button>
+                        ${quotation.Status === 'Draft' ? 
+                            `<button class="btn btn-sm btn-warning" onclick="editQuotation('${quotation.QuoteNo}')">Edit</button>
+                             <button class="btn btn-sm btn-danger" onclick="deleteQuotation('${quotation.QuoteNo}')">Delete</button>` : 
                             ''}
                     </td>
                 `;
@@ -3927,7 +4002,7 @@
             document.getElementById('quoteTotal').value = total.toFixed(2);
         }
         
-        function saveQuotation() {
+        async function saveQuotation() {
             // Get form data
             const clientName = document.getElementById('clientName').value;
             const clientEmail = document.getElementById('clientEmail').value;
@@ -3951,44 +4026,54 @@
             
             // Create quotation object
             const quotation = {
-                quoteNo: generateQuoteNo(),
-                date,
-                clientName,
-                clientEmail,
-                clientPhone,
-                services,
-                totalAmount,
-                status: 'Draft',
-                createdBy: app.user.id,
-                createdAt: new Date().toISOString()
+                QuoteNo: generateQuoteNo(),
+                Date: date,
+                ClientName: clientName,
+                ClientEmail: clientEmail,
+                ClientPhone: clientPhone,
+                Services: JSON.stringify(services),
+                TotalAmount: totalAmount,
+                Status: 'Draft',
+                CreatedBy: app.user.id,
+                CreatedAt: new Date().toISOString()
             };
             
-            // Check if we're editing an existing quotation
-            const existingIndex = app.quotations.findIndex(q => q.quoteNo === quotation.quoteNo);
-            
-            if (existingIndex !== -1) {
-                // Update existing quotation
-                app.quotations[existingIndex] = quotation;
-            } else {
-                // Add new quotation
-                app.quotations.push(quotation);
+            // Save to API
+            try {
+                const response = await fetch(`${API_BASE_URL}/quotations`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(quotation)
+                });
+                
+                const result = await response.json();
+                
+                if (result) {
+                    // Add to local state
+                    app.quotations.push(quotation);
+                    
+                    // Close modal
+                    closeQuotationModal();
+                    
+                    // Reload quotations
+                    loadQuotations();
+                    
+                    // Show notification
+                    showNotification('Quotation saved successfully', 'success');
+                } else {
+                    showNotification('Error saving quotation', 'error');
+                }
+            } catch (error) {
+                console.error("Error saving quotation:", error);
+                showNotification('Error saving quotation', 'error');
             }
-            
-            saveData();
-            
-            // Close modal
-            closeQuotationModal();
-            
-            // Reload quotations
-            loadQuotations();
-            
-            // Show notification
-            showNotification('Quotation saved successfully', 'success');
         }
         
         function viewQuotation(quoteNo) {
             // Find quotation
-            const quotation = app.quotations.find(q => q.quoteNo === quoteNo);
+            const quotation = app.quotations.find(q => q.QuoteNo === quoteNo);
             if (!quotation) return;
             
             // Open modal with quotation data
@@ -3998,17 +4083,18 @@
             document.getElementById('quotationModalTitle').textContent = 'View Quotation';
             
             // Populate form
-            document.getElementById('clientName').value = quotation.clientName;
-            document.getElementById('clientEmail').value = quotation.clientEmail || '';
-            document.getElementById('clientPhone').value = quotation.clientPhone || '';
-            document.getElementById('quoteDate').value = quotation.date;
-            document.getElementById('quoteTotal').value = quotation.totalAmount.toFixed(2);
+            document.getElementById('clientName').value = quotation.ClientName;
+            document.getElementById('clientEmail').value = quotation.ClientEmail || '';
+            document.getElementById('clientPhone').value = quotation.ClientPhone || '';
+            document.getElementById('quoteDate').value = quotation.Date;
+            document.getElementById('quoteTotal').value = parseFloat(quotation.TotalAmount).toFixed(2);
             
             // Populate services
             const servicesContainer = document.getElementById('quotationServices');
             servicesContainer.innerHTML = '';
             
-            quotation.services.forEach((service, index) => {
+            const services = JSON.parse(quotation.Services || '[]');
+            services.forEach((service, index) => {
                 const serviceElement = document.createElement('div');
                 serviceElement.className = 'form-row quotation-service';
                 serviceElement.innerHTML = `
@@ -4039,7 +4125,7 @@
         
         function editQuotation(quoteNo) {
             // Find quotation
-            const quotation = app.quotations.find(q => q.quoteNo === quoteNo);
+            const quotation = app.quotations.find(q => q.QuoteNo === quoteNo);
             if (!quotation) return;
             
             // Open modal with quotation data
@@ -4049,17 +4135,18 @@
             document.getElementById('quotationModalTitle').textContent = 'Edit Quotation';
             
             // Populate form
-            document.getElementById('clientName').value = quotation.clientName;
-            document.getElementById('clientEmail').value = quotation.clientEmail || '';
-            document.getElementById('clientPhone').value = quotation.clientPhone || '';
-            document.getElementById('quoteDate').value = quotation.date;
-            document.getElementById('quoteTotal').value = quotation.totalAmount.toFixed(2);
+            document.getElementById('clientName').value = quotation.ClientName;
+            document.getElementById('clientEmail').value = quotation.ClientEmail || '';
+            document.getElementById('clientPhone').value = quotation.ClientPhone || '';
+            document.getElementById('quoteDate').value = quotation.Date;
+            document.getElementById('quoteTotal').value = parseFloat(quotation.TotalAmount).toFixed(2);
             
             // Populate services
             const servicesContainer = document.getElementById('quotationServices');
             servicesContainer.innerHTML = '';
             
-            quotation.services.forEach((service, index) => {
+            const services = JSON.parse(quotation.Services || '[]');
+            services.forEach((service, index) => {
                 const serviceElement = document.createElement('div');
                 serviceElement.className = 'form-row quotation-service';
                 serviceElement.innerHTML = `
@@ -4088,20 +4175,34 @@
             });
         }
         
-        function deleteQuotation(quoteNo) {
+        async function deleteQuotation(quoteNo) {
             if (confirm('Are you sure you want to delete this quotation?')) {
-                // Find and remove quotation
-                const quotationIndex = app.quotations.findIndex(q => q.quoteNo === quoteNo);
-                if (quotationIndex === -1) return;
-                
-                app.quotations.splice(quotationIndex, 1);
-                saveData();
-                
-                // Reload quotations
-                loadQuotations();
-                
-                // Show notification
-                showNotification('Quotation deleted successfully', 'success');
+                try {
+                    const response = await fetch(`${API_BASE_URL}/quotations?id=${quoteNo}`, {
+                        method: 'DELETE'
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        // Find and remove quotation
+                        const quotationIndex = app.quotations.findIndex(q => q.QuoteNo === quoteNo);
+                        if (quotationIndex !== -1) {
+                            app.quotations.splice(quotationIndex, 1);
+                        }
+                        
+                        // Reload quotations
+                        loadQuotations();
+                        
+                        // Show notification
+                        showNotification('Quotation deleted successfully', 'success');
+                    } else {
+                        showNotification('Error deleting quotation', 'error');
+                    }
+                } catch (error) {
+                    console.error("Error deleting quotation:", error);
+                    showNotification('Error deleting quotation', 'error');
+                }
             }
         }
         
@@ -4113,6 +4214,434 @@
         function emailQuotation() {
             // This would send an email in a real app
             showNotification('Email functionality would be implemented here', 'success');
+        }
+        
+        // Orders Functions
+        function loadOrders() {
+            const tbody = document.getElementById('ordersTableBody');
+            tbody.innerHTML = '';
+            
+            if (app.orders.length === 0) {
+                // Initialize with sample orders
+                app.orders = [
+                    {
+                        ID: 'ORD-0001',
+                        Date: getCurrentDateStr(),
+                        Customer: 'John Doe',
+                        Items: JSON.stringify([
+                            { name: 'Sample Item 1', quantity: 2, price: 10.00 },
+                            { name: 'Sample Item 2', quantity: 1, price: 20.00 }
+                        ]),
+                        Total: 40.00,
+                        Outlet: 'HQ',
+                        Status: 'Pending',
+                        AssignedTo: ''
+                    },
+                    {
+                        ID: 'ORD-0002',
+                        Date: getCurrentDateStr(),
+                        Customer: 'Jane Smith',
+                        Items: JSON.stringify([
+                            { name: 'Sample Item 3', quantity: 3, price: 15.00 }
+                        ]),
+                        Total: 45.00,
+                        Outlet: 'BLM',
+                        Status: 'Assigned',
+                        AssignedTo: '0003'
+                    }
+                ];
+            }
+            
+            app.orders.forEach(order => {
+                const items = JSON.parse(order.Items || '[]');
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${order.ID}</td>
+                    <td>${order.Date}</td>
+                    <td>${order.Customer}</td>
+                    <td>${items.map(i => `${i.name} (x${i.quantity})`).join(', ')}</td>
+                    <td>RM${parseFloat(order.Total).toFixed(2)}</td>
+                    <td>${order.Outlet}</td>
+                    <td><span class="status-badge ${order.Status === 'Pending' ? 'status-inactive' : 'status-active'}">${order.Status}</span></td>
+                    <td>
+                        ${app.user.isAdmin ? 
+                            `<button class="btn btn-sm btn-danger" onclick="assignOrder('${order.ID}')">Assign</button>` : 
+                            order.AssignedTo === app.user.id ? 
+                            `<button class="btn btn-sm btn-primary" onclick="generateCashbillFromOrder('${order.ID}')">Generate Cashbill</button>` : 
+                            ''}
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+        
+        function openOrderModal() {
+            // Reset form
+            elements.orderForm.reset();
+            
+            // Set today's date
+            document.getElementById('orderDate').value = getCurrentDateStr();
+            
+            // Populate item dropdown
+            populateOrderItemDropdown();
+            
+            // Reset items
+            resetOrderItems();
+            
+            // Show modal
+            elements.orderModal.classList.add('active');
+        }
+        
+        function closeOrderModal() {
+            elements.orderModal.classList.remove('active');
+        }
+        
+        function populateOrderItemDropdown() {
+            const selects = document.querySelectorAll('.order-item-select');
+            
+            selects.forEach(select => {
+                select.innerHTML = '<option value="">Select Item</option>';
+                
+                app.stockItems.forEach(item => {
+                    const option = document.createElement('option');
+                    option.value = item.Code;
+                    option.textContent = `${item.Name} - RM${parseFloat(item.Price).toFixed(2)}`;
+                    option.dataset.price = item.Price;
+                    select.appendChild(option);
+                });
+                
+                // Add change event listener
+                select.addEventListener('change', updateOrderItemPrice);
+            });
+        }
+        
+        function updateOrderItemPrice(e) {
+            const select = e.target;
+            const priceInput = select.closest('.order-item').querySelector('.order-item-price');
+            const selectedOption = select.options[select.selectedIndex];
+            
+            if (selectedOption && selectedOption.value) {
+                priceInput.value = selectedOption.dataset.price;
+                calculateOrderTotal();
+            } else {
+                priceInput.value = '';
+            }
+        }
+        
+        function addOrderItem() {
+            const itemsContainer = document.getElementById('orderItems');
+            const itemTemplate = document.querySelector('.order-item').cloneNode(true);
+            
+            // Reset values
+            itemTemplate.querySelector('.order-item-select').value = '';
+            itemTemplate.querySelector('.order-item-quantity').value = '1';
+            itemTemplate.querySelector('.order-item-price').value = '';
+            
+            // Show remove button
+            itemTemplate.querySelector('.remove-order-item').style.display = 'inline-flex';
+            
+            // Add event listener
+            itemTemplate.querySelector('.order-item-select').addEventListener('change', updateOrderItemPrice);
+            
+            itemsContainer.appendChild(itemTemplate);
+            
+            // Populate dropdown
+            populateOrderItemDropdown();
+        }
+        
+        function removeOrderItem(item) {
+            item.remove();
+            calculateOrderTotal();
+            
+            // Show/hide remove buttons
+            const items = document.querySelectorAll('.order-item');
+            items.forEach((item, index) => {
+                const removeBtn = item.querySelector('.remove-order-item');
+                if (items.length > 1) {
+                    removeBtn.style.display = 'inline-flex';
+                } else {
+                    removeBtn.style.display = 'none';
+                }
+            });
+        }
+        
+        function resetOrderItems() {
+            const itemsContainer = document.getElementById('orderItems');
+            itemsContainer.innerHTML = `
+                <div class="form-row order-item">
+                    <div class="form-col">
+                        <div class="form-group">
+                            <select class="form-input order-item-select" required>
+                                <option value="">Select Item</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-col">
+                        <div class="form-group">
+                            <input type="number" class="form-input order-item-quantity" placeholder="Quantity" min="1" value="1" required>
+                        </div>
+                    </div>
+                    <div class="form-col">
+                        <div class="form-group">
+                            <input type="number" class="form-input order-item-price" placeholder="Price (RM)" step="0.01" readonly>
+                        </div>
+                    </div>
+                    <div class="form-col" style="display: flex; align-items: end;">
+                        <button type="button" class="btn btn-danger remove-order-item" style="display: none;">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            // Populate dropdown
+            populateOrderItemDropdown();
+        }
+        
+        function calculateOrderTotal() {
+            const items = document.querySelectorAll('.order-item');
+            let total = 0;
+            
+            items.forEach(item => {
+                const quantity = parseFloat(item.querySelector('.order-item-quantity').value) || 0;
+                const price = parseFloat(item.querySelector('.order-item-price').value) || 0;
+                total += quantity * price;
+            });
+            
+            document.getElementById('orderTotal').value = total.toFixed(2);
+        }
+        
+        async function saveOrder() {
+            // Get form data
+            const customer = document.getElementById('orderCustomer').value;
+            const phone = document.getElementById('orderPhone').value;
+            const date = document.getElementById('orderDate').value;
+            const outlet = document.getElementById('orderOutlet').value;
+            const total = parseFloat(document.getElementById('orderTotal').value);
+            
+            // Get items
+            const items = [];
+            document.querySelectorAll('.order-item').forEach(item => {
+                const itemCode = item.querySelector('.order-item-select').value;
+                const quantity = parseInt(item.querySelector('.order-item-quantity').value);
+                const price = parseFloat(item.querySelector('.order-item-price').value);
+                
+                if (itemCode && quantity && price) {
+                    const stockItem = app.stockItems.find(si => si.Code === itemCode);
+                    items.push({
+                        code: itemCode,
+                        name: stockItem.Name,
+                        quantity: quantity,
+                        price: price
+                    });
+                }
+            });
+            
+            // Create order object
+            const order = {
+                ID: generateOrderId(),
+                Date: date,
+                Customer: customer,
+                Phone: phone,
+                Items: JSON.stringify(items),
+                Total: total,
+                Outlet: outlet,
+                Status: 'Pending',
+                AssignedTo: ''
+            };
+            
+            // Save to API
+            try {
+                const response = await fetch(`${API_BASE_URL}/orders`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(order)
+                });
+                
+                const result = await response.json();
+                
+                if (result) {
+                    // Add to local state
+                    app.orders.push(order);
+                    
+                    // Close modal
+                    closeOrderModal();
+                    
+                    // Reload orders
+                    loadOrders();
+                    
+                    // Show notification
+                    showNotification('Order created successfully', 'success');
+                } else {
+                    showNotification('Error saving order', 'error');
+                }
+            } catch (error) {
+                console.error("Error saving order:", error);
+                showNotification('Error saving order', 'error');
+            }
+        }
+        
+        function generateOrderId() {
+            const prefix = 'ORD-';
+            const nextNumber = app.orders.length + 1;
+            return `${prefix}${String(nextNumber).padStart(4, '0')}`;
+        }
+        
+        function assignOrder(orderId) {
+            // Find order
+            const order = app.orders.find(o => o.ID === orderId);
+            if (!order) return;
+            
+            // Open assign order modal
+            elements.assignOrderModal.classList.add('active');
+            
+            // Set order ID as data attribute
+            document.getElementById('confirmAssignOrderBtn').dataset.orderId = orderId;
+            
+            // Populate crew dropdown based on selected outlet
+            updateCrewDropdownForOutlet(order.Outlet);
+        }
+        
+        function closeAssignOrderModal() {
+            elements.assignOrderModal.classList.remove('active');
+        }
+        
+        function updateCrewDropdownForOutlet(outlet) {
+            const crewSelect = document.getElementById('assignOrderCrew');
+            crewSelect.innerHTML = '<option value="">Select Crew Member</option>';
+            
+            // Filter crew members by outlet
+            const crewAtOutlet = app.crewMembers.filter(crew => crew.Outlet === outlet);
+            
+            crewAtOutlet.forEach(crew => {
+                const option = document.createElement('option');
+                option.value = crew.ID;
+                option.textContent = `${crew.Name} (${crew.Role})`;
+                crewSelect.appendChild(option);
+            });
+            
+            // Update outlet selection
+            document.getElementById('assignOrderOutlet').value = outlet;
+            
+            // Add event listener for outlet change
+            document.getElementById('assignOrderOutlet').addEventListener('change', (e) => {
+                updateCrewDropdownForOutlet(e.target.value);
+            });
+        }
+        
+        async function confirmAssignOrder() {
+            const orderId = document.getElementById('confirmAssignOrderBtn').dataset.orderId;
+            const outlet = document.getElementById('assignOrderOutlet').value;
+            const crewId = document.getElementById('assignOrderCrew').value;
+            
+            // Find order
+            const orderIndex = app.orders.findIndex(o => o.ID === orderId);
+            if (orderIndex === -1) return;
+            
+            // Update order
+            app.orders[orderIndex].Outlet = outlet;
+            app.orders[orderIndex].AssignedTo = crewId;
+            app.orders[orderIndex].Status = 'Assigned';
+            
+            // Save to API
+            try {
+                const response = await fetch(`${API_BASE_URL}/orders`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(app.orders[orderIndex])
+                });
+                
+                const result = await response.json();
+                
+                if (result) {
+                    // Close modal
+                    closeAssignOrderModal();
+                    
+                    // Reload orders
+                    loadOrders();
+                    
+                    // Show notification
+                    showNotification('Order assigned successfully', 'success');
+                } else {
+                    showNotification('Error assigning order', 'error');
+                }
+            } catch (error) {
+                console.error("Error assigning order:", error);
+                showNotification('Error assigning order', 'error');
+            }
+        }
+        
+        function generateCashbillFromOrder(orderId) {
+            // Find order
+            const order = app.orders.find(o => o.ID === orderId);
+            if (!order) return;
+            
+            // Open cashbill modal with order data
+            openCashbillModal();
+            
+            // Update modal title
+            document.getElementById('cashbillModalTitle').textContent = 'Create Cashbill from Order';
+            
+            // Set customer info
+            document.getElementById('customerName').value = order.Customer;
+            document.getElementById('customerPhone').value = order.Phone || '';
+            
+            // Add items from order
+            const itemsContainer = document.getElementById('cashbillItems');
+            itemsContainer.innerHTML = '';
+            
+            const items = JSON.parse(order.Items || '[]');
+            items.forEach((item, index) => {
+                const itemElement = document.createElement('div');
+                itemElement.className = 'form-row cashbill-item';
+                itemElement.innerHTML = `
+                    <div class="form-col">
+                        <div class="form-group">
+                            <select class="form-input item-select" required>
+                                <option value="">Select Item</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-col">
+                        <div class="form-group">
+                            <input type="number" class="form-input item-quantity" placeholder="Quantity" min="1" value="${item.quantity}" required>
+                        </div>
+                    </div>
+                    <div class="form-col">
+                        <div class="form-group">
+                            <input type="number" class="form-input item-price" placeholder="Price" step="0.01" value="${item.price}" readonly>
+                        </div>
+                    </div>
+                    <div class="form-col" style="display: flex; align-items: end;">
+                        <button type="button" class="btn btn-danger remove-item" ${index === 0 ? 'style="display: none;"' : ''}>
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                `;
+                itemsContainer.appendChild(itemElement);
+            });
+            
+            // Populate dropdown
+            populateItemDropdown();
+            
+            // Set selected values
+            const itemSelects = document.querySelectorAll('.item-select');
+            itemSelects.forEach((select, index) => {
+                if (items[index]) {
+                    // Try to find matching item by name
+                    const stockItem = app.stockItems.find(si => si.Name === items[index].name);
+                    if (stockItem) {
+                        select.value = stockItem.Code;
+                    }
+                }
+            });
+            
+            // Calculate total
+            calculateTotal();
         }
         
         // Schedule Functions
@@ -4210,23 +4739,24 @@
             // Create empty schedule
             const weekKey = getWeekKey(app.currentWeek);
             app.schedules[weekKey] = {
-                week: weekKey,
-                startDate: formatDate(app.currentWeek.start),
-                endDate: formatDate(app.currentWeek.end),
-                entries: []
+                WeekKey: weekKey,
+                StartDate: formatDate(app.currentWeek.start),
+                EndDate: formatDate(app.currentWeek.end),
+                Entries: JSON.stringify([])
             };
             
             // Add entries for all crew members
+            const entries = [];
             app.crewMembers.forEach(crew => {
                 for (let i = 0; i < 7; i++) {
                     const date = new Date(app.currentWeek.start);
                     date.setDate(date.getDate() + i);
                     
-                    app.schedules[weekKey].entries.push({
-                        crewId: crew.id,
-                        crewName: crew.name,
-                        crewRole: crew.role,
-                        crewOutlet: crew.outlet,
+                    entries.push({
+                        crewId: crew.ID,
+                        crewName: crew.Name,
+                        crewRole: crew.Role,
+                        crewOutlet: crew.Outlet,
                         date: formatDate(date),
                         startTime: '',
                         endTime: '',
@@ -4236,6 +4766,8 @@
                 }
             });
             
+            app.schedules[weekKey].Entries = JSON.stringify(entries);
+            
             // Enter edit mode
             app.scheduleEditMode = true;
             updateScheduleControls();
@@ -4244,16 +4776,36 @@
             renderSchedule(app.schedules[weekKey]);
         }
         
-        function saveSchedule() {
-            // Save to localStorage
-            saveData();
-            
-            // Exit edit mode
-            app.scheduleEditMode = false;
-            updateScheduleControls();
-            
-            // Show notification
-            showNotification('Schedule saved successfully', 'success');
+        async function saveSchedule() {
+            // Save to API
+            try {
+                const weekKey = getWeekKey(app.currentWeek);
+                const schedule = app.schedules[weekKey];
+                
+                const response = await fetch(`${API_BASE_URL}/schedules`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(schedule)
+                });
+                
+                const result = await response.json();
+                
+                if (result) {
+                    // Exit edit mode
+                    app.scheduleEditMode = false;
+                    updateScheduleControls();
+                    
+                    // Show notification
+                    showNotification('Schedule saved successfully', 'success');
+                } else {
+                    showNotification('Error saving schedule', 'error');
+                }
+            } catch (error) {
+                console.error("Error saving schedule:", error);
+                showNotification('Error saving schedule', 'error');
+            }
         }
         
         function updateScheduleControls() {
@@ -4310,9 +4862,12 @@
             // Create body
             const tbody = document.createElement('tbody');
             
+            // Parse entries
+            const entries = JSON.parse(schedule.Entries || '[]');
+            
             // Group entries by crew
             const crewEntries = {};
-            schedule.entries.forEach(entry => {
+            entries.forEach(entry => {
                 if (!crewEntries[entry.crewId]) {
                     crewEntries[entry.crewId] = [];
                 }
@@ -4325,23 +4880,23 @@
             // Add rows for each crew
             Object.keys(crewEntries).forEach(crewId => {
                 const entries = crewEntries[crewId];
-                const crew = app.crewMembers.find(c => c.id === crewId);
+                const crew = app.crewMembers.find(c => c.ID === crewId);
                 
                 // Apply filter
-                if (activeFilter === 'hq' && crew.outlet !== 'HQ') return;
-                if (activeFilter === 'blm' && crew.outlet !== 'BLM') return;
+                if (activeFilter === 'hq' && crew.Outlet !== 'HQ') return;
+                if (activeFilter === 'blm' && crew.Outlet !== 'BLM') return;
                 
                 // Create crew info row
                 const crewRow = document.createElement('tr');
-                crewRow.dataset.outlet = crew.outlet.toLowerCase();
+                crewRow.dataset.outlet = crew.Outlet.toLowerCase();
                 
                 // Crew info cell
                 const crewCell = document.createElement('td');
                 crewCell.className = 'employee-info';
                 crewCell.innerHTML = `
-                    <div><strong>${crew.name}</strong></div>
-                    <div>${crew.role}</div>
-                    <div>${crew.outlet}</div>
+                    <div><strong>${crew.Name}</strong></div>
+                    <div>${crew.Role}</div>
+                    <div>${crew.Outlet}</div>
                 `;
                 crewRow.appendChild(crewCell);
                 
@@ -4472,401 +5027,13 @@
             const schedule = app.schedules[weekKey];
             
             if (schedule) {
-                const entry = schedule.entries.find(e => e.crewId === crewId && e.date === date);
+                const entries = JSON.parse(schedule.Entries || '[]');
+                const entry = entries.find(e => e.crewId === crewId && e.date === date);
                 if (entry) {
                     entry[field] = value;
+                    schedule.Entries = JSON.stringify(entries);
                 }
             }
-        }
-        
-        // Orders Functions
-        function loadOrders() {
-            const tbody = document.getElementById('ordersTableBody');
-            tbody.innerHTML = '';
-            
-            if (app.orders.length === 0) {
-                // Initialize with sample orders
-                app.orders = [
-                    {
-                        id: 'ORD-0001',
-                        date: getCurrentDateStr(),
-                        customer: 'John Doe',
-                        items: [
-                            { name: 'Sample Item 1', quantity: 2, price: 10.00 },
-                            { name: 'Sample Item 2', quantity: 1, price: 20.00 }
-                        ],
-                        total: 40.00,
-                        outlet: 'HQ',
-                        status: 'Pending',
-                        assignedTo: ''
-                    },
-                    {
-                        id: 'ORD-0002',
-                        date: getCurrentDateStr(),
-                        customer: 'Jane Smith',
-                        items: [
-                            { name: 'Sample Item 3', quantity: 3, price: 15.00 }
-                        ],
-                        total: 45.00,
-                        outlet: 'BLM',
-                        status: 'Assigned',
-                        assignedTo: '0003'
-                    }
-                ];
-                saveData();
-            }
-            
-            app.orders.forEach(order => {
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td>${order.id}</td>
-                    <td>${order.date}</td>
-                    <td>${order.customer}</td>
-                    <td>${order.items.map(i => `${i.name} (x${i.quantity})`).join(', ')}</td>
-                    <td>RM${order.total.toFixed(2)}</td>
-                    <td>${order.outlet}</td>
-                    <td><span class="status-badge ${order.status === 'Pending' ? 'status-inactive' : 'status-active'}">${order.status}</span></td>
-                    <td>
-                        ${app.user.isAdmin ? 
-                            `<button class="btn btn-sm btn-danger" onclick="assignOrder('${order.id}')">Assign</button>` : 
-                            order.assignedTo === app.user.id ? 
-                            `<button class="btn btn-sm btn-primary" onclick="generateCashbillFromOrder('${order.id}')">Generate Cashbill</button>` : 
-                            ''}
-                    </td>
-                `;
-                tbody.appendChild(tr);
-            });
-        }
-        
-        function openOrderModal() {
-            // Reset form
-            elements.orderForm.reset();
-            
-            // Set today's date
-            document.getElementById('orderDate').value = getCurrentDateStr();
-            
-            // Populate item dropdown
-            populateOrderItemDropdown();
-            
-            // Reset items
-            resetOrderItems();
-            
-            // Show modal
-            elements.orderModal.classList.add('active');
-        }
-        
-        function closeOrderModal() {
-            elements.orderModal.classList.remove('active');
-        }
-        
-        function populateOrderItemDropdown() {
-            const selects = document.querySelectorAll('.order-item-select');
-            
-            selects.forEach(select => {
-                select.innerHTML = '<option value="">Select Item</option>';
-                
-                app.stockItems.forEach(item => {
-                    const option = document.createElement('option');
-                    option.value = item.code;
-                    option.textContent = `${item.name} - RM${item.price.toFixed(2)}`;
-                    option.dataset.price = item.price;
-                    select.appendChild(option);
-                });
-                
-                // Add change event listener
-                select.addEventListener('change', updateOrderItemPrice);
-            });
-        }
-        
-        function updateOrderItemPrice(e) {
-            const select = e.target;
-            const priceInput = select.closest('.order-item').querySelector('.order-item-price');
-            const selectedOption = select.options[select.selectedIndex];
-            
-            if (selectedOption && selectedOption.value) {
-                priceInput.value = selectedOption.dataset.price;
-                calculateOrderTotal();
-            } else {
-                priceInput.value = '';
-            }
-        }
-        
-        function addOrderItem() {
-            const itemsContainer = document.getElementById('orderItems');
-            const itemTemplate = document.querySelector('.order-item').cloneNode(true);
-            
-            // Reset values
-            itemTemplate.querySelector('.order-item-select').value = '';
-            itemTemplate.querySelector('.order-item-quantity').value = '1';
-            itemTemplate.querySelector('.order-item-price').value = '';
-            
-            // Show remove button
-            itemTemplate.querySelector('.remove-order-item').style.display = 'inline-flex';
-            
-            // Add event listener
-            itemTemplate.querySelector('.order-item-select').addEventListener('change', updateOrderItemPrice);
-            
-            itemsContainer.appendChild(itemTemplate);
-            
-            // Populate dropdown
-            populateOrderItemDropdown();
-        }
-        
-        function removeOrderItem(item) {
-            item.remove();
-            calculateOrderTotal();
-            
-            // Show/hide remove buttons
-            const items = document.querySelectorAll('.order-item');
-            items.forEach((item, index) => {
-                const removeBtn = item.querySelector('.remove-order-item');
-                if (items.length > 1) {
-                    removeBtn.style.display = 'inline-flex';
-                } else {
-                    removeBtn.style.display = 'none';
-                }
-            });
-        }
-        
-        function resetOrderItems() {
-            const itemsContainer = document.getElementById('orderItems');
-            itemsContainer.innerHTML = `
-                <div class="form-row order-item">
-                    <div class="form-col">
-                        <div class="form-group">
-                            <select class="form-input order-item-select" required>
-                                <option value="">Select Item</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="form-col">
-                        <div class="form-group">
-                            <input type="number" class="form-input order-item-quantity" placeholder="Quantity" min="1" value="1" required>
-                        </div>
-                    </div>
-                    <div class="form-col">
-                        <div class="form-group">
-                            <input type="number" class="form-input order-item-price" placeholder="Price (RM)" step="0.01" readonly>
-                        </div>
-                    </div>
-                    <div class="form-col" style="display: flex; align-items: end;">
-                        <button type="button" class="btn btn-danger remove-order-item" style="display: none;">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </div>
-                </div>
-            `;
-            
-            // Populate dropdown
-            populateOrderItemDropdown();
-        }
-        
-        function calculateOrderTotal() {
-            const items = document.querySelectorAll('.order-item');
-            let total = 0;
-            
-            items.forEach(item => {
-                const quantity = parseFloat(item.querySelector('.order-item-quantity').value) || 0;
-                const price = parseFloat(item.querySelector('.order-item-price').value) || 0;
-                total += quantity * price;
-            });
-            
-            document.getElementById('orderTotal').value = total.toFixed(2);
-        }
-        
-        function saveOrder() {
-            // Get form data
-            const customer = document.getElementById('orderCustomer').value;
-            const phone = document.getElementById('orderPhone').value;
-            const date = document.getElementById('orderDate').value;
-            const outlet = document.getElementById('orderOutlet').value;
-            const total = parseFloat(document.getElementById('orderTotal').value);
-            
-            // Get items
-            const items = [];
-            document.querySelectorAll('.order-item').forEach(item => {
-                const itemCode = item.querySelector('.order-item-select').value;
-                const quantity = parseInt(item.querySelector('.order-item-quantity').value);
-                const price = parseFloat(item.querySelector('.order-item-price').value);
-                
-                if (itemCode && quantity && price) {
-                    const stockItem = app.stockItems.find(si => si.code === itemCode);
-                    items.push({
-                        code: itemCode,
-                        name: stockItem.name,
-                        quantity: quantity,
-                        price: price
-                    });
-                }
-            });
-            
-            // Create order object
-            const order = {
-                id: generateOrderId(),
-                date,
-                customer,
-                phone,
-                items,
-                total,
-                outlet,
-                status: 'Pending',
-                assignedTo: ''
-            };
-            
-            // Add to app state
-            app.orders.push(order);
-            saveData();
-            
-            // Close modal
-            closeOrderModal();
-            
-            // Reload orders
-            loadOrders();
-            
-            // Show notification
-            showNotification('Order created successfully', 'success');
-        }
-        
-        function generateOrderId() {
-            const prefix = 'ORD-';
-            const nextNumber = app.orders.length + 1;
-            return `${prefix}${String(nextNumber).padStart(4, '0')}`;
-        }
-        
-        function assignOrder(orderId) {
-            // Find order
-            const order = app.orders.find(o => o.id === orderId);
-            if (!order) return;
-            
-            // Open assign order modal
-            elements.assignOrderModal.classList.add('active');
-            
-            // Set order ID as data attribute
-            document.getElementById('confirmAssignOrderBtn').dataset.orderId = orderId;
-            
-            // Populate crew dropdown based on selected outlet
-            updateCrewDropdownForOutlet(order.outlet);
-        }
-        
-        function closeAssignOrderModal() {
-            elements.assignOrderModal.classList.remove('active');
-        }
-        
-        function updateCrewDropdownForOutlet(outlet) {
-            const crewSelect = document.getElementById('assignOrderCrew');
-            crewSelect.innerHTML = '<option value="">Select Crew Member</option>';
-            
-            // Filter crew members by outlet
-            const crewAtOutlet = app.crewMembers.filter(crew => crew.outlet === outlet);
-            
-            crewAtOutlet.forEach(crew => {
-                const option = document.createElement('option');
-                option.value = crew.id;
-                option.textContent = `${crew.name} (${crew.role})`;
-                crewSelect.appendChild(option);
-            });
-            
-            // Update outlet selection
-            document.getElementById('assignOrderOutlet').value = outlet;
-            
-            // Add event listener for outlet change
-            document.getElementById('assignOrderOutlet').addEventListener('change', (e) => {
-                updateCrewDropdownForOutlet(e.target.value);
-            });
-        }
-        
-        function confirmAssignOrder() {
-            const orderId = document.getElementById('confirmAssignOrderBtn').dataset.orderId;
-            const outlet = document.getElementById('assignOrderOutlet').value;
-            const crewId = document.getElementById('assignOrderCrew').value;
-            
-            // Find order
-            const orderIndex = app.orders.findIndex(o => o.id === orderId);
-            if (orderIndex === -1) return;
-            
-            // Update order
-            app.orders[orderIndex].outlet = outlet;
-            app.orders[orderIndex].assignedTo = crewId;
-            app.orders[orderIndex].status = 'Assigned';
-            
-            saveData();
-            
-            // Close modal
-            closeAssignOrderModal();
-            
-            // Reload orders
-            loadOrders();
-            
-            // Show notification
-            showNotification('Order assigned successfully', 'success');
-        }
-        
-        function generateCashbillFromOrder(orderId) {
-            // Find order
-            const order = app.orders.find(o => o.id === orderId);
-            if (!order) return;
-            
-            // Open cashbill modal with order data
-            openCashbillModal();
-            
-            // Update modal title
-            document.getElementById('cashbillModalTitle').textContent = 'Create Cashbill from Order';
-            
-            // Set customer info
-            document.getElementById('customerName').value = order.customer;
-            document.getElementById('customerPhone').value = order.phone || '';
-            
-            // Add items from order
-            const itemsContainer = document.getElementById('cashbillItems');
-            itemsContainer.innerHTML = '';
-            
-            order.items.forEach((item, index) => {
-                const itemElement = document.createElement('div');
-                itemElement.className = 'form-row cashbill-item';
-                itemElement.innerHTML = `
-                    <div class="form-col">
-                        <div class="form-group">
-                            <select class="form-input item-select" required>
-                                <option value="">Select Item</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="form-col">
-                        <div class="form-group">
-                            <input type="number" class="form-input item-quantity" placeholder="Quantity" min="1" value="${item.quantity}" required>
-                        </div>
-                    </div>
-                    <div class="form-col">
-                        <div class="form-group">
-                            <input type="number" class="form-input item-price" placeholder="Price" step="0.01" value="${item.price}" readonly>
-                        </div>
-                    </div>
-                    <div class="form-col" style="display: flex; align-items: end;">
-                        <button type="button" class="btn btn-danger remove-item" ${index === 0 ? 'style="display: none;"' : ''}>
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </div>
-                `;
-                itemsContainer.appendChild(itemElement);
-            });
-            
-            // Populate dropdown
-            populateItemDropdown();
-            
-            // Set selected values
-            const itemSelects = document.querySelectorAll('.item-select');
-            itemSelects.forEach((select, index) => {
-                if (order.items[index]) {
-                    // Try to find matching item by name
-                    const stockItem = app.stockItems.find(si => si.name === order.items[index].name);
-                    if (stockItem) {
-                        select.value = stockItem.code;
-                    }
-                }
-            });
-            
-            // Calculate total
-            calculateTotal();
         }
         
         // Attendance Management Functions
@@ -4880,8 +5047,8 @@
             
             app.crewMembers.forEach(crew => {
                 const option = document.createElement('option');
-                option.value = crew.id;
-                option.textContent = `${crew.name} (${crew.role})`;
+                option.value = crew.ID;
+                option.textContent = `${crew.Name} (${crew.Role})`;
                 crewFilter.appendChild(option);
             });
             
@@ -4900,38 +5067,38 @@
             let records = [];
             
             if (date) {
-                records = app.attendanceRecords.filter(record => record.date === date);
+                records = app.attendanceRecords.filter(record => record.Date === date);
                 
                 if (crewId) {
-                    records = records.filter(record => record.crewId === crewId);
+                    records = records.filter(record => record.CrewID === crewId);
                 }
             }
             
             // If no records found, create empty records for all crew members
             if (records.length === 0 && date) {
                 const crewToProcess = crewId ? 
-                    app.crewMembers.filter(crew => crew.id === crewId) : 
+                    app.crewMembers.filter(crew => crew.ID === crewId) : 
                     app.crewMembers;
                 
                 crewToProcess.forEach(crew => {
-                    const userSchedule = getUserSchedule(crew.id, date);
+                    const userSchedule = getUserSchedule(crew.ID, date);
                     
                     if (userSchedule) {
                         records.push({
-                            id: generateId(),
-                            crewId: crew.id,
-                            crewName: crew.name,
-                            date: date,
-                            scheduledTime: userSchedule.startTime + ' - ' + userSchedule.endTime,
-                            punchInTime: '',
-                            punchOutTime: '',
-                            breakStartTime: '',
-                            breakEndTime: '',
-                            breakDuration: '',
-                            status: 'No Record',
-                            isLate: false,
-                            isOverbreak: false,
-                            notes: ''
+                            ID: generateId(),
+                            CrewID: crew.ID,
+                            CrewName: crew.Name,
+                            Date: date,
+                            ScheduledTime: userSchedule.startTime + ' - ' + userSchedule.endTime,
+                            PunchInTime: '',
+                            PunchOutTime: '',
+                            BreakStartTime: '',
+                            BreakEndTime: '',
+                            BreakDuration: '',
+                            Status: 'No Record',
+                            IsLate: false,
+                            IsOverbreak: false,
+                            Notes: ''
                         });
                     }
                 });
@@ -4943,35 +5110,35 @@
                 
                 // Determine status
                 let statusClass = 'status-inactive';
-                let statusText = record.status;
+                let statusText = record.Status;
                 
-                if (record.isLate) {
+                if (record.IsLate) {
                     statusClass = 'status-warning';
                     statusText = 'Late';
-                } else if (record.isOverbreak) {
+                } else if (record.IsOverbreak) {
                     statusClass = 'status-warning';
                     statusText = 'Overbreak';
-                } else if (record.punchInTime && record.punchOutTime) {
+                } else if (record.PunchInTime && record.PunchOutTime) {
                     statusClass = 'status-active';
                     statusText = 'Complete';
-                } else if (record.punchInTime) {
+                } else if (record.PunchInTime) {
                     statusClass = 'status-active';
                     statusText = 'Working';
                 }
                 
                 tr.innerHTML = `
-                    <td>${record.crewId}</td>
-                    <td>${record.crewName}</td>
-                    <td>${record.scheduledTime}</td>
-                    <td>${record.punchInTime || '-'}</td>
-                    <td>${record.punchOutTime || '-'}</td>
-                    <td>${record.breakStartTime || '-'}</td>
-                    <td>${record.breakEndTime || '-'}</td>
-                    <td>${record.breakDuration || '-'}</td>
+                    <td>${record.CrewID}</td>
+                    <td>${record.CrewName}</td>
+                    <td>${record.ScheduledTime}</td>
+                    <td>${record.PunchInTime || '-'}</td>
+                    <td>${record.PunchOutTime || '-'}</td>
+                    <td>${record.BreakStartTime || '-'}</td>
+                    <td>${record.BreakEndTime || '-'}</td>
+                    <td>${record.BreakDuration || '-'}</td>
                     <td><span class="status-badge ${statusClass}">${statusText}</span></td>
                     <td>
                         <div class="attendance-actions">
-                            <button class="btn btn-sm btn-primary" onclick="editAttendanceRecord('${record.id}')">Edit</button>
+                            <button class="btn btn-sm btn-primary" onclick="editAttendanceRecord('${record.ID}')">Edit</button>
                         </div>
                     </td>
                 `;
@@ -4981,21 +5148,21 @@
         
         function editAttendanceRecord(recordId) {
             // Find attendance record
-            const record = app.attendanceRecords.find(r => r.id === recordId);
+            const record = app.attendanceRecords.find(r => r.ID === recordId);
             if (!record) return;
             
             // Open attendance edit modal
             elements.attendanceEditModal.classList.add('active');
             
             // Populate form
-            document.getElementById('editCrewName').value = record.crewName;
-            document.getElementById('editAttendanceDate').value = record.date;
-            document.getElementById('editScheduledTime').value = record.scheduledTime;
-            document.getElementById('editPunchInTime').value = record.punchInTime;
-            document.getElementById('editPunchOutTime').value = record.punchOutTime;
-            document.getElementById('editBreakStartTime').value = record.breakStartTime;
-            document.getElementById('editBreakEndTime').value = record.breakEndTime;
-            document.getElementById('editAttendanceNotes').value = record.notes || '';
+            document.getElementById('editCrewName').value = record.CrewName;
+            document.getElementById('editAttendanceDate').value = record.Date;
+            document.getElementById('editScheduledTime').value = record.ScheduledTime;
+            document.getElementById('editPunchInTime').value = record.PunchInTime;
+            document.getElementById('editPunchOutTime').value = record.PunchOutTime;
+            document.getElementById('editBreakStartTime').value = record.BreakStartTime;
+            document.getElementById('editBreakEndTime').value = record.BreakEndTime;
+            document.getElementById('editAttendanceNotes').value = record.Notes || '';
             
             // Set record ID as data attribute
             document.getElementById('saveAttendanceEditBtn').dataset.recordId = recordId;
@@ -5072,11 +5239,11 @@
             }
         }
         
-        function saveAttendanceEdit() {
+        async function saveAttendanceEdit() {
             const recordId = document.getElementById('saveAttendanceEditBtn').dataset.recordId;
             
             // Find attendance record
-            const recordIndex = app.attendanceRecords.findIndex(r => r.id === recordId);
+            const recordIndex = app.attendanceRecords.findIndex(r => r.ID === recordId);
             
             // Get form values
             const punchInTime = document.getElementById('editPunchInTime').value;
@@ -5144,53 +5311,73 @@
                 // Update existing record
                 app.attendanceRecords[recordIndex] = {
                     ...app.attendanceRecords[recordIndex],
-                    punchInTime,
-                    punchOutTime,
-                    breakStartTime,
-                    breakEndTime,
-                    breakDuration,
-                    status,
-                    isLate,
-                    isOverbreak,
-                    notes
+                    PunchInTime: punchInTime,
+                    PunchOutTime: punchOutTime,
+                    BreakStartTime: breakStartTime,
+                    BreakEndTime: breakEndTime,
+                    BreakDuration: breakDuration,
+                    Status: status,
+                    IsLate: isLate,
+                    IsOverbreak: isOverbreak,
+                    Notes: notes
                 };
             } else {
                 // Create new record
                 const crewId = document.getElementById('editCrewName').value.split(' ')[0]; // Extract crew ID from name
                 const date = document.getElementById('editAttendanceDate').value;
-                const crew = app.crewMembers.find(c => c.name.includes(document.getElementById('editCrewName').value.split(' ')[0]));
+                const crew = app.crewMembers.find(c => c.Name.includes(document.getElementById('editCrewName').value.split(' ')[0]));
                 
                 if (crew) {
                     app.attendanceRecords.push({
-                        id: recordId,
-                        crewId: crew.id,
-                        crewName: crew.name,
-                        date,
-                        scheduledTime: document.getElementById('editScheduledTime').value,
-                        punchInTime,
-                        punchOutTime,
-                        breakStartTime,
-                        breakEndTime,
-                        breakDuration,
-                        status,
-                        isLate,
-                        isOverbreak,
-                        notes
+                        ID: recordId,
+                        CrewID: crew.ID,
+                        CrewName: crew.Name,
+                        Date: date,
+                        ScheduledTime: document.getElementById('editScheduledTime').value,
+                        PunchInTime: punchInTime,
+                        PunchOutTime: punchOutTime,
+                        BreakStartTime: breakStartTime,
+                        BreakEndTime: breakEndTime,
+                        BreakDuration: breakDuration,
+                        Status: status,
+                        IsLate: isLate,
+                        IsOverbreak: isOverbreak,
+                        Notes: notes
                     });
                 }
             }
             
-            // Save data
-            saveData();
-            
-            // Close modal
-            closeAttendanceEditModal();
-            
-            // Reload attendance records
-            loadAttendanceRecords();
-            
-            // Show notification
-            showNotification('Attendance record updated successfully', 'success');
+            // Save to API
+            try {
+                const record = recordIndex !== -1 ? app.attendanceRecords[recordIndex] : 
+                    app.attendanceRecords[app.attendanceRecords.length - 1];
+                
+                const response = await fetch(`${API_BASE_URL}/attendanceRecords`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(record)
+                });
+                
+                const result = await response.json();
+                
+                if (result) {
+                    // Close modal
+                    closeAttendanceEditModal();
+                    
+                    // Reload attendance records
+                    loadAttendanceRecords();
+                    
+                    // Show notification
+                    showNotification('Attendance record updated successfully', 'success');
+                } else {
+                    showNotification('Error updating attendance record', 'error');
+                }
+            } catch (error) {
+                console.error("Error updating attendance record:", error);
+                showNotification('Error updating attendance record', 'error');
+            }
         }
         
         // Crew Management Functions
@@ -5201,14 +5388,14 @@
             app.crewMembers.forEach(crew => {
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
-                    <td>${crew.id}</td>
-                    <td>${crew.name}</td>
-                    <td>${crew.role}</td>
-                    <td>${crew.outlet}</td>
-                    <td><span class="status-badge ${crew.status === 'Active' ? 'status-active' : 'status-inactive'}">${crew.status}</span></td>
+                    <td>${crew.ID}</td>
+                    <td>${crew.Name}</td>
+                    <td>${crew.Role}</td>
+                    <td>${crew.Outlet}</td>
+                    <td><span class="status-badge ${crew.Status === 'Active' ? 'status-active' : 'status-inactive'}">${crew.Status}</span></td>
                     <td>
-                        <button class="btn btn-sm btn-primary" onclick="editCrew('${crew.id}')">Edit</button>
-                        <button class="btn btn-sm btn-danger" onclick="deleteCrew('${crew.id}')">Delete</button>
+                        <button class="btn btn-sm btn-primary" onclick="editCrew('${crew.ID}')">Edit</button>
+                        <button class="btn btn-sm btn-danger" onclick="deleteCrew('${crew.ID}')">Delete</button>
                     </td>
                 `;
                 tbody.appendChild(tr);
@@ -5230,7 +5417,7 @@
             elements.crewModal.classList.remove('active');
         }
         
-        function saveCrew() {
+        async function saveCrew() {
             // Get form data
             const id = document.getElementById('crewId').value;
             const name = document.getElementById('crewName').value;
@@ -5238,47 +5425,63 @@
             const outlet = document.getElementById('crewOutlet').value;
             
             // Check if crew member already exists
-            const existingCrewIndex = app.crewMembers.findIndex(c => c.id === id);
+            const existingCrewIndex = app.crewMembers.findIndex(c => c.ID === id);
             
             if (existingCrewIndex !== -1) {
                 // Update existing crew member
                 app.crewMembers[existingCrewIndex] = {
                     ...app.crewMembers[existingCrewIndex],
-                    name,
-                    role,
-                    outlet
+                    Name: name,
+                    Role: role,
+                    Outlet: outlet
                 };
             } else {
                 // Add new crew member
                 app.crewMembers.push({
-                    id,
-                    name,
-                    role,
-                    outlet,
-                    status: 'Active'
+                    ID: id,
+                    Name: name,
+                    Role: role,
+                    Outlet: outlet,
+                    Status: 'Active'
                 });
             }
             
-            // Save to localStorage
-            saveCrewMembers();
-            
-            // Close modal
-            closeCrewModal();
-            
-            // Reload crew members
-            loadCrewMembers();
-            
-            // Show notification
-            showNotification('Crew member saved successfully', 'success');
-        }
-        
-        function saveCrewMembers() {
-            localStorage.setItem('pneCrewMembers', JSON.stringify(app.crewMembers));
+            // Save to API
+            try {
+                const crew = existingCrewIndex !== -1 ? app.crewMembers[existingCrewIndex] : 
+                    app.crewMembers[app.crewMembers.length - 1];
+                
+                const response = await fetch(`${API_BASE_URL}/crewMembers`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(crew)
+                });
+                
+                const result = await response.json();
+                
+                if (result) {
+                    // Close modal
+                    closeCrewModal();
+                    
+                    // Reload crew members
+                    loadCrewMembers();
+                    
+                    // Show notification
+                    showNotification('Crew member saved successfully', 'success');
+                } else {
+                    showNotification('Error saving crew member', 'error');
+                }
+            } catch (error) {
+                console.error("Error saving crew member:", error);
+                showNotification('Error saving crew member', 'error');
+            }
         }
         
         function editCrew(id) {
             // Find crew member
-            const crew = app.crewMembers.find(c => c.id === id);
+            const crew = app.crewMembers.find(c => c.ID === id);
             if (!crew) return;
             
             // Open modal with crew data
@@ -5288,29 +5491,41 @@
             document.getElementById('crewModalTitle').textContent = 'Edit Crew Member';
             
             // Populate form
-            document.getElementById('crewId').value = crew.id;
+            document.getElementById('crewId').value = crew.ID;
             document.getElementById('crewId').disabled = true;
-            document.getElementById('crewName').value = crew.name;
-            document.getElementById('crewRole').value = crew.role;
-            document.getElementById('crewOutlet').value = crew.outlet;
+            document.getElementById('crewName').value = crew.Name;
+            document.getElementById('crewRole').value = crew.Role;
+            document.getElementById('crewOutlet').value = crew.Outlet;
         }
         
-        function deleteCrew(id) {
+        async function deleteCrew(id) {
             if (confirm('Are you sure you want to delete this crew member?')) {
-                // Find and remove crew member
-                const crewIndex = app.crewMembers.findIndex(c => c.id === id);
-                if (crewIndex === -1) return;
-                
-                app.crewMembers.splice(crewIndex, 1);
-                
-                // Save to localStorage
-                saveCrewMembers();
-                
-                // Reload crew members
-                loadCrewMembers();
-                
-                // Show notification
-                showNotification('Crew member deleted successfully', 'success');
+                try {
+                    const response = await fetch(`${API_BASE_URL}/crewMembers?id=${id}`, {
+                        method: 'DELETE'
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        // Find and remove crew member
+                        const crewIndex = app.crewMembers.findIndex(c => c.ID === id);
+                        if (crewIndex !== -1) {
+                            app.crewMembers.splice(crewIndex, 1);
+                        }
+                        
+                        // Reload crew members
+                        loadCrewMembers();
+                        
+                        // Show notification
+                        showNotification('Crew member deleted successfully', 'success');
+                    } else {
+                        showNotification('Error deleting crew member', 'error');
+                    }
+                } catch (error) {
+                    console.error("Error deleting crew member:", error);
+                    showNotification('Error deleting crew member', 'error');
+                }
             }
         }
         
@@ -5322,16 +5537,16 @@
             app.stockItems.forEach(item => {
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
-                    <td>${item.code}</td>
-                    <td>${item.name}</td>
-                    <td>${item.description}</td>
-                    <td>RM${item.price.toFixed(2)}</td>
-                    <td>${item.quantity}</td>
-                    <td>${item.outlet}</td>
+                    <td>${item.Code}</td>
+                    <td>${item.Name}</td>
+                    <td>${item.Description}</td>
+                    <td>RM${parseFloat(item.Price).toFixed(2)}</td>
+                    <td>${item.Quantity}</td>
+                    <td>${item.Outlet}</td>
                     <td>
                         ${app.user.isAdmin ? 
-                            `<button class="btn btn-sm btn-primary" onclick="editStock('${item.code}')">Edit</button>
-                             <button class="btn btn-sm btn-danger" onclick="deleteStock('${item.code}')">Delete</button>` : 
+                            `<button class="btn btn-sm btn-primary" onclick="editStock('${item.Code}')">Edit</button>
+                             <button class="btn btn-sm btn-danger" onclick="deleteStock('${item.Code}')">Delete</button>` : 
                             ''}
                     </td>
                 `;
@@ -5354,7 +5569,7 @@
             elements.stockModal.classList.remove('active');
         }
         
-        function saveStock() {
+        async function saveStock() {
             // Get form data
             const code = document.getElementById('itemCode').value;
             const name = document.getElementById('itemName').value;
@@ -5364,50 +5579,66 @@
             const outlet = document.getElementById('itemOutlet').value;
             
             // Check if stock item already exists
-            const existingStockIndex = app.stockItems.findIndex(s => s.code === code);
+            const existingStockIndex = app.stockItems.findIndex(s => s.Code === code);
             
             if (existingStockIndex !== -1) {
                 // Update existing stock item
                 app.stockItems[existingStockIndex] = {
                     ...app.stockItems[existingStockIndex],
-                    name,
-                    description,
-                    price,
-                    quantity,
-                    outlet
+                    Name: name,
+                    Description: description,
+                    Price: price,
+                    Quantity: quantity,
+                    Outlet: outlet
                 };
             } else {
                 // Add new stock item
                 app.stockItems.push({
-                    code,
-                    name,
-                    description,
-                    price,
-                    quantity,
-                    outlet
+                    Code: code,
+                    Name: name,
+                    Description: description,
+                    Price: price,
+                    Quantity: quantity,
+                    Outlet: outlet
                 });
             }
             
-            // Save to localStorage
-            saveStockItems();
-            
-            // Close modal
-            closeStockModal();
-            
-            // Reload stock items
-            loadStockItems();
-            
-            // Show notification
-            showNotification('Stock item saved successfully', 'success');
-        }
-        
-        function saveStockItems() {
-            localStorage.setItem('pneStockItems', JSON.stringify(app.stockItems));
+            // Save to API
+            try {
+                const stock = existingStockIndex !== -1 ? app.stockItems[existingStockIndex] : 
+                    app.stockItems[app.stockItems.length - 1];
+                
+                const response = await fetch(`${API_BASE_URL}/stockItems`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(stock)
+                });
+                
+                const result = await response.json();
+                
+                if (result) {
+                    // Close modal
+                    closeStockModal();
+                    
+                    // Reload stock items
+                    loadStockItems();
+                    
+                    // Show notification
+                    showNotification('Stock item saved successfully', 'success');
+                } else {
+                    showNotification('Error saving stock item', 'error');
+                }
+            } catch (error) {
+                console.error("Error saving stock item:", error);
+                showNotification('Error saving stock item', 'error');
+            }
         }
         
         function editStock(code) {
             // Find stock item
-            const stock = app.stockItems.find(s => s.code === code);
+            const stock = app.stockItems.find(s => s.Code === code);
             if (!stock) return;
             
             // Open modal with stock data
@@ -5417,46 +5648,47 @@
             document.getElementById('stockModalTitle').textContent = 'Edit Stock Item';
             
             // Populate form
-            document.getElementById('itemCode').value = stock.code;
+            document.getElementById('itemCode').value = stock.Code;
             document.getElementById('itemCode').disabled = true;
-            document.getElementById('itemName').value = stock.name;
-            document.getElementById('itemDescription').value = stock.description;
-            document.getElementById('itemPrice').value = stock.price;
-            document.getElementById('itemQuantity').value = stock.quantity;
-            document.getElementById('itemOutlet').value = stock.outlet;
+            document.getElementById('itemName').value = stock.Name;
+            document.getElementById('itemDescription').value = stock.Description;
+            document.getElementById('itemPrice').value = stock.Price;
+            document.getElementById('itemQuantity').value = stock.Quantity;
+            document.getElementById('itemOutlet').value = stock.Outlet;
         }
         
-        function deleteStock(code) {
+        async function deleteStock(code) {
             if (confirm('Are you sure you want to delete this stock item?')) {
-                // Find and remove stock item
-                const stockIndex = app.stockItems.findIndex(s => s.code === code);
-                if (stockIndex === -1) return;
-                
-                app.stockItems.splice(stockIndex, 1);
-                
-                // Save to localStorage
-                saveStockItems();
-                
-                // Reload stock items
-                loadStockItems();
-                
-                // Show notification
-                showNotification('Stock item deleted successfully', 'success');
+                try {
+                    const response = await fetch(`${API_BASE_URL}/stockItems?id=${code}`, {
+                        method: 'DELETE'
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        // Find and remove stock item
+                        const stockIndex = app.stockItems.findIndex(s => s.Code === code);
+                        if (stockIndex !== -1) {
+                            app.stockItems.splice(stockIndex, 1);
+                        }
+                        
+                        // Reload stock items
+                        loadStockItems();
+                        
+                        // Show notification
+                        showNotification('Stock item deleted successfully', 'success');
+                    } else {
+                        showNotification('Error deleting stock item', 'error');
+                    }
+                } catch (error) {
+                    console.error("Error deleting stock item:", error);
+                    showNotification('Error deleting stock item', 'error');
+                }
             }
         }
         
         // Stock Receiving Functions
-        function loadStockReceivingData() {
-            const receivingData = localStorage.getItem('pneStockReceivingRecords');
-            if (receivingData) {
-                app.stockReceivingRecords = JSON.parse(receivingData);
-            }
-        }
-        
-        function saveStockReceivingData() {
-            localStorage.setItem('pneStockReceivingRecords', JSON.stringify(app.stockReceivingRecords));
-        }
-        
         function loadStockReceivingPage() {
             // Set today's date as default
             elements.receivingDate.value = getCurrentDateStr();
@@ -5485,9 +5717,9 @@
                 
                 app.stockItems.forEach(item => {
                     const option = document.createElement('option');
-                    option.value = item.code;
-                    option.textContent = `${item.name} (Current Stock: ${item.quantity})`;
-                    option.dataset.price = item.price;
+                    option.value = item.Code;
+                    option.textContent = `${item.Name} (Current Stock: ${item.Quantity})`;
+                    option.dataset.price = item.Price;
                     select.appendChild(option);
                 });
                 
@@ -5653,7 +5885,7 @@
             showNotification('Preview functionality would be implemented here', 'success');
         }
         
-        function saveReceiving() {
+        async function saveReceiving() {
             // Validate form
             const date = elements.receivingDate.value;
             const supplier = elements.supplierName.value;
@@ -5677,19 +5909,19 @@
                 const cost = parseFloat(itemElement.querySelector('.item-cost').value) || 0;
                 
                 if (itemCode && quantity > 0 && cost > 0) {
-                    const stockItem = app.stockItems.find(si => si.code === itemCode);
+                    const stockItem = app.stockItems.find(si => si.Code === itemCode);
                     if (stockItem) {
                         items.push({
                             code: itemCode,
-                            name: stockItem.name,
+                            name: stockItem.Name,
                             quantity: quantity,
                             cost: cost
                         });
                         
                         // Update stock quantity
-                        const stockIndex = app.stockItems.findIndex(si => si.code === itemCode);
+                        const stockIndex = app.stockItems.findIndex(si => si.Code === itemCode);
                         if (stockIndex !== -1) {
-                            app.stockItems[stockIndex].quantity += quantity;
+                            app.stockItems[stockIndex].Quantity += quantity;
                         }
                     }
                 }
@@ -5702,35 +5934,62 @@
             
             // Create receiving record
             const receivingRecord = {
-                id: generateId(),
-                date,
-                supplier,
-                invoiceNumber,
-                items,
-                totalCost,
-                receivedBy,
-                notes,
-                createdAt: new Date().toISOString()
+                ID: generateId(),
+                Date: date,
+                Supplier: supplier,
+                InvoiceNumber: invoiceNumber,
+                Items: JSON.stringify(items),
+                TotalCost: totalCost,
+                ReceivedBy: receivedBy,
+                Notes: notes,
+                CreatedAt: new Date().toISOString()
             };
             
-            // Add to app state
-            app.stockReceivingRecords.push(receivingRecord);
-            
-            // Save data
-            saveStockReceivingData();
-            saveStockItems();
-            
-            // Show notification
-            showNotification('Stock received and inventory updated successfully', 'success');
-            
-            // Reset form
-            document.getElementById('stockReceivingForm').reset();
-            elements.receivingDate.value = getCurrentDateStr();
-            elements.receivedBy.value = app.user.name;
-            resetReceivingItems();
-            
-            // Reload records
-            loadReceivingRecords();
+            // Save to API
+            try {
+                const response = await fetch(`${API_BASE_URL}/stockReceiving`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(receivingRecord)
+                });
+                
+                const result = await response.json();
+                
+                if (result) {
+                    // Add to local state
+                    app.stockReceivingRecords.push(receivingRecord);
+                    
+                    // Update stock items in API
+                    for (const stockItem of app.stockItems) {
+                        await fetch(`${API_BASE_URL}/stockItems`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify(stockItem)
+                        });
+                    }
+                    
+                    // Show notification
+                    showNotification('Stock received and inventory updated successfully', 'success');
+                    
+                    // Reset form
+                    document.getElementById('stockReceivingForm').reset();
+                    elements.receivingDate.value = getCurrentDateStr();
+                    elements.receivedBy.value = app.user.name;
+                    resetReceivingItems();
+                    
+                    // Reload records
+                    loadReceivingRecords();
+                } else {
+                    showNotification('Error saving receiving record', 'error');
+                }
+            } catch (error) {
+                console.error("Error saving receiving record:", error);
+                showNotification('Error saving receiving record', 'error');
+            }
         }
         
         function loadReceivingRecords() {
@@ -5751,7 +6010,7 @@
                 switch (filter) {
                     case 'today':
                         const todayStr = formatDate(today);
-                        filteredRecords = filteredRecords.filter(record => record.date === todayStr);
+                        filteredRecords = filteredRecords.filter(record => record.Date === todayStr);
                         break;
                     case 'week':
                         const weekStart = new Date(today);
@@ -5760,7 +6019,7 @@
                         weekEnd.setDate(weekStart.getDate() + 6);
                         
                         filteredRecords = filteredRecords.filter(record => {
-                            const recordDate = new Date(record.date);
+                            const recordDate = new Date(record.Date);
                             return recordDate >= weekStart && recordDate <= weekEnd;
                         });
                         break;
@@ -5769,7 +6028,7 @@
                         const monthEnd = new Date(today.getFullYear(), today.getMonth() + 1, 0);
                         
                         filteredRecords = filteredRecords.filter(record => {
-                            const recordDate = new Date(record.date);
+                            const recordDate = new Date(record.Date);
                             return recordDate >= monthStart && recordDate <= monthEnd;
                         });
                         break;
@@ -5777,7 +6036,7 @@
             }
             
             // Sort records by date (newest first)
-            filteredRecords.sort((a, b) => new Date(b.date) - new Date(a.date));
+            filteredRecords.sort((a, b) => new Date(b.Date) - new Date(a.Date));
             
             if (filteredRecords.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="7" class="no-schedule">No receiving records found</td></tr>';
@@ -5789,20 +6048,21 @@
                 const tr = document.createElement('tr');
                 
                 // Format items display
-                const itemsDisplay = record.items.map(item => 
+                const items = JSON.parse(record.Items || '[]');
+                const itemsDisplay = items.map(item => 
                     `${item.name} (x${item.quantity})`
                 ).join(', ');
                 
                 tr.innerHTML = `
-                    <td>${record.date}</td>
-                    <td>${record.invoiceNumber || '-'}</td>
-                    <td>${record.supplier}</td>
+                    <td>${record.Date}</td>
+                    <td>${record.InvoiceNumber || '-'}</td>
+                    <td>${record.Supplier}</td>
                     <td>${itemsDisplay}</td>
-                    <td>RM${record.totalCost.toFixed(2)}</td>
-                    <td>${record.receivedBy}</td>
+                    <td>RM${parseFloat(record.TotalCost).toFixed(2)}</td>
+                    <td>${record.ReceivedBy}</td>
                     <td>
-                        <button class="btn btn-sm btn-primary" onclick="viewReceivingRecord('${record.id}')">View</button>
-                        <button class="btn btn-sm btn-danger" onclick="deleteReceivingRecord('${record.id}')">Delete</button>
+                        <button class="btn btn-sm btn-primary" onclick="viewReceivingRecord('${record.ID}')">View</button>
+                        <button class="btn btn-sm btn-danger" onclick="deleteReceivingRecord('${record.ID}')">Delete</button>
                     </td>
                 `;
                 tbody.appendChild(tr);
@@ -5811,27 +6071,41 @@
         
         function viewReceivingRecord(id) {
             // Find record
-            const record = app.stockReceivingRecords.find(r => r.id === id);
+            const record = app.stockReceivingRecords.find(r => r.ID === id);
             if (!record) return;
             
             // This would open a modal with record details in a real app
-            alert(`Viewing record #${record.invoiceNumber || 'N/A'} from ${record.supplier}`);
+            alert(`Viewing record #${record.InvoiceNumber || 'N/A'} from ${record.Supplier}`);
         }
         
-        function deleteReceivingRecord(id) {
+        async function deleteReceivingRecord(id) {
             if (confirm('Are you sure you want to delete this receiving record? This will NOT revert the stock quantities.')) {
-                // Find and remove record
-                const recordIndex = app.stockReceivingRecords.findIndex(r => r.id === id);
-                if (recordIndex === -1) return;
-                
-                app.stockReceivingRecords.splice(recordIndex, 1);
-                saveStockReceivingData();
-                
-                // Reload records
-                loadReceivingRecords();
-                
-                // Show notification
-                showNotification('Receiving record deleted successfully', 'success');
+                try {
+                    const response = await fetch(`${API_BASE_URL}/stockReceiving?id=${id}`, {
+                        method: 'DELETE'
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        // Find and remove record
+                        const recordIndex = app.stockReceivingRecords.findIndex(r => r.ID === id);
+                        if (recordIndex !== -1) {
+                            app.stockReceivingRecords.splice(recordIndex, 1);
+                        }
+                        
+                        // Reload records
+                        loadReceivingRecords();
+                        
+                        // Show notification
+                        showNotification('Receiving record deleted successfully', 'success');
+                    } else {
+                        showNotification('Error deleting receiving record', 'error');
+                    }
+                } catch (error) {
+                    console.error("Error deleting receiving record:", error);
+                    showNotification('Error deleting receiving record', 'error');
+                }
             }
         }
         
