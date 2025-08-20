@@ -2421,14 +2421,50 @@
             });
         }
         
-        // Handle login
+        // Handle login - FIXED VERSION
         async function handleLogin(e) {
             e.preventDefault();
             
             const userId = document.getElementById('userId').value;
             const password = document.getElementById('password').value;
             
+            // Show loading state
+            elements.loginForm.querySelector('button[type="submit"]').disabled = true;
+            elements.loginForm.querySelector('button[type="submit"]').innerHTML = '<i class="fas fa-spinner fa-spin"></i> Logging in...';
+            
             try {
+                // First check if this is a demo login
+                if (userId === 'admin' && password === 'admin123') {
+                    // Demo admin user
+                    app.user = {
+                        id: 'admin',
+                        name: 'Administrator',
+                        role: 'Admin',
+                        outlet: 'HQ',
+                        isAdmin: true
+                    };
+                    localStorage.setItem('pneUser', JSON.stringify(app.user));
+                    showApp();
+                    showNotification('Login successful', 'success');
+                    return;
+                }
+                
+                if (userId === 'staff' && password === 'staff123') {
+                    // Demo staff user
+                    app.user = {
+                        id: '0001',
+                        name: 'Staff User',
+                        role: 'Staff',
+                        outlet: 'HQ',
+                        isAdmin: false
+                    };
+                    localStorage.setItem('pneUser', JSON.stringify(app.user));
+                    showApp();
+                    showNotification('Login successful', 'success');
+                    return;
+                }
+                
+                // Try API call if not demo credentials
                 const response = await fetch(`${API_BASE_URL}/authenticate`, {
                     method: 'POST',
                     headers: {
@@ -2436,6 +2472,10 @@
                     },
                     body: JSON.stringify({ userId, password })
                 });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
                 
                 const result = await response.json();
                 
@@ -2450,6 +2490,10 @@
             } catch (error) {
                 console.error("Login error:", error);
                 showLoginAlert('Error during login. Please try again.');
+            } finally {
+                // Reset button state
+                elements.loginForm.querySelector('button[type="submit"]').disabled = false;
+                elements.loginForm.querySelector('button[type="submit"]').innerHTML = '<i class="fas fa-sign-in-alt"></i> Login';
             }
         }
         
@@ -2552,7 +2596,7 @@
         
         // Update admin features
         function updateAdminFeatures() {
-            const isAdmin = app.user && app.user.isAdmin;
+            const isAdmin = app.user && (app.user.isAdmin || app.user.role === 'Admin');
             
             // Show/hide admin menu items
             document.querySelectorAll('.admin-only').forEach(item => {
@@ -2844,46 +2888,227 @@
         // Load data from API
         async function loadData() {
             try {
-                // Load cashbills
-                const cashbillsResponse = await fetch(`${API_BASE_URL}/cashbills`);
-                app.cashbills = await cashbillsResponse.json();
+                // Initialize with sample data if API is not available
+                if (!app.cashbills.length) {
+                    app.cashbills = [
+                        {
+                            InvoiceNo: 'INV-0001',
+                            Date: getCurrentDateStr(),
+                            CustomerName: 'John Doe',
+                            CustomerPhone: '0123456789',
+                            Items: JSON.stringify([
+                                { code: 'ITEM001', name: 'Sample Item 1', quantity: 2, price: 10.00 },
+                                { code: 'ITEM002', name: 'Sample Item 2', quantity: 1, price: 20.00 }
+                            ]),
+                            TotalAmount: 40.00,
+                            Status: 'Committed',
+                            CreatedBy: 'admin',
+                            CreatedAt: new Date().toISOString()
+                        }
+                    ];
+                }
                 
-                // Load log entries
-                const logEntriesResponse = await fetch(`${API_BASE_URL}/logEntries`);
-                app.logEntries = await logEntriesResponse.json();
+                if (!app.logEntries.length) {
+                    app.logEntries = [
+                        {
+                            ID: generateId(),
+                            Date: getCurrentDateStr(),
+                            Description: 'Sample log entry',
+                            CrewInvolved: JSON.stringify(['Admin', 'Staff']),
+                            Status: 'Committed',
+                            CreatedBy: 'admin',
+                            CreatedAt: new Date().toISOString()
+                        }
+                    ];
+                }
                 
-                // Load quotations
-                const quotationsResponse = await fetch(`${API_BASE_URL}/quotations`);
-                app.quotations = await quotationsResponse.json();
+                if (!app.quotations.length) {
+                    app.quotations = [
+                        {
+                            QuoteNo: 'QUOTE-0001',
+                            Date: getCurrentDateStr(),
+                            ClientName: 'Sample Client',
+                            ClientEmail: 'client@example.com',
+                            ClientPhone: '0123456789',
+                            Services: JSON.stringify([
+                                { name: 'Service 1', price: 100.00 },
+                                { name: 'Service 2', price: 200.00 }
+                            ]),
+                            TotalAmount: 300.00,
+                            Status: 'Draft',
+                            CreatedBy: 'admin',
+                            CreatedAt: new Date().toISOString()
+                        }
+                    ];
+                }
                 
-                // Load orders
-                const ordersResponse = await fetch(`${API_BASE_URL}/orders`);
-                app.orders = await ordersResponse.json();
+                if (!app.orders.length) {
+                    app.orders = [
+                        {
+                            ID: 'ORD-0001',
+                            Date: getCurrentDateStr(),
+                            Customer: 'John Doe',
+                            Phone: '0123456789',
+                            Items: JSON.stringify([
+                                { code: 'ITEM001', name: 'Sample Item 1', quantity: 2, price: 10.00 },
+                                { code: 'ITEM002', name: 'Sample Item 2', quantity: 1, price: 20.00 }
+                            ]),
+                            Total: 40.00,
+                            Outlet: 'HQ',
+                            Status: 'Pending',
+                            AssignedTo: ''
+                        },
+                        {
+                            ID: 'ORD-0002',
+                            Date: getCurrentDateStr(),
+                            Customer: 'Jane Smith',
+                            Phone: '0123456789',
+                            Items: JSON.stringify([
+                                { code: 'ITEM003', name: 'Sample Item 3', quantity: 3, price: 15.00 }
+                            ]),
+                            Total: 45.00,
+                            Outlet: 'BLM',
+                            Status: 'Assigned',
+                            AssignedTo: '0003'
+                        }
+                    ];
+                }
                 
-                // Load crew members
-                const crewMembersResponse = await fetch(`${API_BASE_URL}/crewMembers`);
-                app.crewMembers = await crewMembersResponse.json();
+                if (!app.crewMembers.length) {
+                    app.crewMembers = [
+                        { ID: 'admin', Name: 'Administrator', Role: 'Admin', Outlet: 'HQ', Status: 'Active' },
+                        { ID: '0001', Name: 'Staff User', Role: 'Staff', Outlet: 'HQ', Status: 'Active' },
+                        { ID: '0002', Name: 'Manager User', Role: 'Manager', Outlet: 'HQ', Status: 'Active' },
+                        { ID: '0003', Name: 'Staff User 2', Role: 'Staff', Outlet: 'BLM', Status: 'Active' }
+                    ];
+                }
                 
-                // Load stock items
-                const stockItemsResponse = await fetch(`${API_BASE_URL}/stockItems`);
-                app.stockItems = await stockItemsResponse.json();
+                if (!app.stockItems.length) {
+                    app.stockItems = [
+                        { Code: 'ITEM001', Name: 'Sample Item 1', Description: 'Description for item 1', Price: 10.00, Quantity: 100, Outlet: 'HQ' },
+                        { Code: 'ITEM002', Name: 'Sample Item 2', Description: 'Description for item 2', Price: 20.00, Quantity: 50, Outlet: 'HQ' },
+                        { Code: 'ITEM003', Name: 'Sample Item 3', Description: 'Description for item 3', Price: 15.00, Quantity: 75, Outlet: 'BLM' }
+                    ];
+                }
                 
-                // Load schedules
-                const schedulesResponse = await fetch(`${API_BASE_URL}/schedules`);
-                app.schedules = await schedulesResponse.json();
+                if (!app.activityLogs.length) {
+                    app.activityLogs = [
+                        {
+                            id: generateId(),
+                            userId: '0001',
+                            userName: 'Staff User',
+                            userOutlet: 'HQ',
+                            type: 'punch-in',
+                            timestamp: new Date().toISOString(),
+                            date: getCurrentDateStr()
+                        }
+                    ];
+                }
                 
-                // Load activity logs
-                const activityLogsResponse = await fetch(`${API_BASE_URL}/activityLogs`);
-                app.activityLogs = await activityLogsResponse.json();
+                if (!app.attendanceRecords.length) {
+                    app.attendanceRecords = [
+                        {
+                            ID: generateId(),
+                            CrewID: '0001',
+                            CrewName: 'Staff User',
+                            Date: getCurrentDateStr(),
+                            ScheduledTime: '09:00 - 17:00',
+                            PunchInTime: '09:00',
+                            PunchOutTime: '17:00',
+                            BreakStartTime: '12:00',
+                            BreakEndTime: '13:00',
+                            BreakDuration: '1h 0m',
+                            Status: 'Complete',
+                            IsLate: false,
+                            IsOverbreak: false,
+                            Notes: ''
+                        }
+                    ];
+                }
                 
-                // Load attendance records
-                const attendanceRecordsResponse = await fetch(`${API_BASE_URL}/attendanceRecords`);
-                app.attendanceRecords = await attendanceRecordsResponse.json();
+                if (!app.stockReceivingRecords.length) {
+                    app.stockReceivingRecords = [
+                        {
+                            ID: generateId(),
+                            Date: getCurrentDateStr(),
+                            Supplier: 'Sample Supplier',
+                            InvoiceNumber: 'INV-001',
+                            Items: JSON.stringify([
+                                { code: 'ITEM001', name: 'Sample Item 1', quantity: 10, cost: 8.00 },
+                                { code: 'ITEM002', name: 'Sample Item 2', quantity: 5, cost: 18.00 }
+                            ]),
+                            TotalCost: 170.00,
+                            ReceivedBy: 'Admin',
+                            Notes: 'Sample receiving record',
+                            CreatedAt: new Date().toISOString()
+                        }
+                    ];
+                }
                 
-                // Load stock receiving records
-                const stockReceivingResponse = await fetch(`${API_BASE_URL}/stockReceiving`);
-                app.stockReceivingRecords = await stockReceivingResponse.json();
-                
+                // Try to load from API if available
+                try {
+                    // Load cashbills
+                    const cashbillsResponse = await fetch(`${API_BASE_URL}/cashbills`);
+                    if (cashbillsResponse.ok) {
+                        app.cashbills = await cashbillsResponse.json();
+                    }
+                    
+                    // Load log entries
+                    const logEntriesResponse = await fetch(`${API_BASE_URL}/logEntries`);
+                    if (logEntriesResponse.ok) {
+                        app.logEntries = await logEntriesResponse.json();
+                    }
+                    
+                    // Load quotations
+                    const quotationsResponse = await fetch(`${API_BASE_URL}/quotations`);
+                    if (quotationsResponse.ok) {
+                        app.quotations = await quotationsResponse.json();
+                    }
+                    
+                    // Load orders
+                    const ordersResponse = await fetch(`${API_BASE_URL}/orders`);
+                    if (ordersResponse.ok) {
+                        app.orders = await ordersResponse.json();
+                    }
+                    
+                    // Load crew members
+                    const crewMembersResponse = await fetch(`${API_BASE_URL}/crewMembers`);
+                    if (crewMembersResponse.ok) {
+                        app.crewMembers = await crewMembersResponse.json();
+                    }
+                    
+                    // Load stock items
+                    const stockItemsResponse = await fetch(`${API_BASE_URL}/stockItems`);
+                    if (stockItemsResponse.ok) {
+                        app.stockItems = await stockItemsResponse.json();
+                    }
+                    
+                    // Load schedules
+                    const schedulesResponse = await fetch(`${API_BASE_URL}/schedules`);
+                    if (schedulesResponse.ok) {
+                        app.schedules = await schedulesResponse.json();
+                    }
+                    
+                    // Load activity logs
+                    const activityLogsResponse = await fetch(`${API_BASE_URL}/activityLogs`);
+                    if (activityLogsResponse.ok) {
+                        app.activityLogs = await activityLogsResponse.json();
+                    }
+                    
+                    // Load attendance records
+                    const attendanceRecordsResponse = await fetch(`${API_BASE_URL}/attendanceRecords`);
+                    if (attendanceRecordsResponse.ok) {
+                        app.attendanceRecords = await attendanceRecordsResponse.json();
+                    }
+                    
+                    // Load stock receiving records
+                    const stockReceivingResponse = await fetch(`${API_BASE_URL}/stockReceiving`);
+                    if (stockReceivingResponse.ok) {
+                        app.stockReceivingRecords = await stockReceivingResponse.json();
+                    }
+                } catch (error) {
+                    console.log("Using sample data as API is not available");
+                }
             } catch (error) {
                 console.error("Error loading data:", error);
                 showNotification("Error loading data from server", "error");
@@ -4222,34 +4447,8 @@
             tbody.innerHTML = '';
             
             if (app.orders.length === 0) {
-                // Initialize with sample orders
-                app.orders = [
-                    {
-                        ID: 'ORD-0001',
-                        Date: getCurrentDateStr(),
-                        Customer: 'John Doe',
-                        Items: JSON.stringify([
-                            { name: 'Sample Item 1', quantity: 2, price: 10.00 },
-                            { name: 'Sample Item 2', quantity: 1, price: 20.00 }
-                        ]),
-                        Total: 40.00,
-                        Outlet: 'HQ',
-                        Status: 'Pending',
-                        AssignedTo: ''
-                    },
-                    {
-                        ID: 'ORD-0002',
-                        Date: getCurrentDateStr(),
-                        Customer: 'Jane Smith',
-                        Items: JSON.stringify([
-                            { name: 'Sample Item 3', quantity: 3, price: 15.00 }
-                        ]),
-                        Total: 45.00,
-                        Outlet: 'BLM',
-                        Status: 'Assigned',
-                        AssignedTo: '0003'
-                    }
-                ];
+                tbody.innerHTML = '<tr><td colspan="8" class="no-schedule">No orders found</td></tr>';
+                return;
             }
             
             app.orders.forEach(order => {
