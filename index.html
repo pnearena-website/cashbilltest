@@ -208,17 +208,6 @@
       font-weight: 500;
     }
     
-    /* Mobile Navigation */
-    .mobile-nav-toggle {
-      display: none;
-      background: none;
-      border: none;
-      color: var(--grey-600);
-      font-size: 1.2rem;
-      cursor: pointer;
-      padding: 0.5rem;
-    }
-    
     /* Cards */
     .card {
       background: var(--white);
@@ -393,56 +382,6 @@
       justify-content: space-between;
       font-size: 0.85rem;
       color: var(--grey-600);
-    }
-    
-    /* System Health */
-    .system-health {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 1.5rem;
-      margin-bottom: 1.5rem;
-    }
-    
-    .health-indicator {
-      background: var(--grey-50);
-      border-radius: var(--radius);
-      padding: 1.25rem;
-      border: 1px solid var(--grey-200);
-      text-align: center;
-      transition: all 0.3s ease;
-    }
-    
-    .health-indicator:hover {
-      box-shadow: var(--shadow);
-    }
-    
-    .health-indicator i {
-      font-size: 1.75rem;
-      margin-bottom: 0.75rem;
-    }
-    
-    .health-good {
-      color: var(--success);
-    }
-    
-    .health-warning {
-      color: var(--warning);
-    }
-    
-    .health-danger {
-      color: var(--danger);
-    }
-    
-    .health-indicator h3 {
-      font-size: 1.25rem;
-      margin-bottom: 0.25rem;
-      color: var(--grey-800);
-      font-weight: 600;
-    }
-    
-    .health-indicator p {
-      color: var(--grey-600);
-      font-size: 0.85rem;
     }
     
     /* User Activity Chart */
@@ -1592,10 +1531,12 @@
       border: 1px solid #ddd;
       padding: 8px;
       text-align: left;
+      font-size: 10px;
     }
     
     .pdf-items-table th {
       background-color: #f2f2f2;
+      font-weight: bold;
     }
     
     .pdf-total-row {
@@ -1604,28 +1545,7 @@
     
     /* Responsive Styles */
     @media (max-width: 768px) {
-      /* Mobile Navigation */
-      .mobile-nav-toggle {
-        display: block;
-      }
-      
-      .nav-links {
-        display: none;
-        position: absolute;
-        top: 100%;
-        left: 0;
-        width: 100%;
-        background: var(--white);
-        flex-direction: column;
-        padding: 1rem;
-        box-shadow: var(--shadow);
-        z-index: 10;
-      }
-      
-      .nav-links.active {
-        display: flex;
-      }
-      
+      /* Navigation */
       nav {
         position: relative;
         flex-direction: column;
@@ -1675,16 +1595,6 @@
       /* Performance Metrics */
       .performance-metrics {
         grid-template-columns: 1fr;
-      }
-      
-      /* System Health */
-      .system-health {
-        grid-template-columns: repeat(2, 1fr);
-      }
-      
-      /* System Tools */
-      .system-tools {
-        grid-template-columns: repeat(2, 1fr);
       }
       
       /* Items */
@@ -1829,16 +1739,6 @@
         font-size: 1.5rem;
       }
       
-      /* System Health */
-      .system-health {
-        grid-template-columns: 1fr;
-      }
-      
-      /* System Tools */
-      .system-tools {
-        grid-template-columns: 1fr;
-      }
-      
       /* Buttons */
       button {
         padding: 0.5rem 0.75rem;
@@ -1871,10 +1771,6 @@
       }
       
       .performance-metrics {
-        grid-template-columns: repeat(3, 1fr);
-      }
-      
-      .system-health {
         grid-template-columns: repeat(3, 1fr);
       }
       
@@ -2058,7 +1954,6 @@
     
     .mobile-device .stat-card, 
     .mobile-device .metric-card, 
-    .mobile-device .health-indicator, 
     .mobile-device .tool-btn {
       padding: 1.25rem;
     }
@@ -2120,10 +2015,6 @@
     
     .desktop-device .performance-metrics {
       grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    }
-    
-    .desktop-device .system-health {
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     }
     
     .desktop-device .system-tools {
@@ -2671,9 +2562,6 @@
     <!-- DASHBOARD PAGE -->
     <div id="dashboardPage" class="page">
       <nav>
-        <button class="mobile-nav-toggle mobile-only" id="mobileMenuToggle" aria-label="Toggle navigation menu">
-          <i class="fas fa-bars"></i>
-        </button>
         <div class="nav-links" id="navLinks">
           <a onclick="showPage('newCashbillPage')"><i class="fas fa-plus"></i> Create New Cashbill</a>
           <a onclick="showPage('cashbillListPage')"><i class="fas fa-list"></i> View Cashbills</a>
@@ -2760,36 +2648,6 @@
         <!-- Admin Features -->
         <div id="adminFeatures" style="display: none;">
           <div class="card">
-            <h2><i class="fas fa-heartbeat"></i> System Health</h2>
-            <div class="system-health">
-              <div class="health-indicator">
-                <i class="fas fa-file-invoice health-good"></i>
-                <h3 id="totalCashbillsCount">0</h3>
-                <p>Total Cashbills</p>
-              </div>
-              <div class="health-indicator">
-                <i class="fas fa-server health-good"></i>
-                <h3>99.9%</h3>
-                <p>System Uptime</p>
-              </div>
-              <div class="health-indicator">
-                <i class="fas fa-database health-warning"></i>
-                <h3>78%</h3>
-                <p>Storage Used</p>
-              </div>
-            </div>
-          </div>
-          
-          <div class="card">
-            <h2><i class="fas fa-chart-bar"></i> User Activity</h2>
-            <div class="user-activity-chart">
-              <div class="chart-container" id="userActivityChart">
-                <!-- Will be populated by JavaScript -->
-              </div>
-            </div>
-          </div>
-          
-          <div class="card">
             <h2><i class="fas fa-tools"></i> System Tools</h2>
             <div class="system-tools">
               <div class="tool-btn" onclick="backupSystem()">
@@ -2875,9 +2733,6 @@
     <!-- CASHBILL LIST PAGE -->
     <div id="cashbillListPage" class="page">
       <nav>
-        <button class="mobile-nav-toggle mobile-only" id="mobileMenuToggle2" aria-label="Toggle navigation menu">
-          <i class="fas fa-bars"></i>
-        </button>
         <div class="nav-links" id="navLinks2">
           <a onclick="showPage('dashboardPage')"><i class="fas fa-home"></i> Dashboard</a>
           <a onclick="showPage('newCashbillPage')"><i class="fas fa-plus"></i> Create New Cashbill</a>
@@ -2951,9 +2806,6 @@
     <!-- CASHBILL VIEW PAGE -->
     <div id="cashbillViewPage" class="page">
       <nav>
-        <button class="mobile-nav-toggle mobile-only" id="mobileMenuToggle3" aria-label="Toggle navigation menu">
-          <i class="fas fa-bars"></i>
-        </button>
         <div class="nav-links" id="navLinks3">
           <a onclick="showPage('dashboardPage')"><i class="fas fa-home"></i> Dashboard</a>
           <a onclick="showPage('cashbillListPage')"><i class="fas fa-list"></i> Back to List</a>
@@ -3057,9 +2909,6 @@
     <!-- NEW CASHBILL PAGE -->
     <div id="newCashbillPage" class="page">
       <nav>
-        <button class="mobile-nav-toggle mobile-only" id="mobileMenuToggle4" aria-label="Toggle navigation menu">
-          <i class="fas fa-bars"></i>
-        </button>
         <div class="nav-links" id="navLinks4">
           <a onclick="showPage('dashboardPage')"><i class="fas fa-home"></i> Dashboard</a>
           <a onclick="showPage('cashbillListPage')"><i class="fas fa-list"></i> View Cashbills</a>
@@ -3200,9 +3049,6 @@
     <!-- SUCCESS PAGE -->
     <div id="successPage" class="page">
       <nav>
-        <button class="mobile-nav-toggle mobile-only" id="mobileMenuToggle5" aria-label="Toggle navigation menu">
-          <i class="fas fa-bars"></i>
-        </button>
         <div class="nav-links" id="navLinks5">
           <a onclick="showPage('newCashbillPage')"><i class="fas fa-plus"></i> Create Another</a>
           <a onclick="showPage('dashboardPage')"><i class="fas fa-home"></i> Dashboard</a>
@@ -3237,9 +3083,6 @@
     <!-- REPORTS PAGE -->
     <div id="reportsPage" class="page">
       <nav>
-        <button class="mobile-nav-toggle mobile-only" id="mobileMenuToggle6" aria-label="Toggle navigation menu">
-          <i class="fas fa-bars"></i>
-        </button>
         <div class="nav-links" id="navLinks6">
           <a onclick="showPage('dashboardPage')"><i class="fas fa-home"></i> Dashboard</a>
           <a onclick="showPage('cashbillListPage')"><i class="fas fa-list"></i> View Cashbills</a>
@@ -3310,9 +3153,6 @@
     <!-- ADMIN PANEL PAGE -->
     <div id="adminPanelPage" class="page">
       <nav>
-        <button class="mobile-nav-toggle mobile-only" id="mobileMenuToggle7" aria-label="Toggle navigation menu">
-          <i class="fas fa-bars"></i>
-        </button>
         <div class="nav-links" id="navLinks7">
           <a onclick="showPage('dashboardPage')"><i class="fas fa-home"></i> Dashboard</a>
           <a onclick="showPage('cashbillListPage')"><i class="fas fa-list"></i> View Cashbills</a>
@@ -3945,19 +3785,6 @@
   
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script>
-    // Device detection
-    function isMobileDevice() {
-      return (typeof window.orientation !== "undefined") || (navigator.userAgent.indexOf('IEMobile') !== -1) || 
-             (window.innerWidth <= 768) || (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent));
-    }
-    
-    // Apply device class to body
-    if (isMobileDevice()) {
-      document.body.classList.add('mobile-device');
-    } else {
-      document.body.classList.add('desktop-device');
-    }
-    
     // Define items list with categories and pricing
     const itemsList = [
       {
@@ -4226,30 +4053,7 @@
       if (pageId === 'adminPanelPage') {
         updateAdminPanel();
       }
-      
-      // Close mobile menu if open
-      closeMobileMenu();
     }
-    
-    // Close mobile menu
-    function closeMobileMenu() {
-      const navLinks = document.querySelectorAll('.nav-links');
-      navLinks.forEach(nav => {
-        nav.classList.remove('active');
-      });
-    }
-    
-    // Mobile menu toggle
-    document.addEventListener('DOMContentLoaded', function() {
-      const mobileMenuToggles = document.querySelectorAll('.mobile-nav-toggle');
-      
-      mobileMenuToggles.forEach(toggle => {
-        toggle.addEventListener('click', function() {
-          const navLinks = this.closest('nav').querySelector('.nav-links');
-          navLinks.classList.toggle('active');
-        });
-      });
-    });
     
     // Login functionality
     document.getElementById('loginForm').addEventListener('submit', function(e) {
@@ -5061,12 +4865,6 @@
     
     // Update admin features
     function updateAdminFeatures() {
-      // Update system health
-      document.getElementById('totalCashbillsCount').textContent = cashbills.length;
-      
-      // Update user activity chart
-      updateUserActivityChart();
-      
       // Update system activity
       updateSystemRecentActivity();
     }
@@ -5168,57 +4966,6 @@
         case 'Generate Report': return 'file-alt';
         default: return 'info-circle';
       }
-    }
-    
-    // Update user activity chart
-    function updateUserActivityChart() {
-      const container = document.getElementById('userActivityChart');
-      container.innerHTML = '';
-      
-      // Get the last 30 days
-      const today = new Date();
-      const thirtyDaysAgo = new Date(today);
-      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-      
-      // Filter cashbills in the last 30 days
-      const recentCashbills = cashbills.filter(bill => {
-        const billDate = new Date(bill.date);
-        return billDate >= thirtyDaysAgo && billDate <= today;
-      });
-      
-      // Group by user
-      const userActivity = {};
-      users.forEach(user => {
-        userActivity[user.name] = 0;
-      });
-      
-      recentCashbills.forEach(bill => {
-        const user = users.find(u => u.id === bill.userId);
-        if (user) {
-          userActivity[user.name]++;
-        }
-      });
-      
-      // Find max value for scaling
-      const maxCount = Math.max(...Object.values(userActivity), 1);
-      
-      // Create bars
-      Object.entries(userActivity).forEach(([username, count]) => {
-        const barHeight = (count / maxCount) * 100; // percentage of max
-        const bar = document.createElement('div');
-        bar.style.flex = '1';
-        bar.style.display = 'flex';
-        bar.style.flexDirection = 'column';
-        bar.style.alignItems = 'center';
-        bar.style.position = 'relative';
-        bar.innerHTML = `
-          <div class="chart-bar" style="height: ${barHeight}%; min-height: 5px;">
-            <div class="chart-value">${count}</div>
-          </div>
-          <div class="chart-label">${username}</div>
-        `;
-        container.appendChild(bar);
-      });
     }
     
     // Update activity log
@@ -5469,7 +5216,7 @@
       const exportFileDefaultName = `pne_arena_report_${new Date().toISOString().split('T')[0]}.json`;
       
       const linkElement = document.createElement('a');
-      linkElement.setAttribute('href', dataUri);
+      linkElement.href = dataUri;
       linkElement.setAttribute('download', exportFileDefaultName);
       linkElement.click();
       
@@ -7106,7 +6853,7 @@
       hideLoading();
     }
     
-    // Generate cashbill PDF
+    // Generate cashbill PDF - IMPROVED VERSION
     function generateCashbillPDF() {
       if (!currentViewingCashbill) {
         alert('No cashbill selected for PDF generation');
@@ -7124,52 +6871,59 @@
         creator: 'PNE ARENA System'
       });
       
-      // Add company header
-      doc.setFontSize(18);
+      // Set smaller font sizes for better layout
+      const smallFontSize = 8;
+      const normalFontSize = 10;
+      const headerFontSize = 12;
+      const titleFontSize = 16;
+      
+      // Add company header with smaller font
+      doc.setFontSize(titleFontSize);
       doc.setFont(undefined, 'bold');
-      doc.text(systemSettings.companyName, 105, 20, { align: 'center' });
+      doc.text(systemSettings.companyName, 105, 15, { align: 'center' });
       
-      // Add invoice title
-      doc.setFontSize(14);
-      doc.text('CASHBILL', 105, 30, { align: 'center' });
+      // Add invoice title with smaller font
+      doc.setFontSize(headerFontSize);
+      doc.text('CASHBILL INVOICE', 105, 22, { align: 'center' });
       
-      // Add invoice number
-      doc.setFontSize(12);
-      doc.text(`Invoice No: ${currentViewingCashbill.invoiceNumber}`, 20, 45);
+      // Add invoice number with smaller font
+      doc.setFontSize(normalFontSize);
+      doc.text(`Invoice No: ${currentViewingCashbill.invoiceNumber}`, 20, 30);
       
-      // Add date
+      // Add date with smaller font
       const date = new Date(currentViewingCashbill.date);
-      doc.text(`Date: ${date.toLocaleDateString()}`, 20, 52);
+      doc.text(`Date: ${date.toLocaleDateString()}`, 20, 35);
       
-      // Add customer info
-      doc.text('Bill To:', 20, 65);
+      // Add customer info with smaller font
+      doc.setFont(undefined, 'bold');
+      doc.text('Bill To:', 20, 42);
       doc.setFont(undefined, 'normal');
-      doc.text(currentViewingCashbill.customerName, 20, 72);
+      doc.text(currentViewingCashbill.customerName, 20, 47);
       
-      // Add payment method and status
+      // Add payment method and status with smaller font
       doc.setFont(undefined, 'bold');
-      doc.text(`Payment Method: ${getPaymentMethodDisplayName(currentViewingCashbill.paymentMethod)}`, 20, 85);
-      doc.text(`Status: ${currentViewingCashbill.status === 'draft' ? 'Draft' : currentViewingCashbill.status === 'pending' ? 'Pending' : 'Committed'}`, 20, 92);
-      
-      // Add items table header
-      doc.setFont(undefined, 'bold');
-      doc.text('Items:', 20, 105);
-      
-      // Table headers
-      const headers = ['Description', 'Qty', 'Unit Price', 'Tax %', 'Discount', 'Total'];
-      const headerPositions = [20, 80, 110, 140, 160, 180];
-      
-      doc.setFontSize(10);
-      headers.forEach((header, i) => {
-        doc.text(header, headerPositions[i], 115);
-      });
+      doc.text(`Payment Method: ${getPaymentMethodDisplayName(currentViewingCashbill.paymentMethod)}`, 20, 53);
+      doc.text(`Status: ${currentViewingCashbill.status === 'draft' ? 'Draft' : currentViewingCashbill.status === 'pending' ? 'Pending' : 'Committed'}`, 20, 58);
       
       // Add separator line
       doc.setLineWidth(0.5);
-      doc.line(20, 120, 190, 120);
+      doc.line(20, 65, 190, 65);
       
-      // Add items
-      let yPos = 128;
+      // Add items table header with smaller font
+      doc.setFontSize(smallFontSize);
+      doc.setFont(undefined, 'bold');
+      const headers = ['Description', 'Qty', 'Unit Price', 'Tax %', 'Discount', 'Total'];
+      const headerPositions = [20, 70, 95, 115, 135, 155];
+      
+      headers.forEach((header, i) => {
+        doc.text(header, headerPositions[i], 70);
+      });
+      
+      // Add separator line after headers
+      doc.line(20, 73, 190, 73);
+      
+      // Add items with smaller font and compact spacing
+      let yPos = 78;
       doc.setFont(undefined, 'normal');
       
       currentViewingCashbill.items.forEach(item => {
@@ -7183,7 +6937,7 @@
           yPos = 20;
         }
         
-        // Add item row
+        // Add item row with compact spacing
         doc.text(item.description, 20, yPos);
         doc.text(item.quantity.toString(), headerPositions[1], yPos);
         doc.text(`${systemSettings.currency}${item.unitPrice.toFixed(2)}`, headerPositions[2], yPos);
@@ -7191,50 +6945,64 @@
         doc.text(`${systemSettings.currency}${item.discount.toFixed(2)}`, headerPositions[4], yPos);
         doc.text(`${systemSettings.currency}${itemTotalWithTax.toFixed(2)}`, headerPositions[5], yPos);
         
-        yPos += 8;
+        yPos += 6; // Reduced spacing between items
       });
       
-      // Add totals
-      yPos += 10;
+      // Add totals section with smaller font
+      yPos += 8; // Add some space before totals
       doc.setLineWidth(0.5);
       doc.line(20, yPos, 190, yPos);
-      yPos += 10;
+      yPos += 8;
+      
+      // Add summary on the left side
+      doc.setFontSize(normalFontSize);
+      doc.setFont(undefined, 'bold');
+      doc.text('Subtotal:', 20, yPos);
+      doc.setFont(undefined, 'normal');
+      doc.text(`${systemSettings.currency}${currentViewingCashbill.subtotal.toFixed(2)}`, 160, yPos, { align: 'right' });
+      yPos += 5;
       
       doc.setFont(undefined, 'bold');
-      doc.text('Subtotal:', 140, yPos);
-      doc.text(`${systemSettings.currency}${currentViewingCashbill.subtotal.toFixed(2)}`, 160, yPos, { align: 'right' });
-      yPos += 8;
-      
-      doc.text('Tax:', 140, yPos);
+      doc.text('Tax:', 20, yPos);
+      doc.setFont(undefined, 'normal');
       doc.text(`${systemSettings.currency}${currentViewingCashbill.totalTax.toFixed(2)}`, 160, yPos, { align: 'right' });
-      yPos += 8;
+      yPos += 5;
       
-      doc.text('Discount:', 140, yPos);
+      doc.setFont(undefined, 'bold');
+      doc.text('Discount:', 20, yPos);
+      doc.setFont(undefined, 'normal');
       doc.text(`${systemSettings.currency}${currentViewingCashbill.totalDiscount.toFixed(2)}`, 160, yPos, { align: 'right' });
-      yPos += 8;
+      yPos += 5;
       
-      doc.setFontSize(12);
-      doc.text('Total:', 140, yPos);
+      // Add total with slightly larger font
+      doc.setFontSize(normalFontSize + 2);
+      doc.setFont(undefined, 'bold');
+      doc.text('Total:', 20, yPos);
       doc.text(`${systemSettings.currency}${currentViewingCashbill.grandTotal.toFixed(2)}`, 160, yPos, { align: 'right' });
       
-      // Add notes if any
+      // Add notes if any with smaller font
       if (currentViewingCashbill.notes) {
-        yPos += 20;
-        doc.setFontSize(10);
+        yPos += 12;
+        doc.setFontSize(normalFontSize);
         doc.setFont(undefined, 'bold');
         doc.text('Notes:', 20, yPos);
-        yPos += 8;
+        yPos += 5;
         doc.setFont(undefined, 'normal');
-        doc.text(currentViewingCashbill.notes, 20, yPos);
+        // Split long notes into multiple lines if needed
+        const noteLines = doc.splitTextToSize(currentViewingCashbill.notes, 170);
+        noteLines.forEach(line => {
+          doc.text(line, 20, yPos);
+          yPos += 4;
+        });
       }
       
-      // Add footer
+      // Add footer with smaller font
       const pageCount = doc.internal.getNumberOfPages();
       for (let i = 1; i <= pageCount; i++) {
         doc.setPage(i);
-        doc.setFontSize(8);
+        doc.setFontSize(7);
         doc.text(`Generated by ${systemSettings.companyName} System`, 105, 285, { align: 'center' });
-        doc.text(`Page ${i} of ${pageCount}`, 105, 290, { align: 'center' });
+        doc.text(`Page ${i} of ${pageCount}`, 105, 288, { align: 'center' });
       }
       
       // Save the PDF
