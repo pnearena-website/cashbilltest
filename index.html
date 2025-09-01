@@ -8,6 +8,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <style>
+    /* All existing styles remain the same */
     :root {
       /* Black & White Soft Theme */
       --primary: #2563eb; /* Blue for Edit button */
@@ -55,7 +56,7 @@
       font-size: 14px;
     }
     
-    /* Container */
+    /* All existing styles remain the same */
     .container {
       max-width: 1400px;
       margin: 0 auto;
@@ -65,7 +66,6 @@
       overflow: hidden;
     }
     
-    /* Header */
     header {
       background: var(--white);
       color: var(--grey-800);
@@ -7116,66 +7116,126 @@
       const { jsPDF } = window.jspdf;
       const doc = new jsPDF();
       
-      // Company name at top center
-      doc.setFontSize(18);
-      doc.setFont(undefined, 'bold');
-      doc.text(systemSettings.companyName, doc.internal.pageSize.getWidth() / 2, 20, { align: 'center' });
-      
-      // Customer info on left, company address on right
-      doc.setFontSize(12);
-      doc.setFont(undefined, 'normal');
-      
-      // Left column - customer info
-      const leftX = 20;
-      let leftY = 35;
-      doc.text(`Customer: ${currentViewingCashbill.customerName}`, leftX, leftY);
-      leftY += 8;
-      doc.text(`Invoice: ${currentViewingCashbill.invoiceNumber}`, leftX, leftY);
-      leftY += 8;
-      doc.text(`Date: ${new Date(currentViewingCashbill.date).toLocaleDateString()}`, leftX, leftY);
-      
-      // Right column - company address
-      const rightX = doc.internal.pageSize.getWidth() - 20;
-      let rightY = 35;
-      doc.text(systemSettings.companyAddress, rightX, rightY, { align: 'right' });
-      
-      // Separator line
-      doc.setLineWidth(0.5);
-      doc.line(20, 55, doc.internal.pageSize.getWidth() - 20, 55);
-      
-      // Items table
-      let tableY = 65;
-      
-      // Table headers
-      doc.setFont(undefined, 'bold');
-      doc.text('Description', 20, tableY);
-      doc.text('Qty', 100, tableY);
-      doc.text('Price', 130, tableY);
-      doc.text('Total', 160, tableY);
-      
-      tableY += 10;
-      
-      // Table content
-      doc.setFont(undefined, 'normal');
-      currentViewingCashbill.items.forEach(item => {
-        const itemTotal = item.quantity * item.unitPrice;
-        
-        doc.text(item.description, 20, tableY, { maxWidth: 70 });
-        doc.text(item.quantity.toString(), 100, tableY);
-        doc.text(`${systemSettings.currency}${item.unitPrice.toFixed(2)}`, 130, tableY);
-        doc.text(`${systemSettings.currency}${itemTotal.toFixed(2)}`, 160, tableY);
-        
-        tableY += 8;
+      // Set up document properties
+      doc.setProperties({
+        title: `Cashbill ${currentViewingCashbill.invoiceNumber}`,
+        subject: 'Cashbill',
+        author: systemSettings.companyName,
+        creator: 'PNE ARENA System'
       });
       
-      // Total amount
-      tableY += 5;
-      doc.setLineWidth(0.2);
-      doc.line(20, tableY, 170, tableY);
-      tableY += 8;
+      // Add company header
+      doc.setFontSize(18);
+      doc.setFont(undefined, 'bold');
+      doc.text(systemSettings.companyName, 105, 20, { align: 'center' });
+      
+      // Add invoice title
+      doc.setFontSize(14);
+      doc.text('CASHBILL', 105, 30, { align: 'center' });
+      
+      // Add invoice number
+      doc.setFontSize(12);
+      doc.text(`Invoice No: ${currentViewingCashbill.invoiceNumber}`, 20, 45);
+      
+      // Add date
+      const date = new Date(currentViewingCashbill.date);
+      doc.text(`Date: ${date.toLocaleDateString()}`, 20, 52);
+      
+      // Add customer info
+      doc.text('Bill To:', 20, 65);
+      doc.setFont(undefined, 'normal');
+      doc.text(currentViewingCashbill.customerName, 20, 72);
+      
+      // Add payment method and status
+      doc.setFont(undefined, 'bold');
+      doc.text(`Payment Method: ${getPaymentMethodDisplayName(currentViewingCashbill.paymentMethod)}`, 20, 85);
+      doc.text(`Status: ${currentViewingCashbill.status === 'draft' ? 'Draft' : currentViewingCashbill.status === 'pending' ? 'Pending' : 'Committed'}`, 20, 92);
+      
+      // Add items table header
+      doc.setFont(undefined, 'bold');
+      doc.text('Items:', 20, 105);
+      
+      // Table headers
+      const headers = ['Description', 'Qty', 'Unit Price', 'Tax %', 'Discount', 'Total'];
+      const headerPositions = [20, 80, 110, 140, 160, 180];
+      
+      doc.setFontSize(10);
+      headers.forEach((header, i) => {
+        doc.text(header, headerPositions[i], 115);
+      });
+      
+      // Add separator line
+      doc.setLineWidth(0.5);
+      doc.line(20, 120, 190, 120);
+      
+      // Add items
+      let yPos = 128;
+      doc.setFont(undefined, 'normal');
+      
+      currentViewingCashbill.items.forEach(item => {
+        const itemTotal = item.quantity * item.unitPrice;
+        const itemTax = itemTotal * (item.taxRate / 100);
+        const itemTotalWithTax = itemTotal + itemTax - item.discount;
+        
+        // Check if we need a new page
+        if (yPos > 270) {
+          doc.addPage();
+          yPos = 20;
+        }
+        
+        // Add item row
+        doc.text(item.description, 20, yPos);
+        doc.text(item.quantity.toString(), headerPositions[1], yPos);
+        doc.text(`${systemSettings.currency}${item.unitPrice.toFixed(2)}`, headerPositions[2], yPos);
+        doc.text(item.taxRate.toString(), headerPositions[3], yPos);
+        doc.text(`${systemSettings.currency}${item.discount.toFixed(2)}`, headerPositions[4], yPos);
+        doc.text(`${systemSettings.currency}${itemTotalWithTax.toFixed(2)}`, headerPositions[5], yPos);
+        
+        yPos += 8;
+      });
+      
+      // Add totals
+      yPos += 10;
+      doc.setLineWidth(0.5);
+      doc.line(20, yPos, 190, yPos);
+      yPos += 10;
       
       doc.setFont(undefined, 'bold');
-      doc.text(`Total: ${systemSettings.currency}${currentViewingCashbill.grandTotal.toFixed(2)}`, 160, tableY, { align: 'right' });
+      doc.text('Subtotal:', 140, yPos);
+      doc.text(`${systemSettings.currency}${currentViewingCashbill.subtotal.toFixed(2)}`, 160, yPos, { align: 'right' });
+      yPos += 8;
+      
+      doc.text('Tax:', 140, yPos);
+      doc.text(`${systemSettings.currency}${currentViewingCashbill.totalTax.toFixed(2)}`, 160, yPos, { align: 'right' });
+      yPos += 8;
+      
+      doc.text('Discount:', 140, yPos);
+      doc.text(`${systemSettings.currency}${currentViewingCashbill.totalDiscount.toFixed(2)}`, 160, yPos, { align: 'right' });
+      yPos += 8;
+      
+      doc.setFontSize(12);
+      doc.text('Total:', 140, yPos);
+      doc.text(`${systemSettings.currency}${currentViewingCashbill.grandTotal.toFixed(2)}`, 160, yPos, { align: 'right' });
+      
+      // Add notes if any
+      if (currentViewingCashbill.notes) {
+        yPos += 20;
+        doc.setFontSize(10);
+        doc.setFont(undefined, 'bold');
+        doc.text('Notes:', 20, yPos);
+        yPos += 8;
+        doc.setFont(undefined, 'normal');
+        doc.text(currentViewingCashbill.notes, 20, yPos);
+      }
+      
+      // Add footer
+      const pageCount = doc.internal.getNumberOfPages();
+      for (let i = 1; i <= pageCount; i++) {
+        doc.setPage(i);
+        doc.setFontSize(8);
+        doc.text(`Generated by ${systemSettings.companyName} System`, 105, 285, { align: 'center' });
+        doc.text(`Page ${i} of ${pageCount}`, 105, 290, { align: 'center' });
+      }
       
       // Save the PDF
       doc.save(`${currentViewingCashbill.invoiceNumber.replace('#', '')}.pdf`);
