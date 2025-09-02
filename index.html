@@ -3035,7 +3035,7 @@
                 <div class="settings-description">Company address for PDF generation</div>
               </div>
               <div class="settings-control">
-                <textarea id="settingsCompanyAddress" rows="3">58, Bandar Laguna Merbok, 08000 Sungai Petani, Kedah</textarea>
+                <textarea id="settingsCompanyAddress" rows="3">Bandar Laguna Merbok, 08000 Sungai Petani, Kedah</textarea>
               </div>
             </div>
             <div class="settings-item">
@@ -3431,7 +3431,7 @@
     let notifications = [];
     let systemSettings = {
       companyName: 'PNE ARENA',
-      companyAddress: '58, Bandar Laguna Merbok, 08000 Sungai Petani, Kedah',
+      companyAddress: 'Bandar Laguna Merbok, 08000 Sungai Petani, Kedah',
       currency: 'RM',
       taxRate: 0,
       cashbillTargets: { crew: 10, manager: 20, marketing: 15, admin: 0 },
@@ -6453,7 +6453,7 @@
         // Add company address
         doc.setFontSize(smallFontSize);
         doc.setFont(undefined, 'normal');
-        doc.text(systemSettings.companyAddress || '58, Bandar Laguna Merbok, 08000 Sungai Petani, Kedah', 190, 15, { align: 'right' });
+        doc.text(systemSettings.companyAddress || 'Bandar Laguna Merbok, 08000 Sungai Petani, Kedah', 190, 15, { align: 'right' });
         
         // Add invoice title with smaller font
         doc.setFontSize(headerFontSize);
@@ -6681,7 +6681,7 @@
         <body>
           <div class="header">
             <div class="company-name">${systemSettings.companyName}</div>
-            <div class="company-address">${systemSettings.companyAddress || '58, Bandar Laguna Merbok, 08000 Sungai Petani, Kedah'}</div>
+            <div class="company-address">${systemSettings.companyAddress || 'Bandar Laguna Merbok, 08000 Sungai Petani, Kedah'}</div>
             <div class="invoice-title">CASHBILL INVOICE</div>
           </div>
           
