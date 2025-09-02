@@ -1652,6 +1652,14 @@
       font-weight: bold;
     }
     
+    .pdf-amount-box {
+      border: 1px solid #000;
+      padding: 5px;
+      display: inline-block;
+      min-width: 80px;
+      text-align: right;
+    }
+    
     /* Enhanced Admin Panel Styles */
     .admin-feature-grid {
       display: grid;
@@ -2439,6 +2447,10 @@
             <h4>Payment Method</h4>
             <p id="viewPaymentMethod">Cash</p>
           </div>
+          <div class="cashbill-info-card">
+            <h4>Created By</h4>
+            <p id="viewCreatedBy">Admin</p>
+          </div>
         </div>
         
         <div class="card">
@@ -3031,7 +3043,7 @@
                 <div class="settings-description">Company address for PDF generation</div>
               </div>
               <div class="settings-control">
-                <textarea id="settingsCompanyAddress" rows="3">Bandar Laguna Merbok, 08000, Sungai Petani Kedah</textarea>
+                <textarea id="settingsCompanyAddress" rows="3">58, Bandar Laguna Merbok, 08000 Sungai Petani, Kedah</textarea>
               </div>
             </div>
             <div class="settings-item">
@@ -3427,7 +3439,7 @@
     let notifications = [];
     let systemSettings = {
       companyName: 'PNE ARENA',
-      companyAddress: 'Bandar Laguna Merbok, 08000, Sungai Petani Kedah',
+      companyAddress: '58, Bandar Laguna Merbok, 08000 Sungai Petani, Kedah',
       currency: 'RM',
       taxRate: 0,
       cashbillTargets: { crew: 10, manager: 20, marketing: 15, admin: 0 },
@@ -6232,6 +6244,10 @@
       document.getElementById('viewStatus').textContent = cashbill.status === 'draft' ? 'Draft' : cashbill.status === 'pending' ? 'Pending' : 'Committed';
       document.getElementById('viewPaymentMethod').textContent = getPaymentMethodDisplayName(cashbill.paymentMethod);
       
+      // Use userName if available, otherwise fall back to finding user by ID
+      const userName = cashbill.userName || (users.find(u => u.id === cashbill.userId)?.name || 'Unknown');
+      document.getElementById('viewCreatedBy').textContent = userName;
+      
       // Populate items table
       const itemsTableBody = document.getElementById('viewItemsTableBody');
       let itemsHTML = '';
@@ -6430,35 +6446,35 @@
         // Add company address
         doc.setFontSize(smallFontSize);
         doc.setFont(undefined, 'normal');
-        doc.text('Bandar Laguna Merbok, 08000, Sungai Petani Kedah', 190, 15, { align: 'right' });
+        doc.text("Bandar Laguna Merbok, 08000, Sungai Petani, Kedah", 105, 20, { align: 'center' });
         
         // Add invoice title with smaller font
         doc.setFontSize(headerFontSize);
-        doc.text('CASHBILL INVOICE', 105, 25, { align: 'center' });
+        doc.text('CASHBILL INVOICE', 105, 30, { align: 'center' });
         
         // Add invoice number with smaller font
         doc.setFontSize(normalFontSize);
-        doc.text(`Invoice No: ${currentViewingCashbill.invoiceNumber}`, 20, 35);
+        doc.text(`Invoice No: ${currentViewingCashbill.invoiceNumber}`, 20, 40);
         
         // Add date with dd/mm/yyyy format
         const date = new Date(currentViewingCashbill.date);
         const formattedDate = formatDateToDDMMYYYY(date);
-        doc.text(`Date: ${formattedDate}`, 20, 40);
+        doc.text(`Date: ${formattedDate}`, 20, 45);
         
         // Add customer info with smaller font
         doc.setFont(undefined, 'bold');
-        doc.text('Bill To:', 20, 47);
+        doc.text('Bill To:', 20, 52);
         doc.setFont(undefined, 'normal');
-        doc.text(currentViewingCashbill.customerName, 20, 52);
+        doc.text(currentViewingCashbill.customerName, 20, 57);
         
         // Add payment method and status with smaller font
         doc.setFont(undefined, 'bold');
-        doc.text(`Payment Method: ${getPaymentMethodDisplayName(currentViewingCashbill.paymentMethod)}`, 20, 58);
-        doc.text(`Status: ${currentViewingCashbill.status === 'draft' ? 'Draft' : currentViewingCashbill.status === 'pending' ? 'Pending' : 'Committed'}`, 20, 63);
+        doc.text(`Payment Method: ${getPaymentMethodDisplayName(currentViewingCashbill.paymentMethod)}`, 20, 63);
+        doc.text(`Status: ${currentViewingCashbill.status === 'draft' ? 'Draft' : currentViewingCashbill.status === 'pending' ? 'Pending' : 'Committed'}`, 20, 68);
         
         // Add separator line
         doc.setLineWidth(0.5);
-        doc.line(20, 70, 190, 70);
+        doc.line(20, 75, 190, 75);
         
         // Add items table header with smaller font
         doc.setFontSize(smallFontSize);
@@ -6467,14 +6483,14 @@
         const headerPositions = [20, 70, 95, 115, 135, 155];
         
         headers.forEach((header, i) => {
-          doc.text(header, headerPositions[i], 75);
+          doc.text(header, headerPositions[i], 80);
         });
         
         // Add separator line after headers
-        doc.line(20, 78, 190, 78);
+        doc.line(20, 83, 190, 83);
         
         // Add items with smaller font and compact spacing
-        let yPos = 83;
+        let yPos = 88;
         doc.setFont(undefined, 'normal');
         
         currentViewingCashbill.items.forEach(item => {
@@ -6519,11 +6535,21 @@
         doc.text(`${systemSettings.currency}${currentViewingCashbill.totalDiscount.toFixed(2)}`, 160, yPos, { align: 'right' });
         yPos += 5;
         
-        // Add total with slightly larger font
+        // Add total with slightly larger font and box
         doc.setFontSize(normalFontSize + 2);
         doc.setFont(undefined, 'bold');
         doc.text('Total:', 20, yPos);
-        doc.text(`${systemSettings.currency}${currentViewingCashbill.grandTotal.toFixed(2)}`, 160, yPos, { align: 'right' });
+        
+        // Draw box around total amount
+        const totalAmount = `${systemSettings.currency}${currentViewingCashbill.grandTotal.toFixed(2)}`;
+        const textWidth = doc.getTextWidth(totalAmount);
+        const boxX = 160 - textWidth - 5;
+        const boxY = yPos - 4;
+        const boxWidth = textWidth + 10;
+        const boxHeight = 8;
+        
+        doc.rect(boxX, boxY, boxWidth, boxHeight);
+        doc.text(totalAmount, 160, yPos, { align: 'right' });
         
         // Add notes if any with smaller font
         if (currentViewingCashbill.notes) {
@@ -6653,12 +6679,19 @@
                 display: none;
               }
             }
+            .amount-box {
+              border: 1px solid #000;
+              padding: 2px 5px;
+              display: inline-block;
+              min-width: 80px;
+              text-align: right;
+            }
           </style>
         </head>
         <body>
           <div class="header">
             <div class="company-name">${systemSettings.companyName}</div>
-            <div class="company-address">Bandar Laguna Merbok, 08000, Sungai Petani Kedah</div>
+            <div class="company-address">Bandar Laguna Merbok, 08000, Sungai Petani, Kedah</div>
             <div class="invoice-title">CASHBILL INVOICE</div>
           </div>
           
@@ -6728,7 +6761,7 @@
             </div>
             <div class="total-row final">
               <span>Total Amount:</span>
-              <span>${systemSettings.currency}${currentViewingCashbill.grandTotal.toFixed(2)}</span>
+              <span class="amount-box">${systemSettings.currency}${currentViewingCashbill.grandTotal.toFixed(2)}</span>
             </div>
           </div>
       `;
