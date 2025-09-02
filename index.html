@@ -2149,6 +2149,7 @@
       <!-- Desktop Navigation -->
       <nav id="desktopNav" class="desktop-nav">
         <div class="nav-links">
+          <a onclick="showPage('dashboardPage'); toggleDesktopMenu();"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
           <a onclick="showPage('newCashbillPage'); toggleDesktopMenu();"><i class="fas fa-plus"></i> Create New Cashbill</a>
           <a onclick="showPage('cashbillListPage'); toggleDesktopMenu();"><i class="fas fa-list"></i> View Cashbills</a>
           <a onclick="showPage('reportsPage'); toggleDesktopMenu();"><i class="fas fa-chart-bar"></i> View Reports</a>
@@ -2163,7 +2164,7 @@
     </header>
     
     <!-- LOGIN PAGE -->
-    <div id="loginPage" class="page active">
+    <div id="loginPage" class="page">
       <div class="login-form-container">
         <div class="login-header">
           <h2>PNE ARENA</h2>
@@ -3617,6 +3618,8 @@
       
       if (user) {
         currentUser = user;
+        // Store user in localStorage to maintain login state on refresh
+        localStorage.setItem('currentUser', JSON.stringify(user));
         updateCurrentUserUI();
         logActivity(user.id, user.name, 'Login', 'User logged in');
         showPage('dashboardPage');
@@ -3845,6 +3848,19 @@
     
     // Initialize the first item row
     document.addEventListener('DOMContentLoaded', function() {
+      // Check if user is already logged in (from localStorage)
+      const savedUser = localStorage.getItem('currentUser');
+      if (savedUser) {
+        try {
+          currentUser = JSON.parse(savedUser);
+          updateCurrentUserUI();
+          showPage('dashboardPage');
+        } catch (e) {
+          console.error("Error parsing saved user:", e);
+          localStorage.removeItem('currentUser');
+        }
+      }
+      
       // Update the initial item row
       const initialItemRow = document.querySelector('#itemsContainer .item-row');
       if (initialItemRow) {
@@ -6437,7 +6453,7 @@
         // Add company address
         doc.setFontSize(smallFontSize);
         doc.setFont(undefined, 'normal');
-        doc.text(systemSettings.companyAddress, 190, 15, { align: 'right' });
+        doc.text(systemSettings.companyAddress || '58, Bandar Laguna Merbok, 08000 Sungai Petani, Kedah', 190, 15, { align: 'right' });
         
         // Add invoice title with smaller font
         doc.setFontSize(headerFontSize);
@@ -6665,7 +6681,7 @@
         <body>
           <div class="header">
             <div class="company-name">${systemSettings.companyName}</div>
-            <div class="company-address">${systemSettings.companyAddress}</div>
+            <div class="company-address">${systemSettings.companyAddress || '58, Bandar Laguna Merbok, 08000 Sungai Petani, Kedah'}</div>
             <div class="invoice-title">CASHBILL INVOICE</div>
           </div>
           
@@ -7093,6 +7109,8 @@
         logActivity(currentUser.id, currentUser.name, 'Logout', 'User logged out');
       }
       
+      // Clear localStorage
+      localStorage.removeItem('currentUser');
       currentUser = null;
       showPage('loginPage');
       document.getElementById('loginForm').reset();
@@ -7401,7 +7419,7 @@
           if (cashbillsResponse.ok) {
             const serverCashbills = await cashbillsResponse.json();
             
-            // Process cashbills to parse items
+            // Process cashbills to parse items and ensure userName is set
             cashbills = serverCashbills.map(bill => {
               // Ensure userId is a string for proper comparison
               if (bill.userId && typeof bill.userId !== 'string') {
@@ -7415,6 +7433,14 @@
                 } catch (e) {
                   console.error("Error parsing items for cashbill", bill.invoiceNumber, ":", e);
                   bill.items = [];
+                }
+              }
+              
+              // Ensure userName is set
+              if (!bill.userName && bill.userId) {
+                const user = users.find(u => u.id === bill.userId);
+                if (user) {
+                  bill.userName = user.name;
                 }
               }
               
